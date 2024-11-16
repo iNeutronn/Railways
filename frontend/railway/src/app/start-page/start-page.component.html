@@ -1,0 +1,46 @@
+<div class="container">
+    <div class="content">
+      
+      <div class="input-group">
+        <input
+          type="number"
+          placeholder="NUMBER OF TICKET OFFICES"
+          [(ngModel)]="ticketOffices"
+        />
+        <input
+          type="number"
+          placeholder="NUMBER OF ENTRANCES"
+          [(ngModel)]="entrances"
+        />
+        <input
+          type="number"
+          placeholder="SERVICE TIME"
+          [(ngModel)]="serviceTime"
+        />
+      </div>
+  
+      <div class="strategy">
+        <label>
+          <input
+            type="radio"
+            name="strategy"
+            value="first"
+            [(ngModel)]="strategy"
+          />
+          FIRST
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="strategy"
+            value="second"
+            [(ngModel)]="strategy"
+          />
+          SECOND
+        </label>
+      </div>
+  
+      <button class="start-button" (click)="start()">START</button>
+    </div>
+  </div>
+  
