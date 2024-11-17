@@ -3,6 +3,7 @@ package com.railways.railways;
 import com.railways.railways.Configuration.ConfigModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import java.util.Arrays;
 
@@ -10,6 +11,7 @@ import java.util.Arrays;
 public class AppConfig {
 
     @Bean
+    @Scope("singleton")
     public ConfigModel configModel() {
         return new ConfigModel(
                 3,
