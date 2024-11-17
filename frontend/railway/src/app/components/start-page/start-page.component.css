@@ -1,59 +1,72 @@
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #0a4db4;
-    color: white;
-    font-family: 'Arial', sans-serif;
-  }
-
-  .content {
-    text-align: center;
-    padding: 20px;
-    background-color: #0a4db4;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
-
-  .icon img {
-    width: 100px;
-    margin-bottom: 20px;
-  }
-
-  .input-group input {
-    display: block;
-    margin: 10px auto;
-    padding: 10px;
-    width: 250px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #0a4db4;
-    color: white;
-  }
-
-input::placeholder {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background-image: url("/assets/images/station-configuration-background.jpg");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-color: rgb(33,72,193);
   color: white;
-  opacity: 1;
+  font-family: 'Arial', sans-serif;
 }
 
-  .strategy label {
-    display: block;
-    margin: 10px;
-    cursor: pointer;
-  }
+.content {
+  text-align: center;
+  padding: 20px;
+  background-color: rgb(33,72,193);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
 
-  .start-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: white;
-    color: #0a4db4;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+.icon img {
+  width: 100px;
+  margin-bottom: 20px;
+}
 
-  .start-button:hover {
-    color: white;
-    background-color: #083a87;
-  }
+.image-container {
+  width: 100%;
+  display: flex;
+  height: 30vh;
+  justify-content: center;
+}
+
+.input-group input {
+  display: block;
+  margin: 10px auto;
+  padding: 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #0a4db4;
+  color: white;
+}
+
+input::placeholder {
+color: white;
+opacity: 1;
+}
+
+.strategy label {
+  display: block;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.start-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: white;
+  color: #0a4db4;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.start-button:hover {
+  color: white;
+  background-color: #083a87;
+}
