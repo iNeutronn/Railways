@@ -98,6 +98,20 @@ public class ConfigModel {
         this.maxPeopleAllowed = maxPeopleAllowed;
     }
 
+    /**
+     * Updates all configuration fields.
+     *
+     * @param newConfig the new configuration model
+     */
+    public void updateConfig(ConfigModel newConfig) {
+        setCashPointCount(newConfig.getCashPointCount());
+        setCashpointLocations(newConfig.getCashpointLocations());
+        setEntranceCount(newConfig.getEntranceCount());
+        setMinServiceTime(newConfig.getMinServiceTime());
+        setMaxServiceTime(newConfig.getMaxServiceTime());
+        setMaxPeopleAllowed(newConfig.getMaxPeopleAllowed());
+    }
+
     @Override
     public String toString() {
         return "ConfigModel{" +
