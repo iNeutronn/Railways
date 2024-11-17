@@ -40,8 +40,7 @@
   margin: 10px;
   border-radius: 10px;
   border: 2px solid white;
-  padding: 15px 10px 5px;
-  display: flex;
+  padding: 15px 10px 5px 10px;
 }
 
 .field-group::before {
@@ -98,19 +97,41 @@ opacity: 1;
   cursor: pointer;
 }
 
-.start-button {
+.submit-button{
   margin-top: 20px;
   padding: 10px 20px;
   background-color: white;
-  color: #0a4db4;
-  border: none;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.start-button {
+  color: #0a4db4;
+  border: none;
   transition: all 0.5s ease;
+}
+
+.disabled-button {
+  background-color: #cac8c8;
 }
 
 .start-button:hover {
   color: white;
   transition: all 0.5s ease;
   background-color: #083a87;
+}
+
+.error-block {
+  left: 0;
+}
+
+.error-message {
+  left: 0;
+  color: #FF8C00;
+  font-size: 13px;
+  display: inline;
+}
+
+.input-field.ng-invalid.ng-touched {
+  border: 1px solid #FF8C00;
 }
