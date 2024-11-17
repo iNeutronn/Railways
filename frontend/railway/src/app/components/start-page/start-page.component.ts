@@ -12,11 +12,11 @@ import {CustomerGenerationType} from '../../models/enums/customer-generation';
   styleUrls: ['./start-page.component.css']
 })
 export class StartPageComponent {
-  stationConfiguration: StationConfiguration = {
-    serviceTime: 0,
-    generationType: CustomerGenerationType.Simple,
-    cashDeskCount: 0,
-    entranceCount: 0
+  stationConfiguration = {
+    cashDeskCount: null as number | null,
+    entranceCount: null as number | null,
+    serviceTime: null as number | null,
+    generationType: null
   };
 
   start(): void {

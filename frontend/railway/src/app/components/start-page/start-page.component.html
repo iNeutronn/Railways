@@ -4,21 +4,38 @@
         <img src="/assets/images/train.jpg" alt="Background Image" class="background-image" />
       </div>
       <div class="input-group">
-        <input
-          type="number"
-          placeholder="NUMBER OF TICKET OFFICES"
-          [(ngModel)]="stationConfiguration.cashDeskCount"
-        />
-        <input
-          type="number"
-          placeholder="NUMBER OF ENTRANCES"
-          [(ngModel)]="stationConfiguration.entranceCount"
-        />
-        <input
-          type="number"
-          placeholder="SERVICE TIME"
-          [(ngModel)]="stationConfiguration.serviceTime"
-        />
+        <div class="field-group">
+          <input
+            id="ticketOfficesNumber"
+            type="number"
+            class="input-field"
+            placeholder=" "
+            [(ngModel)]="stationConfiguration.cashDeskCount"
+          />
+          <label for="ticketOfficesNumber" class="input-label">NUMBER OF TICKET OFFICES</label>
+        </div>
+
+        <div class="field-group">
+          <input
+            id="entrancesNumber"
+            type="number"
+            placeholder=" "
+            class="input-field"
+            [(ngModel)]="stationConfiguration.entranceCount"
+          />
+          <label for="entrancesNumber" class="input-label">NUMBER OF ENTRANCES</label>
+        </div>
+
+        <div class="field-group">
+          <input
+            id="serviceTime"
+            type="number"
+            placeholder=" "
+            class="input-field"
+            [(ngModel)]="stationConfiguration.serviceTime"
+          />
+          <label for="serviceTime" class="input-label">SERVICE TIME</label>
+        </div>
       </div>
 
       <div class="strategy">

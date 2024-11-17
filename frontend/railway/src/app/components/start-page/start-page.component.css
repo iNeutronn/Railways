@@ -34,6 +34,48 @@
   justify-content: center;
 }
 
+
+.field-group {
+  position: relative;
+  margin: 10px;
+  border-radius: 10px;
+  border: 2px solid white;
+  padding: 15px 10px 5px;
+  display: flex;
+}
+
+.field-group::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 8px;
+  right: 8px;
+  background: white;
+  height: 2px;
+  z-index: -1;
+}
+
+.input-label {
+  font-size: 15px;
+  position: absolute;
+  top: 55%;
+  left: 20px;
+  transform: translateY(-50%);
+  color: white;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus ~ .input-label,
+.input-field:not(:placeholder-shown) ~ .input-label {
+  top: 0;
+  font-size: 14px;
+  background: white;
+  padding: 0 5px;
+  border-radius: 5px;
+  color: black;
+}
+
 .input-group input {
   display: block;
   margin: 10px auto;
@@ -64,9 +106,11 @@ opacity: 1;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: all 0.5s ease;
 }
 
 .start-button:hover {
   color: white;
+  transition: all 0.5s ease;
   background-color: #083a87;
 }
