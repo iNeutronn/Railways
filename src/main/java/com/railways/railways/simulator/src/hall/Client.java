@@ -9,6 +9,7 @@ public class Client {
     private final String lastName;
     private int ticketsToBuy;
     private Point position;
+    private final long timestamp; // New field to store insertion time
 
     public Client(int clientID, String firstName, String lastName, int ticketsToBuy, Point position) {
         this.clientID = clientID;
@@ -16,6 +17,11 @@ public class Client {
         this.lastName = lastName;
         this.ticketsToBuy = ticketsToBuy;
         this.position = position;
+        this.timestamp = System.currentTimeMillis();
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 
     public PrivilegeEnum getPrivilege() {
