@@ -1,6 +1,6 @@
 package com.railways.railways.simulator.src.hall;
 
-public class RegularClientGenerator<T> extends ClientGenerator<T> {
+public class RegularClientGenerator extends ClientGenerator {
     private float everyNSeconds;
 
     public RegularClientGenerator(float everyNSeconds) {
@@ -8,7 +8,7 @@ public class RegularClientGenerator<T> extends ClientGenerator<T> {
     }
 
     @Override
-    public T Generate() {
+    public Client Generate() {
         if (!isStopped) {
             // Logic for generating regular clients
             lastGeneratedAt++; // Placeholder logic
