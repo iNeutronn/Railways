@@ -1,7 +1,9 @@
 package com.railways.railways.simulator.src.hall;
 
+import java.awt.*;
+
 public class RegularClientGenerator extends ClientGenerator {
-    private float everyNSeconds;
+    private final float everyNSeconds; // Interval between generations
 
     public RegularClientGenerator(float everyNSeconds) {
         this.everyNSeconds = everyNSeconds;
@@ -10,9 +12,11 @@ public class RegularClientGenerator extends ClientGenerator {
     @Override
     public Client Generate() {
         if (!isStopped) {
-            // Logic for generating regular clients
-            lastGeneratedAt++; // Placeholder logic
+            lastGeneratedAt++;
+            //notify the UI
+            return new Client(1,"Viktor",
+                    "TheGreatest",12,new Point(0,0)); // hardcoded example
         }
-        return null; // Replace with actual generation logic
+        return null;
     }
 }

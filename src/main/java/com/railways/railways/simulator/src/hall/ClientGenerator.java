@@ -13,4 +13,7 @@ public abstract class ClientGenerator implements IGeneration {
     public void Resume() {
         isStopped = false;
     }
+
+    @Override
+    public abstract Client Generate(); // To be implemented by subclasses
 }
