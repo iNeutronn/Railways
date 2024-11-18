@@ -1,21 +1,21 @@
 package com.railways.railways.simulator.src.hall;
 
-import javax.swing.text.Position;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Random;
 
 public class TicketOffice implements Runnable {
     private final int ticketOfficeID;
-    private PriorityQueue<Client> clientsQueue;  // Change to PriorityQueue for prioritization
+    private PriorityQueue<Client> clientsQueue;
     private ArrayList<ServeRecord> serveRecords;
-    private Position position;
+    private Segment location;
     private boolean isOpen;
 
     private final int minServiceTime;
     private final int maxServiceTime;
 
-    public TicketOffice(int ticketOfficeID, Position position, int minServiceTime, int maxServiceTime) {
+    public TicketOffice(int ticketOfficeID, Segment position, int minServiceTime, int maxServiceTime) {
         this.ticketOfficeID = ticketOfficeID;
         // Using a PriorityQueue with a comparator that prioritizes clients based on their privilege
         this.clientsQueue = new PriorityQueue<>((c1, c2) -> {
@@ -24,7 +24,7 @@ public class TicketOffice implements Runnable {
         });
 
         this.serveRecords = new ArrayList<>();
-        this.position = position;
+        this.location = position;
         this.isOpen = true;
         this.minServiceTime = minServiceTime;
         this.maxServiceTime = maxServiceTime;
@@ -79,5 +79,21 @@ public class TicketOffice implements Runnable {
 
     public ArrayList<ServeRecord> getServeRecords() {
         return serveRecords;
+    }
+
+    public Point getFrontPosition()
+    {
+        // Return the position between the top left and top right corners as the front position of the ticket office
+        // TODO: Find optimal solution for this
+        int x = location.getBottomRight().x - location.getTopLeft().x;
+        int y = location.getTopLeft().y;
+        return new Point(x, y);
+    }
+
+    public Point getQueueEndPosition() {
+        // Return the position of the last client in the queue
+        if (clientsQueue.isEmpty()) return getFrontPosition();
+        ArrayList<Client> list = new ArrayList<>(clientsQueue);
+        return list.getLast().getPosition();
     }
 }
