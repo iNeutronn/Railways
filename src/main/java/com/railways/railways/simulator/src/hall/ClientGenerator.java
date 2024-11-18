@@ -1,6 +1,6 @@
 package com.railways.railways.simulator.src.hall;
 
-public abstract class ClientGenerator<T> implements IGeneration<T> {
+public abstract class ClientGenerator implements IGeneration {
     protected boolean isStopped;
     protected int lastGeneratedAt;
 
