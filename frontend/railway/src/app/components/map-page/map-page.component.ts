@@ -1,0 +1,14 @@
+import { Component, OnInit } from '@angular/core';
+
+
+@Component({
+  selector: 'app-map-page',
+  standalone: true,
+  imports: [],
+  templateUrl: './map-page.component.html',
+  styleUrl: './map-page.component.css'
+})
+export class MapPageComponent {
+  currentTime: string = '';
+
+}
