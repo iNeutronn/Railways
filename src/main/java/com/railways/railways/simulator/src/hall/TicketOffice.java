@@ -2,14 +2,14 @@ package com.railways.railways.simulator.src.hall;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class TicketOffice implements Runnable {
     private final int ticketOfficeID;
-    private PriorityQueue<Client> clientsQueue;
-    private ArrayList<ServeRecord> serveRecords;
-    private Segment location;
+    private final PriorityBlockingQueue<Client> clientsQueue;
+    private final ArrayList<ServeRecord> serveRecords;
+    private final Segment location;
     private boolean isOpen;
 
     private final int minServiceTime;
@@ -17,11 +17,14 @@ public class TicketOffice implements Runnable {
 
     public TicketOffice(int ticketOfficeID, Segment position, int minServiceTime, int maxServiceTime) {
         this.ticketOfficeID = ticketOfficeID;
-        // Using a PriorityQueue with a comparator that prioritizes clients based on their privilege
-        this.clientsQueue = new PriorityQueue<>((c1, c2) -> {
-            int priorityComparison = Integer.compare(c2.getPriority(), c1.getPriority());
-            return priorityComparison != 0 ? priorityComparison : Long.compare(c1.getTimestamp(), c2.getTimestamp());
-        });
+
+        this.clientsQueue = new PriorityBlockingQueue<>(
+                10,
+                (c1, c2) -> {
+                    int priorityComparison = Integer.compare(c2.getPriority(), c1.getPriority());
+                    return priorityComparison != 0 ? priorityComparison : Long.compare(c1.getTimestamp(), c2.getTimestamp());
+                }
+        );
 
         this.serveRecords = new ArrayList<>();
         this.location = position;
@@ -33,26 +36,21 @@ public class TicketOffice implements Runnable {
     @Override
     public void run() {
         while (isOpen) {
-            serveClient();
             try {
-                // Short pause to simulate time between clients
-                Thread.sleep(100);
+                serveClient();
+                Thread.sleep(100); // Short pause between clients
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
     }
 
-    public void serveClient() {
-        if (clientsQueue.isEmpty()) return;
-
-        Client client = clientsQueue.poll();
-        if (client == null) return;
+    public void serveClient() throws InterruptedException {
+        Client client = clientsQueue.take();
 
         int serviceTime = getRandomServeTime();
-
-        // Simulate serving the client
         try {
+            // Simulate serving the client
             Thread.sleep((long) serviceTime * client.getTicketsToBuy());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -61,7 +59,7 @@ public class TicketOffice implements Runnable {
         ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), serviceTime);
         serveRecords.add(record);
 
-        //TODO: Notify ui that they have been served
+        // TODO: Notify the UI that the client has been served
     }
 
     private int getRandomServeTime() {
@@ -70,7 +68,7 @@ public class TicketOffice implements Runnable {
     }
 
     public void addClient(Client client) {
-        clientsQueue.add(client);
+        clientsQueue.offer(client); // Thread-safe addition
     }
 
     public void closeOffice() {
@@ -81,19 +79,22 @@ public class TicketOffice implements Runnable {
         return serveRecords;
     }
 
-    public Point getFrontPosition()
-    {
+    public Point getFrontPosition() {
         // Return the position between the top left and top right corners as the front position of the ticket office
-        // TODO: Find optimal solution for this
+        // TODO: introduce direction to get right position
         int x = location.getBottomRight().x - location.getTopLeft().x;
         int y = location.getTopLeft().y;
         return new Point(x, y);
     }
 
     public Point getQueueEndPosition() {
-        // Return the position of the last client in the queue
-        if (clientsQueue.isEmpty()) return getFrontPosition();
-        ArrayList<Client> list = new ArrayList<>(clientsQueue);
-        return list.getLast().getPosition();
+        ArrayList<Client> clientList = new ArrayList<>(clientsQueue);
+
+        if (clientList.isEmpty()) {
+            return getFrontPosition();
+        }
+
+        Client lastClient = clientList.getLast();
+        return lastClient.getPosition();
     }
 }
