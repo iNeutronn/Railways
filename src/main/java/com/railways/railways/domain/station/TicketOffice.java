@@ -1,4 +1,7 @@
-package com.railways.railways.simulator.src.hall;
+package com.railways.railways.domain.station;
+
+import com.railways.railways.domain.ServeRecord;
+import com.railways.railways.domain.client.Client;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,14 +12,17 @@ public class TicketOffice implements Runnable {
     private final int ticketOfficeID;
     private final PriorityBlockingQueue<Client> clientsQueue;
     private final ArrayList<ServeRecord> serveRecords;
-    private final Segment location;
     private boolean isOpen;
+    private Segment segment;
+    private Direction direction;
 
     private final int minServiceTime;
     private final int maxServiceTime;
 
-    public TicketOffice(int ticketOfficeID, Segment position, int minServiceTime, int maxServiceTime) {
+    public TicketOffice(int ticketOfficeID, Segment position, Direction direction, int minServiceTime, int maxServiceTime) {
         this.ticketOfficeID = ticketOfficeID;
+        this.direction = direction;
+        this.segment = position;
 
         this.clientsQueue = new PriorityBlockingQueue<>(
                 10,
@@ -27,7 +33,6 @@ public class TicketOffice implements Runnable {
         );
 
         this.serveRecords = new ArrayList<>();
-        this.location = position;
         this.isOpen = true;
         this.minServiceTime = minServiceTime;
         this.maxServiceTime = maxServiceTime;
@@ -79,22 +84,19 @@ public class TicketOffice implements Runnable {
         return serveRecords;
     }
 
-    public Point getFrontPosition() {
-        // Return the position between the top left and top right corners as the front position of the ticket office
-        // TODO: introduce direction to get right position
-        int x = location.getBottomRight().x - location.getTopLeft().x;
-        int y = location.getTopLeft().y;
-        return new Point(x, y);
+    public int getQueueSize() {
+        return clientsQueue.size();
     }
 
-    public Point getQueueEndPosition() {
-        ArrayList<Client> clientList = new ArrayList<>(clientsQueue);
+    public Segment getSegment() {
+        return segment;
+    }
 
-        if (clientList.isEmpty()) {
-            return getFrontPosition();
-        }
+    public Direction getDirection() {
+        return direction;
+    }
 
-        Client lastClient = clientList.getLast();
-        return lastClient.getPosition();
+    public PriorityBlockingQueue<Client> getQueue() {
+        return clientsQueue;
     }
 }
