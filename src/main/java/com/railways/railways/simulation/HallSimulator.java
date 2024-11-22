@@ -56,7 +56,7 @@ public class HallSimulator {
                     Client client = generateClient();
                     if (client != null) {
                         hall.addClient(client);
-//                        System.out.println("HallSimulator: Client created and added");
+                        System.out.println("HallSimulator: Client created and added");
                     }
                 } else {
                     stop();

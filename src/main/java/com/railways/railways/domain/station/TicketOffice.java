@@ -62,7 +62,7 @@ public class TicketOffice implements Runnable {
 
         ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), serviceTime);
         serveRecords.add(record);
-//        System.out.println("TicketOffice: Client " + client.getFullName() + " with id:" + client.getClientID() + " served by ticket office " + ticketOfficeID);
+        System.out.println("TicketOffice: Client " + client.getFullName() + " with id:" + client.getClientID() + " served by ticket office " + ticketOfficeID);
 
         // TODO: Notify the UI that the client has been served
     }
