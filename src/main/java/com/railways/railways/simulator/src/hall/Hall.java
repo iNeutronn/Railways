@@ -25,6 +25,10 @@ public class Hall {
         return ticketOffices;
     }
 
+    public void addTicketOffice(TicketOffice ticketOffice) {
+        ticketOffices.add(ticketOffice);
+    }
+
     public void setTicketOffices(List<TicketOffice> ticketOffices) {
         this.ticketOffices = ticketOffices;
     }
