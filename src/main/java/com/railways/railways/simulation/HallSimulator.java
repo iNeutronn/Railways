@@ -3,22 +3,26 @@ package com.railways.railways.simulation;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.PrivilegeEnum;
 import com.railways.railways.domain.station.Hall;
+import com.railways.railways.events.ClientCreatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.awt.*;
 import java.util.Random;
 
+
 public class HallSimulator {
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final int maxCapacity; // Maximum capacity of the hall
     private GenerationPolicy schedulingPolicy;
     private Hall hall;
     private boolean isRunning = false;
     private Random random = new Random();
 
-    public HallSimulator(Hall hall, GenerationPolicy policy, int maxCapacity, boolean isRunning) {
+    public HallSimulator(ApplicationEventPublisher applicationEventPublisher, Hall hall, GenerationPolicy policy, int maxCapacity) {
         this.hall = hall;
         this.schedulingPolicy = policy;
         this.maxCapacity = maxCapacity;
-        this.isRunning = isRunning;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     private Client generateClient() {
@@ -54,10 +58,12 @@ public class HallSimulator {
                 currentClientCount = hall.getClientCount();
                 if (currentClientCount < maxCapacity) {
                     Client client = generateClient();
-                    if (client != null) {
-                        hall.addClient(client);
-//                        System.out.println("HallSimulator: Client created and added");
-                    }
+
+                    hall.addClient(client);
+
+                    ClientCreatedEvent event = new ClientCreatedEvent(this, client);
+                    applicationEventPublisher.publishEvent(event);
+
                 } else {
                     stop();
                 }
