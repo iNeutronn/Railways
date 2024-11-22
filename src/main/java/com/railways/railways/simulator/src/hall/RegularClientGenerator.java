@@ -3,15 +3,25 @@ package com.railways.railways.simulator.src.hall;
 import java.awt.*;
 
 public class RegularClientGenerator extends ClientGenerator {
-    private final float everyNSeconds; // Interval between generations
+    private final long intervalInMillis;
 
     public RegularClientGenerator(float everyNSeconds) {
-        this.everyNSeconds = everyNSeconds;
+        this.intervalInMillis =(long) (everyNSeconds * 1000);
     }
 
     @Override
     public Client Generate() {
         if (!isStopped) {
+            try {
+                // Затримка між генераціями
+                Thread.sleep(intervalInMillis);
+            } catch (InterruptedException e) {
+                // Обробка можливого переривання потоку
+                Thread.currentThread().interrupt();
+                System.err.println("Thread was interrupted: " + e.getMessage());
+                return null;
+            }
+
             lastGeneratedAt++;
             //notify the UI
             return new Client(1,"Viktor",
