@@ -1,12 +1,12 @@
 package com.railways.railways.simulator.src.hall;
+
 import java.awt.*;
 import java.util.Random;
 
 public class RandomClientGenerator extends ClientGenerator {
-    private float everyNSecondsMin;
-    private float everyNSecondsMax;
+    private final float everyNSecondsMin;
+    private final float everyNSecondsMax;
     private final Random random = new Random();
-
 
     public RandomClientGenerator(float everyNSecondsMin, float everyNSecondsMax) {
         this.everyNSecondsMin = everyNSecondsMin;
@@ -17,10 +17,22 @@ public class RandomClientGenerator extends ClientGenerator {
     public Client Generate() {
         if (!isStopped) {
             lastGeneratedAt++;
-            float interval = everyNSecondsMin + random.nextFloat() * (everyNSecondsMax - everyNSecondsMin);
-            // notify the UI
+
+            // Calculate random interval in milliseconds
+            float intervalInSeconds = everyNSecondsMin + random.nextFloat() * (everyNSecondsMax - everyNSecondsMin);
+            long intervalInMillis = (long) (intervalInSeconds * 1000);
+
+            try {
+                // Introduce the random delay
+                Thread.sleep(intervalInMillis);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null; // Thread was interrupted during sleep
+            }
+
+            // Return a hardcoded example Client
             return new Client(1, "Viktor",
-                    "TheGreatest", 12, new Point(0, 0)); // hardcoded example
+                    "TheGreatest", 12, new Point(0, 0));
         }
         return null;
     }
