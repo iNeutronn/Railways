@@ -10,6 +10,8 @@ import java.util.Arrays;
 @Configuration
 public class AppConfig {
 
+
+
     @Bean
     @Scope("singleton")
     public ConfigModel configModel() {
