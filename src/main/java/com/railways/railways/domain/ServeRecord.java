@@ -1,4 +1,4 @@
-package com.railways.railways.simulator.src.hall;
+package com.railways.railways.domain;
 
 
 public record ServeRecord(

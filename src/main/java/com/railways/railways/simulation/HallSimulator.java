@@ -1,17 +1,18 @@
-package com.railways.railways.simulator.src.hall;
+package com.railways.railways.simulation;
+
+import com.railways.railways.domain.client.Client;
+import com.railways.railways.domain.station.Hall;
 
 import java.awt.*;
 
 public class HallSimulator {
-    private final TicketOfficeSimulator ticketOfficeSimulator;
-
     private final int maxCapacity; // Maximum capacity of the hall
     private GenerationPolicy schedulingPolicy;
-    private int currentClientCount = 0; // Current number of clients in the hall
+    private Hall hall;
     private boolean isRunning = false;
 
-    public HallSimulator(TicketOfficeSimulator ticketOfficeSimulator, GenerationPolicy policy, int maxCapacity, boolean isRunning) {
-        this.ticketOfficeSimulator = ticketOfficeSimulator;
+    public HallSimulator(Hall hall, GenerationPolicy policy, int maxCapacity, boolean isRunning) {
+        this.hall = hall;
         this.schedulingPolicy = policy;
         this.maxCapacity = maxCapacity;
         this.isRunning = isRunning;
@@ -44,13 +45,13 @@ public class HallSimulator {
 
         while (true)
         {
+            int currentClientCount = hall.getClientCount();
             while (isRunning) { // Continuous simulation
+                currentClientCount = hall.getClientCount();
                 if (currentClientCount < maxCapacity) {
                     Client client = generateClient();
                     if (client != null) {
-                        currentClientCount++;
-                        // client entered the hall
-                        //ticketOfficeSimulator.processClient(client);
+                        hall.addClient(client);
                     }
                 } else {
                     stop();

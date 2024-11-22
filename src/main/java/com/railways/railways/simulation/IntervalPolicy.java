@@ -1,6 +1,6 @@
-package com.railways.railways.simulator.src.hall;
+package com.railways.railways.simulation;
 
-public class IntervalPolicy implements GenerationPolicy{
+public class IntervalPolicy implements GenerationPolicy {
     private final Double time;
 
     public IntervalPolicy(Double time) {

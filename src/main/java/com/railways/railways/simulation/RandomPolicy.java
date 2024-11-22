@@ -1,8 +1,8 @@
-package com.railways.railways.simulator.src.hall;
+package com.railways.railways.simulation;
 
 import java.util.Random;
 
-public class RandomPolicy implements GenerationPolicy{
+public class RandomPolicy implements GenerationPolicy {
     private final Double minTime;
     private final Double maxTime;
     private final Random random = new Random();

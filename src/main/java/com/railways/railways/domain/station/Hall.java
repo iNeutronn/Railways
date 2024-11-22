@@ -1,12 +1,14 @@
-package com.railways.railways.simulator.src.hall;
-import javax.swing.text.Position;
+package com.railways.railways.domain.station;
+import com.railways.railways.domain.client.Client;
+
 import java.util.List;
 
 public class Hall {
 
     private List<TicketOffice> ticketOffices;
-    private List<Position> entrances;
+    private List<Segment> entrances;
     private TicketOffice reservedTicketOffice;
+    private Segment segment;
 
     private Hall() {
 
@@ -33,11 +35,11 @@ public class Hall {
         this.ticketOffices = ticketOffices;
     }
 
-    public List<Position> getEntrances() {
+    public List<Segment> getEntrances() {
         return entrances;
     }
 
-    public void setEntrances(List<Position> entrances) {
+    public void setEntrances(List<Segment> entrances) {
         this.entrances = entrances;
     }
 
@@ -47,5 +49,21 @@ public class Hall {
 
     public void setReservedTicketOffice(TicketOffice reservedTicketOffice) {
         this.reservedTicketOffice = reservedTicketOffice;
+    }
+
+    public void addClient(Client client) {
+//        reservedTicketOffice.addClient(client);
+    }
+
+    public  int getClientCount() {
+        int count = 0;
+        for (TicketOffice ticketOffice : ticketOffices) {
+            count += ticketOffice.getQueueSize();
+        }
+        return count;
+    }
+
+    public Segment getSegment() {
+        return segment;
     }
 }

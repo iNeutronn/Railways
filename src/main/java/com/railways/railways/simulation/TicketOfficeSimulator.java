@@ -1,4 +1,4 @@
-package com.railways.railways.simulator.src.hall;
+package com.railways.railways.simulation;
 
 public class TicketOfficeSimulator {
     public void run() {
