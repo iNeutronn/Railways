@@ -3,7 +3,6 @@ package com.railways.railways.domain.station;
 import com.railways.railways.domain.ServeRecord;
 import com.railways.railways.domain.client.Client;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -63,8 +62,13 @@ public class TicketOffice implements Runnable {
 
         ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), serviceTime);
         serveRecords.add(record);
+//        System.out.println("TicketOffice: Client " + client.getFullName() + " with id:" + client.getClientID() + " served by ticket office " + ticketOfficeID);
 
         // TODO: Notify the UI that the client has been served
+    }
+
+    public int getOfficeID() {
+        return ticketOfficeID;
     }
 
     private int getRandomServeTime() {
