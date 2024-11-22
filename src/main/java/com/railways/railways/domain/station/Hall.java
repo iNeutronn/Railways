@@ -1,7 +1,11 @@
 package com.railways.railways.domain.station;
+import com.railways.railways.domain.MapManager;
 import com.railways.railways.domain.client.Client;
 
+import java.awt.*;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Hall {
 
@@ -11,7 +15,7 @@ public class Hall {
     private Segment segment;
 
     private Hall() {
-
+        segment = new Segment(new Point(0, 0), new Point(100, 100));
     }
 
     private static final class InstanceHolder {
@@ -52,7 +56,21 @@ public class Hall {
     }
 
     public void addClient(Client client) {
-//        reservedTicketOffice.addClient(client);
+        int index = new Random().nextInt(entrances.size());
+//        System.out.println(index);
+        var entrancePoint = entrances.get(index).start;
+        client.setPosition(entrancePoint);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Add the client to the nearest ticket office
+        var ticketOffice = MapManager.getClosestTicketOffice(client, ticketOffices);
+        ticketOffice.addClient(client);
+//        System.out.println("Hall: Client " + client.getFullName() + " added to ticket office " + ticketOffice.getOfficeID());
     }
 
     public  int getClientCount() {
