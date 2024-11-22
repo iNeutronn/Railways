@@ -1,15 +1,18 @@
 package com.railways.railways.simulation;
 
 import com.railways.railways.domain.client.Client;
+import com.railways.railways.domain.client.PrivilegeEnum;
 import com.railways.railways.domain.station.Hall;
 
 import java.awt.*;
+import java.util.Random;
 
 public class HallSimulator {
     private final int maxCapacity; // Maximum capacity of the hall
     private GenerationPolicy schedulingPolicy;
     private Hall hall;
     private boolean isRunning = false;
+    private Random random = new Random();
 
     public HallSimulator(Hall hall, GenerationPolicy policy, int maxCapacity, boolean isRunning) {
         this.hall = hall;
@@ -20,11 +23,12 @@ public class HallSimulator {
 
     private Client generateClient() {
         return new Client(
-                1,
-                "First name", // change to random
-                "Last name", // change to random
-                3, // change to random
-                new Point() // change to random
+                random.nextInt(1000),
+                "Victor", // change to random
+                "The Greatest", // change to random
+                2, // change to random
+                new Point(), // change to random
+                PrivilegeEnum.DEFAULT
         );
     }
 
@@ -52,6 +56,7 @@ public class HallSimulator {
                     Client client = generateClient();
                     if (client != null) {
                         hall.addClient(client);
+//                        System.out.println("HallSimulator: Client created and added");
                     }
                 } else {
                     stop();
