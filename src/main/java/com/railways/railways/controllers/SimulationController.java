@@ -18,13 +18,13 @@ public class SimulationController {
     }
 
     @GetMapping("/start")
-    public String startSimulation() {
+    public String resumeSimulation() {
         simulationService.startSimulation();
         return "Simulation started!";
     }
 
     @GetMapping("/stop")
-    public String stopSimulation() {
+    public String pauseSimulation() {
         simulationService.stopSimulation();
         return "Simulation stopped!";
     }

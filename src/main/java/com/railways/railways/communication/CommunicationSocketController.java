@@ -2,6 +2,7 @@ package com.railways.railways.communication;
 
 import com.google.gson.Gson;
 import com.railways.railways.communication.DTO.GenerationUpdateDTO;
+import com.railways.railways.simulation.SimulationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -20,7 +21,11 @@ import java.util.List;
 public class CommunicationSocketController extends TextWebSocketHandler {
     private final List<WebSocketSession> sessions = new ArrayList<>();
     private final Gson gson = new Gson(); // Gson initialization
+    private final SimulationService simulationService;
 
+    public CommunicationSocketController(SimulationService simulationService) {
+        this.simulationService = simulationService;
+    }
     /**
      * Called after a new WebSocket connection is established.
      *
@@ -61,5 +66,19 @@ public class CommunicationSocketController extends TextWebSocketHandler {
         } catch (Exception e) {
             System.out.println("Error sending message: " + e.getMessage());
         }
+    }
+
+    /**
+     * Resumes the simulation by calling the start method of the simulation service.
+     */
+    public void resumeSimulation() {
+        simulationService.startSimulation();
+    }
+
+    /**
+     * Pauses the simulation by calling the stop method of the simulation service.
+     */
+    public void pauseSimulation() {
+        simulationService.stopSimulation();
     }
 }
