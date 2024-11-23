@@ -1,103 +1,104 @@
 package com.railways.railways.Configuration;
 
 import org.springframework.web.bind.annotation.*;
-
+import com.railways.railways.simulation.GenerationPolicy;
 import java.util.List;
 
-/**
- * ConfigController provides REST API to access and modify the configuration of the railway ticketing system.
- */
 @RestController
 @RequestMapping("/config")
 public class ConfigController {
 
     private final ConfigModel configModel;
 
-    /**
-     * Constructor for ConfigController, accepting a configuration model.
-     *
-     * @param configModel the configuration for the railway ticketing system
-     */
     public ConfigController(ConfigModel configModel) {
         this.configModel = configModel;
     }
 
-    /**
-     * Endpoint to retrieve the current configuration.
-     *
-     * @return the current configuration as a ConfigModel object
-     */
     @GetMapping
     public ConfigModel getConfig() {
         return configModel;
     }
 
-    /**
-     * Endpoint to update the entire configuration.
-     *
-     * @param newConfig the new configuration model
-     */
     @PutMapping
     public void updateConfig(@RequestBody ConfigModel newConfig) {
         configModel.updateConfig(newConfig);
     }
 
-    /**
-     * Endpoint to update the number of cashpoints.
-     *
-     * @param cashpointsCount the new number of cashpoints
-     */
+    @GetMapping("/generationPolicy")
+    public GenerationPolicy getGenerationPolicy() {
+        return configModel.getGenerationPolicy();
+    }
+
+    @PutMapping("/generationPolicy")
+    public void updateGenerationPolicy(@RequestBody GenerationPolicy generationPolicy) {
+        configModel.setGenerationPolicy(generationPolicy);
+    }
+
+    @GetMapping("/cashpointsCount")
+    public int getCashpointsCount() {
+        return configModel.getCashPointCount();
+    }
+
     @PutMapping("/cashpointsCount")
     public void updateCashpointsCount(@RequestParam int cashpointsCount) {
         configModel.setCashPointCount(cashpointsCount);
     }
 
-    /**
-     * Endpoint to update cashpoint locations.
-     *
-     * @param cashpointConfigs the new cashpoint locations
-     */
+    @GetMapping("/cashpointConfigs")
+    public List<CashPointConfig> getCashpointConfigs() {
+        return configModel.getCashpointConfigs();
+    }
+
     @PutMapping("/cashpointConfigs")
-    public void updateCashpointLocations(@RequestBody List<CashPointConfig> cashpointConfigs) {
+    public void updateCashpointConfigs(@RequestBody List<CashPointConfig> cashpointConfigs) {
         configModel.setCashpointConfigs(cashpointConfigs);
     }
 
-    /**
-     * Endpoint to update the number of entrances.
-     *
-     * @param entranceCount the new number of entrances
-     */
+    @GetMapping("/entranceCount")
+    public int getEntranceCount() {
+        return configModel.getEntranceCount();
+    }
+
     @PutMapping("/entranceCount")
     public void updateEntranceCount(@RequestParam int entranceCount) {
         configModel.setEntranceCount(entranceCount);
     }
 
-    /**
-     * Endpoint to update the minimum service time.
-     *
-     * @param minServiceTime the new minimum service time
-     */
+    @GetMapping("/entranceConfigs")
+    public List<EntranceConfig> getEntranceConfigs() {
+        return configModel.getEntranceConfigs();
+    }
+
+    @PutMapping("/entranceConfigs")
+    public void updateEntranceConfigs(@RequestBody List<EntranceConfig> entranceConfigs) {
+        configModel.setEntranceConfigs(entranceConfigs);
+    }
+
+    @GetMapping("/minServiceTime")
+    public int getMinServiceTime() {
+        return configModel.getMinServiceTime();
+    }
+
     @PutMapping("/minServiceTime")
     public void updateMinServiceTime(@RequestParam int minServiceTime) {
         configModel.setMinServiceTime(minServiceTime);
     }
 
-    /**
-     * Endpoint to update the maximum service time.
-     *
-     * @param maxServiceTime the new maximum service time
-     */
+    @GetMapping("/maxServiceTime")
+    public int getMaxServiceTime() {
+        return configModel.getMaxServiceTime();
+    }
+
     @PutMapping("/maxServiceTime")
     public void updateMaxServiceTime(@RequestParam int maxServiceTime) {
         configModel.setMaxServiceTime(maxServiceTime);
-
     }
 
-    /**
-     * Endpoint to update the maximum number of people allowed.
-     *
-     * @param maxPeopleAllowed the new maximum number of people allowed
-     */
+    @GetMapping("/maxPeopleAllowed")
+    public int getMaxPeopleAllowed() {
+        return configModel.getMaxPeopleAllowed();
+    }
+
     @PutMapping("/maxPeopleAllowed")
     public void updateMaxPeopleAllowed(@RequestParam int maxPeopleAllowed) {
         configModel.setMaxPeopleAllowed(maxPeopleAllowed);
