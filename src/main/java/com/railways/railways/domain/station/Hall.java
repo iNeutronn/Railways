@@ -68,7 +68,7 @@ public class Hall {
         }
 
         // Add the client to the nearest ticket office
-        var ticketOffice = MapManager.getClosestTicketOffice(client, ticketOffices);
+        var ticketOffice = getBestTicketOffice(client);
         ticketOffice.addClient(client);
         System.out.println("Hall: Client " + client.getFullName() + " added to ticket office " + ticketOffice.getOfficeID());
     }
@@ -79,6 +79,26 @@ public class Hall {
             count += ticketOffice.getQueueSize();
         }
         return count;
+    }
+
+    public TicketOffice getBestTicketOffice(Client client) {
+        TicketOffice bestOffice = null;
+        int minQueueSize = Integer.MAX_VALUE;
+        double minDistance = Double.MAX_VALUE;
+
+        for (TicketOffice office : ticketOffices) {
+
+            int queueSize = office.getQueueSize();
+            // Calculate the distance from the client's current position to the starting point of the office's segment
+            double clientDistance = client.getPosition().distance(office.getSegment().start);
+            if (queueSize < minQueueSize || (queueSize == minQueueSize && clientDistance < minDistance)) {
+                minQueueSize = queueSize;
+                minDistance = clientDistance;
+                bestOffice = office;
+            }
+        }
+
+        return bestOffice;
     }
 
     public Segment getSegment() {
