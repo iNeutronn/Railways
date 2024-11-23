@@ -5,5 +5,6 @@ public record ServeRecord(
         int ticketOfficeID,
         int clientID,
         int ticketsBought,
-        int timeSpent
+        String startTime,
+        String endTime
 ) {}

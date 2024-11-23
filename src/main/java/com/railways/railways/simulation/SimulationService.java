@@ -26,7 +26,7 @@ public class SimulationService {
     private final ClientGenerator clientGenerator;
     private HallSimulator hallSimulator;
     private final ApplicationEventPublisher eventPublisher;
-    private  ConfigModel appConfig;
+    private final ConfigModel appConfig;
 
     public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig) {
         this.eventPublisher = eventPublisher;
