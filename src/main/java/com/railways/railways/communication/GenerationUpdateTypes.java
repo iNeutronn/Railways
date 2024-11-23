@@ -1,6 +1,7 @@
 package com.railways.railways.communication;
 
 public enum GenerationUpdateTypes {
-    ClientCreated
+    ClientCreated,
+    ClientMoved,
     //add more types here
 }

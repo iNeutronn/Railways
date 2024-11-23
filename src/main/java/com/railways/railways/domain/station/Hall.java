@@ -57,7 +57,7 @@ public class Hall {
 
     public void addClient(Client client) {
         int index = new Random().nextInt(entrances.size());
-//        System.out.println(index);
+        System.out.println(index);
         var entrancePoint = entrances.get(index).start;
         client.setPosition(entrancePoint);
 
@@ -70,7 +70,7 @@ public class Hall {
         // Add the client to the nearest ticket office
         var ticketOffice = MapManager.getClosestTicketOffice(client, ticketOffices);
         ticketOffice.addClient(client);
-//        System.out.println("Hall: Client " + client.getFullName() + " added to ticket office " + ticketOffice.getOfficeID());
+        System.out.println("Hall: Client " + client.getFullName() + " added to ticket office " + ticketOffice.getOfficeID());
     }
 
     public  int getClientCount() {
