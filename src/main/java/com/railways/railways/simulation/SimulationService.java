@@ -6,6 +6,7 @@ import com.railways.railways.domain.station.Direction;
 import com.railways.railways.domain.station.Hall;
 import com.railways.railways.domain.station.Segment;
 import com.railways.railways.domain.station.TicketOffice;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -22,8 +23,10 @@ public class SimulationService {
     private final ExecutorService executorService;
     private final ClientGenerator clientGenerator;
     private HallSimulator hallSimulator;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public SimulationService() {
+    public SimulationService(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
         this.hall = Hall.getInstance(); // Singleton instance
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
@@ -75,7 +78,7 @@ public class SimulationService {
         }
 
         // Start hall simulation
-        hallSimulator = new HallSimulator(hall, new IntervalPolicy(0.5), 10, true, clientGenerator);
+        hallSimulator = new HallSimulator(eventPublisher, hall, new IntervalPolicy(0.5), 10,  clientGenerator);
         Thread simulationThread = new Thread(hallSimulator::run);
         simulationThread.start();
 
