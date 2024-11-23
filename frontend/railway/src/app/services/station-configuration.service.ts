@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { env } from 'process';
 import { environmentDev } from '../environments/environment.development';
 import { StationConfiguration } from '../models/station-configuration';
+import {of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class StationConfigurationService {
   stationConfigurationUrl: string = environmentDev.serverApi + '/{controller}/';
 
     saveConfiguration(configuration: StationConfiguration) {
-      return this.httpClient.post(this.stationConfigurationUrl, configuration);
+      return of(configuration);
+      //return this.httpClient.post(this.stationConfigurationUrl, configuration);
     }
 }

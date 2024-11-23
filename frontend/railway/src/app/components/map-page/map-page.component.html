@@ -10,7 +10,23 @@
   <span class="stat">CLIENTS: <strong></strong></span>
 </div>
 
-<div class="content">
-  <!-- Тут буде карта -->
-  <p>Map rendering placeholder</p>
+<div class="station-container">
+  <div *ngFor="let client of clients"
+       [ngClass]="client.label"
+       class="marker"
+       [style.top.px]="client.x * scaleFactor"
+       [style.left.px]="client.y * scaleFactor">
+  </div>
+
+  <div *ngFor="let entrance of entrances"
+       class="marker entrance"
+       [style.top.px]="entrance.x * scaleFactor"
+       [style.left.px]="entrance.y * scaleFactor">
+  </div>
+
+  <div *ngFor="let cashDesk of cashDesks"
+       class="marker cash-desk"
+       [style.top.px]="cashDesk.x * scaleFactor"
+       [style.left.px]="cashDesk.y * scaleFactor">
+  </div>
 </div>
