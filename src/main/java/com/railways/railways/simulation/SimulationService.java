@@ -4,7 +4,6 @@ import com.railways.railways.Configuration.CashPointConfig;
 import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.client.PrivilegeEnum;
-import com.railways.railways.domain.station.Direction;
 import com.railways.railways.domain.station.Hall;
 import com.railways.railways.domain.station.Segment;
 import com.railways.railways.domain.station.TicketOffice;
@@ -51,7 +50,7 @@ public class SimulationService {
 
             Segment segment = new Segment(new Point(cashPointConfig.x, cashPointConfig.y), new Point(cashPointConfig.x+4, cashPointConfig.y + 3));
 
-            TicketOffice office = new TicketOffice(i,segment,cashPointConfig.direction, appConfig.getMinServiceTime(), appConfig.getMaxServiceTime());
+            TicketOffice office = new TicketOffice(eventPublisher, i,segment,cashPointConfig.direction, appConfig.getMinServiceTime(), appConfig.getMaxServiceTime());
             ticketOffices.add(office);
         }
 
