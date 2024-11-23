@@ -11,10 +11,14 @@ public class ConfigModel {
     private int cashpointsCount;
 
     // Coordinates of cashpoint (represented as pairs of X, Y values)
-    private List<int[]> cashpointLocations;
+    private List<CashPointConfig> cashpointConfigs;
+
+    private CashPointConfig reservCashPointConfig;
 
     // Number of entrances in the premises
     private int entranceCount;
+
+    private List<EntranceConfig> entranceConfigs;
 
     // Allowed range of service time per ticket (in milliseconds)
     private int minServiceTime;
@@ -23,13 +27,15 @@ public class ConfigModel {
     // Maximum number of people allowed in the premises
     private int maxPeopleAllowed;
 
-    public ConfigModel(int CashPointCount, List<int[]> cashpointLocations, int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed) {
+    public ConfigModel(int CashPointCount, List<CashPointConfig> cashPointConfigs,CashPointConfig reservCashPointConfig ,List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed) {
         setCashPointCount(CashPointCount);
-        setCashpointLocations(cashpointLocations);
+        setCashpointConfigs(cashPointConfigs);
         setEntranceCount(entranceCount);
         setMinServiceTime(minServiceTime);
         setMaxServiceTime(maxServiceTime);
         setMaxPeopleAllowed(maxPeopleAllowed);
+        setEntranceConfigs(entranceConfigs);
+        setReservCashPointConfig(reservCashPointConfig);
     }
 
     public int getCashPointCount() {
@@ -43,15 +49,15 @@ public class ConfigModel {
         this.cashpointsCount = counterCount;
     }
 
-    public List<int[]> getCashpointLocations() {
-        return cashpointLocations;
+    public List<CashPointConfig> getCashpointConfigs() {
+        return cashpointConfigs;
     }
 
-    public void setCashpointLocations(List<int[]> cashpointLocations) {
-        if (cashpointLocations == null || cashpointLocations.isEmpty()) {
-            throw new IllegalArgumentException("Cashpoint locations cannot be null or empty.");
+    public void setCashpointConfigs(List<CashPointConfig> cashpointConfigs) {
+        if (cashpointConfigs == null || cashpointConfigs.isEmpty()) {
+            throw new IllegalArgumentException("Cashpoint configs cannot be null or empty.");
         }
-        this.cashpointLocations = cashpointLocations;
+        this.cashpointConfigs = cashpointConfigs;
     }
 
     public int getEntranceCount() {
@@ -105,7 +111,7 @@ public class ConfigModel {
      */
     public void updateConfig(ConfigModel newConfig) {
         setCashPointCount(newConfig.getCashPointCount());
-        setCashpointLocations(newConfig.getCashpointLocations());
+        setCashpointConfigs(newConfig.getCashpointConfigs());
         setEntranceCount(newConfig.getEntranceCount());
         setMinServiceTime(newConfig.getMinServiceTime());
         setMaxServiceTime(newConfig.getMaxServiceTime());
@@ -116,11 +122,26 @@ public class ConfigModel {
     public String toString() {
         return "ConfigModel{" +
                 "cashpointsCount=" + cashpointsCount +
-                ", cashpointLocations=" + cashpointLocations +
+                ", cashpointLocations=" + cashpointConfigs +
                 ", entranceCount=" + entranceCount +
                 ", minServiceTime=" + minServiceTime +
                 ", maxServiceTime=" + maxServiceTime +
                 ", maxPeopleAllowed=" + maxPeopleAllowed +
                 '}';
+    }
+
+    public void setEntranceConfigs(List<EntranceConfig> entranceConfigs) {
+        this.entranceConfigs = entranceConfigs;
+    }
+
+    public List<EntranceConfig> getEntranceConfigs() {
+        return entranceConfigs;
+    }
+
+    public void setReservCashPointConfig(CashPointConfig reservCashPointConfig) {
+        this.reservCashPointConfig = reservCashPointConfig;
+    }
+    public CashPointConfig getReservCashPointConfig() {
+        return reservCashPointConfig;
     }
 }

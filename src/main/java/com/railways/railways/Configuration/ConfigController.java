@@ -55,11 +55,11 @@ public class ConfigController {
     /**
      * Endpoint to update cashpoint locations.
      *
-     * @param cashpointLocations the new cashpoint locations
+     * @param cashpointConfigs the new cashpoint locations
      */
-    @PutMapping("/cashpointLocations")
-    public void updateCashpointLocations(@RequestBody List<int[]> cashpointLocations) {
-        configModel.setCashpointLocations(cashpointLocations);
+    @PutMapping("/cashpointConfigs")
+    public void updateCashpointLocations(@RequestBody List<CashPointConfig> cashpointConfigs) {
+        configModel.setCashpointConfigs(cashpointConfigs);
     }
 
     /**
