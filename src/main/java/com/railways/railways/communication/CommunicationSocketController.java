@@ -1,6 +1,7 @@
 package com.railways.railways.communication;
 
 import com.google.gson.Gson;
+import com.railways.railways.communication.DTO.GenerationUpdateDTO;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;

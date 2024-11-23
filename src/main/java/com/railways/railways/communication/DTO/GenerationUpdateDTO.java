@@ -1,4 +1,4 @@
-package com.railways.railways.communication;
+package com.railways.railways.communication.DTO;
 
 import java.io.Serializable;
 
