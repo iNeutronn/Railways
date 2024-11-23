@@ -1,11 +1,9 @@
 package com.railways.railways.domain.station;
-import com.railways.railways.domain.MapManager;
 import com.railways.railways.domain.client.Client;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Hall {
 
@@ -55,7 +53,7 @@ public class Hall {
         this.reservedTicketOffice = reservedTicketOffice;
     }
 
-    public void addClient(Client client) {
+    public void processClient(Client client) {
         int index = new Random().nextInt(entrances.size());
         System.out.println(index);
         var entrancePoint = entrances.get(index).start;

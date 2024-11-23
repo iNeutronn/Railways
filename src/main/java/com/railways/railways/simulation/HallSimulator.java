@@ -1,6 +1,5 @@
 package com.railways.railways.simulation;
 
-import com.railways.railways.AppConfig;
 import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientGenerator;
@@ -50,7 +49,7 @@ public class HallSimulator {
                     applicationEventPublisher.publishEvent(event);
 
                     if (client != null) {
-                        executorService.submit(() -> hall.addClient(client));
+                        executorService.submit(() -> hall.processClient(client));
 //                        hall.addClient(client);
                         System.out.println("HallSimulator: Client created and added");
                     }
