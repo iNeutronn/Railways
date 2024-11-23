@@ -1,5 +1,7 @@
 package com.railways.railways.simulation;
 
+import com.railways.railways.Configuration.CashPointConfig;
+import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.client.PrivilegeEnum;
 import com.railways.railways.domain.station.Direction;
@@ -24,9 +26,11 @@ public class SimulationService {
     private final ClientGenerator clientGenerator;
     private HallSimulator hallSimulator;
     private final ApplicationEventPublisher eventPublisher;
+    private  ConfigModel appConfig;
 
-    public SimulationService(ApplicationEventPublisher eventPublisher) {
+    public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig) {
         this.eventPublisher = eventPublisher;
+        this.appConfig = appConfig;
         this.hall = Hall.getInstance(); // Singleton instance
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
@@ -42,23 +46,14 @@ public class SimulationService {
     private void setupHall() {
         // Create ticket offices
         List<TicketOffice> ticketOffices = new ArrayList<>();
-        TicketOffice ticketOffice1 = new TicketOffice(
-                1,
-                new Segment(new Point(0, 0), new Point(2, 2)),
-                Direction.Up,
-                500,
-                1000
-        );
-        TicketOffice ticketOffice2 = new TicketOffice(
-                2,
-                new Segment(new Point(10, 10), new Point(12, 12)),
-                Direction.Up,
-                500,
-                1000
-        );
+        for (int i = 0; i < appConfig.getCashPointCount(); i++) {
+             CashPointConfig cashPointConfig = appConfig.getCashpointConfigs().get(i);
 
-        ticketOffices.add(ticketOffice1);
-        ticketOffices.add(ticketOffice2);
+            Segment segment = new Segment(new Point(cashPointConfig.x, cashPointConfig.y), new Point(cashPointConfig.x+4, cashPointConfig.y + 3));
+
+            TicketOffice office = new TicketOffice(i,segment,cashPointConfig.direction, appConfig.getMinServiceTime(), appConfig.getMaxServiceTime());
+            ticketOffices.add(office);
+        }
 
         // Set ticket offices to the hall
         hall.setTicketOffices(ticketOffices);
@@ -78,7 +73,7 @@ public class SimulationService {
         }
 
         // Start hall simulation
-        hallSimulator = new HallSimulator(eventPublisher, hall, new IntervalPolicy(0.5), 10,  clientGenerator);
+        hallSimulator = new HallSimulator(eventPublisher, appConfig, hall, clientGenerator);
         Thread simulationThread = new Thread(hallSimulator::run);
         simulationThread.start();
 

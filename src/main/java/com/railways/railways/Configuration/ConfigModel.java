@@ -1,11 +1,18 @@
 package com.railways.railways.Configuration;
 
+import com.railways.railways.communication.DTO.GenerationUpdateDTO;
+import com.railways.railways.simulation.GenerationPolicy;
+
 import java.util.List;
 
 /**
  * ConfigModel represents the configuration for the railway ticketing system.
  */
 public class ConfigModel {
+
+    private GenerationPolicy generationPolicy;
+
+    private int hallMaxCapacity;
 
     // Number of ticket cashpoints
     private int cashpointsCount;
@@ -27,7 +34,8 @@ public class ConfigModel {
     // Maximum number of people allowed in the premises
     private int maxPeopleAllowed;
 
-    public ConfigModel(int CashPointCount, List<CashPointConfig> cashPointConfigs,CashPointConfig reservCashPointConfig ,List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed) {
+    public ConfigModel( GenerationPolicy generationPolicy, int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed) {
+        setGenerationPolicy(generationPolicy);
         setCashPointCount(CashPointCount);
         setCashpointConfigs(cashPointConfigs);
         setEntranceCount(entranceCount);
@@ -36,6 +44,14 @@ public class ConfigModel {
         setMaxPeopleAllowed(maxPeopleAllowed);
         setEntranceConfigs(entranceConfigs);
         setReservCashPointConfig(reservCashPointConfig);
+    }
+
+    public void setGenerationPolicy(GenerationPolicy generationPolicy) {
+        this.generationPolicy = generationPolicy;
+    }
+
+    public GenerationPolicy getGenerationPolicy() {
+        return generationPolicy;
     }
 
     public int getCashPointCount() {
