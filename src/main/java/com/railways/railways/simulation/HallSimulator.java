@@ -3,6 +3,7 @@ package com.railways.railways.simulation;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.PrivilegeEnum;
 import com.railways.railways.domain.station.Hall;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.awt.*;
 import java.util.Random;
@@ -13,9 +14,11 @@ public class HallSimulator {
     private Hall hall;
     private boolean isRunning = false;
     private Random random = new Random();
+    private ApplicationEventPublisher applicationEventPublisher;
 
-    public HallSimulator(Hall hall, GenerationPolicy policy, int maxCapacity, boolean isRunning) {
+    public HallSimulator(ApplicationEventPublisher applicationEventPublisher, Hall hall, GenerationPolicy policy, int maxCapacity, boolean isRunning) {
         this.hall = hall;
+        this.applicationEventPublisher = applicationEventPublisher;
         this.schedulingPolicy = policy;
         this.maxCapacity = maxCapacity;
         this.isRunning = isRunning;

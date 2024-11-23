@@ -4,6 +4,7 @@ import com.railways.railways.domain.station.Direction;
 import com.railways.railways.domain.station.Hall;
 import com.railways.railways.domain.station.Segment;
 import com.railways.railways.domain.station.TicketOffice;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -17,8 +18,10 @@ public class SimulationService {
 
     private final Hall hall;
     private final ExecutorService executorService;
+    private  final ApplicationEventPublisher eventPublisher;
 
-    public SimulationService() {
+    public SimulationService(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
         this.hall = Hall.getInstance(); // Singleton instance
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         setupHall();
@@ -63,7 +66,7 @@ public class SimulationService {
         }
 
         // Start hall simulation
-        HallSimulator hallSimulator = new HallSimulator(hall, new IntervalPolicy(0.5), 10, true);
+        HallSimulator hallSimulator = new HallSimulator(eventPublisher, hall, new IntervalPolicy(0.5), 10, true);
         Thread simulationThread = new Thread(hallSimulator::run);
         simulationThread.start();
 
