@@ -8,6 +8,8 @@ import com.railways.railways.domain.station.Hall;
 import com.railways.railways.events.ClientCreatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HallSimulator {
     private Hall hall;
@@ -16,12 +18,14 @@ public class HallSimulator {
     private ApplicationEventPublisher applicationEventPublisher;
     private ClientGenerator clientGenerator;
     private ConfigModel appConfig;
+    private ExecutorService executorService;
 
     public HallSimulator(ApplicationEventPublisher applicationEventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator) {
         this.hall = hall;
         this.applicationEventPublisher = applicationEventPublisher;
         this.appConfig = appConfig;
         this.clientGenerator = clientGenerator;
+        this.executorService = Executors.newCachedThreadPool();
     }
 
     public void start() {
@@ -46,7 +50,8 @@ public class HallSimulator {
                     applicationEventPublisher.publishEvent(event);
 
                     if (client != null) {
-                        hall.addClient(client);
+                        executorService.submit(() -> hall.addClient(client));
+//                        hall.addClient(client);
                         System.out.println("HallSimulator: Client created and added");
                     }
                 } else {
