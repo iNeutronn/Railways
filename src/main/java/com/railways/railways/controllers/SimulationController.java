@@ -22,4 +22,11 @@ public class SimulationController {
         simulationService.startSimulation();
         return "Simulation started!";
     }
+
+    @GetMapping("/stop")
+    public String stopSimulation() {
+        simulationService.stopSimulation();
+        return "Simulation stopped!";
+    }
+
 }

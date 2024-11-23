@@ -1,5 +1,7 @@
 package com.railways.railways.simulation;
 
+import com.railways.railways.domain.client.ClientGenerator;
+import com.railways.railways.domain.client.PrivilegeEnum;
 import com.railways.railways.domain.station.Direction;
 import com.railways.railways.domain.station.Hall;
 import com.railways.railways.domain.station.Segment;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,10 +20,19 @@ public class SimulationService {
 
     private final Hall hall;
     private final ExecutorService executorService;
+    private final ClientGenerator clientGenerator;
+    private HallSimulator hallSimulator;
 
     public SimulationService() {
         this.hall = Hall.getInstance(); // Singleton instance
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
+        Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
+                PrivilegeEnum.DEFAULT, 70,
+                PrivilegeEnum.WARVETERAN, 10,
+                PrivilegeEnum.WITHCHILD, 10,
+                PrivilegeEnum.DISABLED, 10
+        );
+        this.clientGenerator = new ClientGenerator(privilegeMap);
         setupHall();
     }
 
@@ -63,10 +75,19 @@ public class SimulationService {
         }
 
         // Start hall simulation
-        HallSimulator hallSimulator = new HallSimulator(hall, new IntervalPolicy(0.5), 10, true);
+        hallSimulator = new HallSimulator(hall, new IntervalPolicy(0.5), 10, true, clientGenerator);
         Thread simulationThread = new Thread(hallSimulator::run);
         simulationThread.start();
 
         System.out.println("Simulation started!");
+    }
+
+    public void stopSimulation() {
+        // Stop ticket office threads
+        for (TicketOffice office : hall.getTicketOffices()) {
+            office.closeOffice();
+        }
+
+        hallSimulator.stop();
     }
 }
