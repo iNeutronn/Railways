@@ -2,6 +2,12 @@ package com.railways.railways.domain.station;
 
 import com.railways.railways.domain.ServeRecord;
 import com.railways.railways.domain.client.Client;
+import com.railways.railways.events.ClientServedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -14,11 +20,14 @@ public class TicketOffice implements Runnable {
     private boolean isOpen;
     private Segment segment;
     private Direction direction;
+    private ApplicationEventPublisher eventPublisher;
+    private final DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
 
     private final int minServiceTime;
     private final int maxServiceTime;
 
-    public TicketOffice(int ticketOfficeID, Segment position, Direction direction, int minServiceTime, int maxServiceTime) {
+    public TicketOffice(ApplicationEventPublisher eventPublisher, int ticketOfficeID, Segment position, Direction direction, int minServiceTime, int maxServiceTime) {
+        this.eventPublisher = eventPublisher;
         this.ticketOfficeID = ticketOfficeID;
         this.direction = direction;
         this.segment = position;
@@ -53,18 +62,22 @@ public class TicketOffice implements Runnable {
         Client client = clientsQueue.take();
 
         int serviceTime = getRandomServeTime();
+        // Поточна дата та час у локальній часовій зоні
+        String startTime = ZonedDateTime.now().format(isoFormatter);
         try {
             // Simulate serving the client
             Thread.sleep((long) serviceTime * client.getTicketsToBuy());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        String endTime = ZonedDateTime.now().format(isoFormatter);
 
-        ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), serviceTime);
+        ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), startTime, endTime);
         serveRecords.add(record);
         System.out.println("TicketOffice: Client " + client.getFullName() + " with id:" + client.getClientID() + " served by ticket office " + ticketOfficeID);
 
-        // TODO: Notify the UI that the client has been served
+        ClientServedEvent event = new ClientServedEvent(this, record);
+        eventPublisher.publishEvent(event);
     }
 
     public int getOfficeID() {

@@ -43,6 +43,7 @@ public class SimulationService {
         // Create ticket offices
         List<TicketOffice> ticketOffices = new ArrayList<>();
         TicketOffice ticketOffice1 = new TicketOffice(
+                eventPublisher,
                 1,
                 new Segment(new Point(0, 0), new Point(2, 2)),
                 Direction.Up,
@@ -50,6 +51,7 @@ public class SimulationService {
                 1000
         );
         TicketOffice ticketOffice2 = new TicketOffice(
+                eventPublisher,
                 2,
                 new Segment(new Point(10, 10), new Point(12, 12)),
                 Direction.Up,
