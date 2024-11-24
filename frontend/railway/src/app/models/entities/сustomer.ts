@@ -1,4 +1,4 @@
-import {CustomerPrivilege} from '../enums/customer-privilege';
+import {CustomerPrivilege} from '../enums/privilege-enum';
 import {Ticket} from './ticket';
 
 export interface Customer {
