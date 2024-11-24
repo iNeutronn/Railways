@@ -93,7 +93,7 @@ public class Hall {
         int minQueueSize = Integer.MAX_VALUE;
         double minDistance = Double.MAX_VALUE;
 
-        for (TicketOffice office : ticketOffices) {
+        for (TicketOffice office : ticketOffices.stream().filter(TicketOffice::isOpen).toList()) {
 
             int queueSize = office.getQueueSize();
             // Calculate the distance from the client's current position to the starting point of the office's segment
@@ -109,26 +109,16 @@ public class Hall {
     }
 
     public int closeCashPoint(int id) {
-        TicketOffice ticketOffice = findTicketOfficeById(id);
+        TicketOffice ticketOffice = ticketOffices
+                .stream().filter(office -> office.getOfficeID() == id)
+                .findFirst().orElse(null);
         if (ticketOffice == null) {
             return  -1;
         }
 
-        //reservedTicketOffice = ticketOffice;
         CloseTicketOffice(ticketOffice);
-       // publishCashPointDeletedEvent(id);
 
         return id;
-    }
-
-    // Finds the ticket office by ID
-    private TicketOffice findTicketOfficeById(int id) {
-        for (TicketOffice ticketOffice : ticketOffices) {
-            if (ticketOffice.getOfficeID() == id) {
-                return ticketOffice;
-            }
-        }
-        return null;
     }
 
     // Removes the ticket office from the list and closes it

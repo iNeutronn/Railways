@@ -6,10 +6,8 @@ import com.railways.railways.events.ClientServedEvent;
 import com.railways.railways.events.QueueUpdatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
-import java.time.*;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -19,6 +17,7 @@ public class TicketOffice implements Runnable {
     private final PriorityBlockingQueue<Client> clientsQueue;
     private final ArrayList<ServeRecord> serveRecords;
     private boolean isOpen;
+    private final Object pauseLock = new Object(); // Lock object for synchronization
     private Segment segment;
     private Direction direction;
     private ApplicationEventPublisher eventPublisher;
@@ -49,39 +48,37 @@ public class TicketOffice implements Runnable {
 
     @Override
     public void run() {
-        while (true)
-        {
-            while (isOpen) {
-                try {
-                    serveClient();
-                    Thread.sleep(100); // Short pause between clients
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+        while (true) {
+            synchronized (pauseLock) {
+                while (!isOpen) {
+                    try {
+                        pauseLock.wait(); // Wait until notified to resume
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.out.println("TicketOffice thread interrupted");
+                        return; // Exit the thread gracefully
+                    }
                 }
             }
 
             try {
-                Thread.sleep(50);
+                serveClient();
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
             }
+            sleep(100); // Short pause between serving clients
 
         }
-
     }
 
     public void serveClient() throws InterruptedException {
         Client client = clientsQueue.take();
 
         int serviceTime = getRandomServeTime();
-        // Поточна дата та час у локальній часовій зоні
         String startTime = ZonedDateTime.now().format(isoFormatter);
-        try {
-            // Simulate serving the client
-            Thread.sleep((long) serviceTime * client.getTicketsToBuy());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+
+        sleep((long) serviceTime * client.getTicketsToBuy());
+
         String endTime = ZonedDateTime.now().format(isoFormatter);
 
         ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), startTime, endTime);
@@ -90,10 +87,6 @@ public class TicketOffice implements Runnable {
 
         ClientServedEvent event = new ClientServedEvent(this, record);
         eventPublisher.publishEvent(event);
-    }
-
-    public int getOfficeID() {
-        return ticketOfficeID;
     }
 
     private int getRandomServeTime() {
@@ -111,11 +104,16 @@ public class TicketOffice implements Runnable {
     }
 
     public void closeOffice() {
-        isOpen = false;
+        synchronized (pauseLock) {
+            isOpen = false; // Mark as closed
+        }
     }
 
     public void openOffice() {
-        isOpen = true;
+        synchronized (pauseLock) {
+            isOpen = true; // Mark as open
+            pauseLock.notifyAll(); // Notify all waiting threads
+        }
     }
 
     public ArrayList<ServeRecord> getServeRecords() {
@@ -136,5 +134,21 @@ public class TicketOffice implements Runnable {
 
     public PriorityBlockingQueue<Client> getQueue() {
         return clientsQueue;
+    }
+
+    public int getOfficeID() {
+        return ticketOfficeID;
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public boolean isOpen() {
+        return isOpen;
     }
 }
