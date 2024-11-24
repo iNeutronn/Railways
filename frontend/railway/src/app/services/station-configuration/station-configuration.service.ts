@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { env } from 'process';
-import { environmentDev } from '../environments/environment.development';
-import { StationConfiguration } from '../models/station-configuration';
+import { environmentDev } from '../../environments/environment.development';
+import { StationConfiguration } from '../../models/station-configuration';
 import {of} from 'rxjs';
 
 @Injectable({

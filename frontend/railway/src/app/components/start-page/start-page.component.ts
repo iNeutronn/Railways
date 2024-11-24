@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {CustomerGenerationType} from '../../models/enums/customer-generation';
-import { StationConfigurationService } from '../../services/station-configuration.service';
+import { StationConfigurationService } from '../../services/station-configuration/station-configuration.service';
 import { StationConfiguration } from '../../models/station-configuration';
 import { Router } from '@angular/router';
 
@@ -42,6 +42,6 @@ export class StartPageComponent {
     } else {
       console.log('Form is invalid');
     }
-  
+
   }
 }

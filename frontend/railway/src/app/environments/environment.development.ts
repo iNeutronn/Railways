@@ -1,3 +1,3 @@
 export let environmentDev = {
-   serverApi: "http://localpost:{port}"
+   serverApi: "http://localpost:5712"
 }
