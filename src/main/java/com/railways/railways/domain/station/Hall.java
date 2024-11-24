@@ -77,14 +77,17 @@ public class Hall {
 
         var ticketOffice = getBestTicketOffice(entrancePoint);
 
-        publishClientCreatedEvent(client, selectedEntrance, ticketOffice);
 
         var distance = entrancePoint.distance(ticketOffice.getSegment().start);
         distance -= ticketOffice.getQueueSize();
+        var time = (double) (distance * moveSpeed);
+        publishClientCreatedEvent(client, selectedEntrance, ticketOffice,time);
+
+
         if (distance < 0) {
             distance = 1;
         }
-        imitateMoving((long) (distance * moveSpeed));
+        imitateMoving(time);
 
         // Add the client to the nearest ticket office
         ticketOffice.addClient(client);
@@ -182,10 +185,10 @@ public class Hall {
     }
 
     // Publishes a ClientCreatedEvent
-    private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice) {
+    private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice, double time) {
         ClientCreatedEvent event = new ClientCreatedEvent(
                 this,
-                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID())
+                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID(), time)
         );
         applicationEventPublisher.publishEvent(event);
     }
