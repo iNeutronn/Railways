@@ -18,7 +18,7 @@ public class SimulationController {
     }
 
     @GetMapping("/start")
-    public String resumeSimulation() {
+    public String startSimulation() {
         simulationService.startSimulation();
         return "Simulation started!";
     }
@@ -27,6 +27,12 @@ public class SimulationController {
     public String pauseSimulation() {
         simulationService.stopSimulation();
         return "Simulation stopped!";
+    }
+
+    @GetMapping("/resume")
+    public String resumeSimulation() {
+        simulationService.resumeSimulation();
+        return "Simulation resumed!";
     }
 
 }
