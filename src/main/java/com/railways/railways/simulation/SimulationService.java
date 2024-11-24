@@ -4,6 +4,7 @@ import com.railways.railways.Configuration.CashPointConfig;
 import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.client.PrivilegeEnum;
+import com.railways.railways.domain.station.Entrance;
 import com.railways.railways.domain.station.Hall;
 import com.railways.railways.domain.station.Segment;
 import com.railways.railways.domain.station.TicketOffice;
