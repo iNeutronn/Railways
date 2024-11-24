@@ -2,6 +2,7 @@ package com.railways.railways.domain.station;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientCreated;
 import com.railways.railways.events.ClientCreatedEvent;
+import com.railways.railways.events.QueueTransferedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.awt.*;
@@ -138,9 +139,28 @@ public class Hall {
     }
 
     private void transferClients(TicketOffice ticketOffice) {
+        if (reservedTicketOffice == null) {
+            throw new IllegalStateException("Reserved ticket office is not set");
+        }
+
+        if (ticketOffice.getQueueSize() == 0)
+        {
+            System.out.println("Hall: nothing to transfer from ticket office " + ticketOffice.getOfficeID());
+            return;
+        }
+
         reservedTicketOffice.setQueue(ticketOffice.getQueue());
         ticketOffice.clearQueue();
 
+        QueueUpdate queueUpdate = new QueueUpdate(ticketOffice.getOfficeID(), ticketOffice
+                .getQueue()
+                .stream()
+                .map(Client::getClientID)
+                .mapToInt(i -> i).toArray());
+
+        QueueTransferedEvent event = new QueueTransferedEvent(this, queueUpdate);
+        applicationEventPublisher.publishEvent(event);
+        System.out.println("Hall: Clients transferred from ticket office " + ticketOffice.getOfficeID() + " to reserved ticket office.");
     }
 
     // Selects a random entrance

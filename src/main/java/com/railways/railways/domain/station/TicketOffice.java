@@ -149,7 +149,11 @@ public class TicketOffice implements Runnable {
     }
 
     public void publishQueueUpdate() {
-        QueueUpdate queueUpdate = new QueueUpdate(ticketOfficeID, clientsQueue.stream().map(Client::getClientID).mapToInt(i -> i).toArray());
+        QueueUpdate queueUpdate = new QueueUpdate(ticketOfficeID, clientsQueue
+                .stream()
+                .map(Client::getClientID)
+                .mapToInt(i -> i)
+                .toArray());
         QueueUpdatedEvent event = new QueueUpdatedEvent(this, queueUpdate);
 
         eventPublisher.publishEvent(event);

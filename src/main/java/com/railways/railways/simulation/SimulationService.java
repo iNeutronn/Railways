@@ -60,6 +60,18 @@ public class SimulationService {
         // Set ticket offices to the hall
         hall.setTicketOffices(ticketOffices);
 
+        CashPointConfig reservedCashPointConfig = appConfig.getReservCashPointConfig();
+        Segment segment = new Segment(new Point(reservedCashPointConfig.x, reservedCashPointConfig.y),
+                new Point(reservedCashPointConfig.x+4, reservedCashPointConfig.y + 3));
+        TicketOffice reservedTicketOffice = new TicketOffice(eventPublisher,
+                3,
+                segment,
+                reservedCashPointConfig.direction,
+                appConfig.getMinServiceTime(),
+                appConfig.getMaxServiceTime());
+
+        hall.setReservedTicketOffice(reservedTicketOffice);
+
         // Configure entrances
         List<Entrance> entrances = new ArrayList<>();
         entrances.add(new Entrance(1, new Segment(new Point(0, 0), new Point(0, 1))));

@@ -3,6 +3,7 @@ package com.railways.railways.communication.DTO;
 public enum GenerationUpdateTypes {
     ClientCreated,
     ClientServed,
-    QueueUpdated
+    QueueUpdated,
+    QueueTransfered
     //add more types here
 }
