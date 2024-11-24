@@ -61,7 +61,7 @@ public class ConfigController {
      *
      * @return the current number of cashpoints
      */
-    @PostMapping("/cashpointsCount")
+    @GetMapping("/cashpointsCount")
     public int getCashpointsCount() {
         return configModel.getCashPointCount();
     }
@@ -83,7 +83,7 @@ public class ConfigController {
      *
      * @return the list of current entrance configurations
      */
-    @PostMapping("/entranceConfigs")
+    @GetMapping("/entranceConfigs")
     public List<EntranceConfig> getEntranceConfigs() {
         return configModel.getEntranceConfigs();
     }
@@ -105,7 +105,7 @@ public class ConfigController {
      *
      * @return the current minimum service time
      */
-    @PostMapping("/minServiceTime")
+    @GetMapping("/minServiceTime")
     public int getMinServiceTime() {
         return configModel.getMinServiceTime();
     }
@@ -127,7 +127,7 @@ public class ConfigController {
      *
      * @return the current maximum service time
      */
-    @PostMapping("/maxServiceTime")
+    @GetMapping("/maxServiceTime")
     public int getMaxServiceTime() {
         return configModel.getMaxServiceTime();
     }
@@ -149,7 +149,7 @@ public class ConfigController {
      *
      * @return the current maximum number of people allowed
      */
-    @PostMapping("/maxPeopleAllowed")
+    @GetMapping("/maxPeopleAllowed")
     public int getMaxPeopleAllowed() {
         return configModel.getMaxPeopleAllowed();
     }

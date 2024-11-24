@@ -87,7 +87,7 @@ public class Hall {
         if (distance < 0) {
             distance = 1;
         }
-        imitateMoving(time);
+        imitateMoving((long) time);
 
         // Add the client to the nearest ticket office
         ticketOffice.addClient(client);
