@@ -34,7 +34,10 @@ public class ConfigModel {
     // Maximum number of people allowed in the premises
     private int maxPeopleAllowed;
 
-    public ConfigModel( GenerationPolicy generationPolicy, int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed) {
+    //speed of client
+    private double clientSpeed;
+
+    public ConfigModel( GenerationPolicy generationPolicy, int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed, double clientSpeed) {
         setGenerationPolicy(generationPolicy);
         setCashPointCount(CashPointCount);
         setCashpointConfigs(cashPointConfigs);
@@ -44,6 +47,7 @@ public class ConfigModel {
         setMaxPeopleAllowed(maxPeopleAllowed);
         setEntranceConfigs(entranceConfigs);
         setReservCashPointConfig(reservCashPointConfig);
+
     }
 
     public void setGenerationPolicy(GenerationPolicy generationPolicy) {
@@ -159,5 +163,15 @@ public class ConfigModel {
     }
     public CashPointConfig getReservCashPointConfig() {
         return reservCashPointConfig;
+    }
+
+    public double getClientSpeed()
+    {
+        return clientSpeed;
+    }
+
+    public void  setClientSpeed(double newClientSpeed)
+    {
+        clientSpeed = newClientSpeed;
     }
 }
