@@ -108,7 +108,7 @@ public class Hall {
         return bestOffice;
     }
 
-    public int closeCashPoint(int id) {
+    public int closeTicketOffice(int id) {
         TicketOffice ticketOffice = ticketOffices
                 .stream().filter(office -> office.getOfficeID() == id)
                 .findFirst().orElse(null);
@@ -121,25 +121,17 @@ public class Hall {
         return id;
     }
 
-    public int openCashPoint(int id) {
-        TicketOffice ticketOffice = findTicketOfficeById(id);
+    public int openTicketOffice(int id) {
+        TicketOffice ticketOffice = ticketOffices
+                .stream().filter(office -> office.getOfficeID() == id)
+                .findFirst().orElse(null);
         if (ticketOffice == null) {
             return  -1;
         }
 
-        //reservedTicketOffice = ticketOffice;
         OpenTicketOffice(ticketOffice);
 
         return id;
-    }
-    // Finds the ticket office by ID
-    private TicketOffice findTicketOfficeById(int id) {
-        for (TicketOffice ticketOffice : ticketOffices) {
-            if (ticketOffice.getOfficeID() == id) {
-                return ticketOffice;
-            }
-        }
-        return null;
     }
 
     // Removes the ticket office from the list and closes it

@@ -94,7 +94,7 @@ public class SimulationService {
 
     public int closeCashPoint(int id) {
         Hall hall = Hall.getInstance();
-        return hall.closeCashPoint(id);
+        return hall.closeTicketOffice(id);
     }
 
     public void resumeSimulation() {
@@ -106,6 +106,6 @@ public class SimulationService {
 
     public int openCashPoint(int id) {
         Hall hall = Hall.getInstance();
-        return hall.openCashPoint(id);
+        return hall.openTicketOffice(id);
     }
 }
