@@ -38,4 +38,8 @@ public class SimulationController {
         return "Simulation resumed!";
     }
 
+    @PostMapping("/cashpoint/open")
+    public int cashPointResume(@RequestParam int id) {
+        return simulationService.openCashPoint(id);
+    }
 }

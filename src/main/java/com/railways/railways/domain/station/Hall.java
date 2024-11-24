@@ -116,11 +116,21 @@ public class Hall {
 
         //reservedTicketOffice = ticketOffice;
         CloseTicketOffice(ticketOffice);
-       // publishCashPointDeletedEvent(id);
 
         return id;
     }
 
+    public int openCashPoint(int id) {
+        TicketOffice ticketOffice = findTicketOfficeById(id);
+        if (ticketOffice == null) {
+            return  -1;
+        }
+
+        //reservedTicketOffice = ticketOffice;
+        OpenTicketOffice(ticketOffice);
+
+        return id;
+    }
     // Finds the ticket office by ID
     private TicketOffice findTicketOfficeById(int id) {
         for (TicketOffice ticketOffice : ticketOffices) {
@@ -135,6 +145,11 @@ public class Hall {
     private void CloseTicketOffice(TicketOffice ticketOffice) {
         ticketOffice.closeOffice();
         System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " closed.");
+    }
+
+    private void OpenTicketOffice(TicketOffice ticketOffice) {
+        ticketOffice.openOffice();
+        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " opened.");
     }
 
     // Selects a random entrance
