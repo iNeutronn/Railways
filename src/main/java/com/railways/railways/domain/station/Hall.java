@@ -17,6 +17,7 @@ public class Hall {
     private Segment segment;
     private ApplicationEventPublisher applicationEventPublisher;
     private final Random random;
+    private double moveSpeed = 100.0;
 
 
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
@@ -65,6 +66,10 @@ public class Hall {
         this.reservedTicketOffice = reservedTicketOffice;
     }
 
+    public void setMoveSpeed(double moveSpeed) {
+        this.moveSpeed = moveSpeed;
+    }
+
     public void processClient(Client client) {
         Entrance selectedEntrance = selectRandomEntrance();
 
@@ -74,11 +79,18 @@ public class Hall {
 
         publishClientCreatedEvent(client, selectedEntrance, ticketOffice);
 
-        imitateMoving();
+        var distance = entrancePoint.distance(ticketOffice.getSegment().start);
+        distance -= ticketOffice.getQueueSize();
+        if (distance < 0) {
+            distance = 1;
+        }
+        imitateMoving((long) (distance * moveSpeed));
 
         // Add the client to the nearest ticket office
         ticketOffice.addClient(client);
-        System.out.println("Hall: Client " + client.getFullName() + " added to ticket office " + ticketOffice.getOfficeID());
+        System.out.println("Hall: Client " + client.getFullName()
+                + " added to ticket office " + ticketOffice.getOfficeID()
+                + " time to move: " + distance * moveSpeed);
     }
 
     public  int getClientCount() {
@@ -179,9 +191,9 @@ public class Hall {
     }
 
     // Handles thread sleep with exception handling
-    private void imitateMoving() {
+    private void imitateMoving(long millis) {
         try {
-            Thread.sleep(100);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
             System.err.println("Thread interrupted: " + e.getMessage());

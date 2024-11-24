@@ -72,6 +72,8 @@ public class SimulationService {
 
         hall.setReservedTicketOffice(reservedTicketOffice);
 
+        hall.setMoveSpeed(appConfig.getClientSpeed());
+
         // Configure entrances
         List<Entrance> entrances = new ArrayList<>();
         entrances.add(new Entrance(1, new Segment(new Point(0, 0), new Point(0, 1))));

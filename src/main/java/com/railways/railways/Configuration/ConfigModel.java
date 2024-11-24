@@ -47,6 +47,7 @@ public class ConfigModel {
         setMaxPeopleAllowed(maxPeopleAllowed);
         setEntranceConfigs(entranceConfigs);
         setReservCashPointConfig(reservCashPointConfig);
+        setClientSpeed(clientSpeed);
 
     }
 
