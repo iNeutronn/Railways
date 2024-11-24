@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class ConfigModel {
 
-    private GenerationPolicy generationPolicy;
+    private transient GenerationPolicy generationPolicy;
 
     private int hallMaxCapacity;
 
