@@ -61,12 +61,12 @@ public class TicketOffice implements Runnable {
                 }
             }
 
+            sleep(100); // Short pause between serving clients
             try {
                 serveClient();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            sleep(100); // Short pause between serving clients
 
         }
     }
