@@ -60,9 +60,9 @@ public class SimulationService {
         hall.setTicketOffices(ticketOffices);
 
         // Configure entrances
-        List<Segment> entrances = new ArrayList<>();
-        entrances.add(new Segment(new Point(0, 0), new Point(0, 1)));
-        entrances.add(new Segment(new Point(9, 9), new Point(10, 9)));
+        List<Entrance> entrances = new ArrayList<>();
+        entrances.add(new Entrance(1, new Segment(new Point(0, 0), new Point(0, 1))));
+        entrances.add(new Entrance(2, new Segment(new Point(9, 9), new Point(10, 9))));
 
         hall.setEntrances(entrances);
     }

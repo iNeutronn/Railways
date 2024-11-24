@@ -21,7 +21,7 @@ public class HallSimulator {
 
     public HallSimulator(ApplicationEventPublisher applicationEventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator) {
         this.hall = hall;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.applicationEventPublisher = applicationEventPublisher; // TODO delete
         this.appConfig = appConfig;
         this.clientGenerator = clientGenerator;
         this.executorService = Executors.newCachedThreadPool();
