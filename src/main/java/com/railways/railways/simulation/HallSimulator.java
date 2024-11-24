@@ -4,76 +4,94 @@ import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.station.Hall;
-import com.railways.railways.events.ClientCreatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
+
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class HallSimulator {
-    private Hall hall;
-    private boolean isRunning = false;
-    private Random random = new Random();
-    private ApplicationEventPublisher applicationEventPublisher;
-    private ClientGenerator clientGenerator;
-    private ConfigModel appConfig;
-    private ExecutorService executorService;
+public class HallSimulator implements Runnable {
+    private final Hall hall;
+    private final Random random = new Random();
+    private final ClientGenerator clientGenerator;
+    private final ConfigModel appConfig;
+    private final ExecutorService executorService;
+    private final ApplicationEventPublisher eventPublisher;
+    private boolean isOvercrowded = false;
 
-    public HallSimulator(ApplicationEventPublisher applicationEventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator) {
+    // Shared flag and monitor
+    private boolean isRunning = false;
+    private final Object pauseLock = new Object();
+
+    public HallSimulator(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator) {
         this.hall = hall;
-        this.applicationEventPublisher = applicationEventPublisher; // TODO delete
         this.appConfig = appConfig;
         this.clientGenerator = clientGenerator;
         this.executorService = Executors.newCachedThreadPool();
+        this.eventPublisher = eventPublisher;
     }
 
     public void start() {
-        isRunning = true;
+        synchronized (pauseLock) {
+            isRunning = true;
+            pauseLock.notifyAll(); // Wake up the thread if it is waiting
+        }
     }
 
     public void stop() {
-        isRunning = false;
+        synchronized (pauseLock) {
+            isRunning = false; // The thread will pause the next time it checks
+        }
     }
 
+    @Override
     public void run() {
-
-        while (true)
-        {
-            int currentClientCount = hall.getClientCount();
-            while (isRunning) { // Continuous simulation
-                currentClientCount = hall.getClientCount();
-                if (currentClientCount < appConfig.getMaxPeopleAllowed()) {
-                    Client client = clientGenerator.generateClient(random.nextInt(100000));
-
-
-                    if (client != null) {
-                        executorService.submit(() -> hall.processClient(client));
-//                        hall.addClient(client);
-                        System.out.println("HallSimulator: Client created and added");
+        while (true) {
+            synchronized (pauseLock) {
+                while (!isRunning) { // If paused, wait until notified
+                    try {
+                        pauseLock.wait(); // Release lock and wait to be resumed
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        System.out.println("Thread interrupted, exiting simulation");
+                        return;
                     }
-                } else {
-                    stop();
-                }
-
-                try {
-                    Thread.sleep((long) (appConfig.getGenerationPolicy().getSeconds() * 1000));
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
                 }
             }
 
-            if(currentClientCount < appConfig.getMaxPeopleAllowed() * 0.75) {
-                start();
-            }else {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
+            if (hall.getClientCount() < appConfig.getMaxPeopleAllowed()) {
+                Client client = clientGenerator.generateClient(random.nextInt(100000));
+                if (client != null) {
+                    executorService.submit(() -> hall.processClient(client));
+                    System.out.println("HallSimulator: Client created and added");
+                }
+            } else {
+                System.out.println("Hall is full, pausing simulation");
+                isOvercrowded = true;
+            }
+
+            sleep((int) (appConfig.getGenerationPolicy().getSeconds() * 1000));
+
+            if (isOvercrowded)
+            {
+                System.out.println("Hall is overcrowded, checking condition to resume simulation");
+                if (hall.getClientCount() < appConfig.getMaxPeopleAllowed() * 0.7) {
+                    isOvercrowded = false;
+                    System.out.println("Hall is no longer overcrowded, resuming simulation");
+                } else {
+                    sleep(5000);
                 }
             }
         }
     }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
+
 
