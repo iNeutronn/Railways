@@ -1,4 +1,4 @@
-import {Customer} from './сustomer';
+import {Client} from './client';
 import {Position} from '../position';
 
 export interface CashDesk {
@@ -6,6 +6,6 @@ export interface CashDesk {
   position: Position;
   isActive: boolean;
   isReserve: boolean;
-  queue: Customer[];
+  queue: Client[];
   serviceTime: number;
 }
