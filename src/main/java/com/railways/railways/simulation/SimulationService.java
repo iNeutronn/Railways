@@ -90,4 +90,9 @@ public class SimulationService {
 
         hallSimulator.stop();
     }
+
+    public int closeCashPoint(int id) {
+        Hall hall = Hall.getInstance();
+        return hall.closeCashPoint(id);
+    }
 }

@@ -107,6 +107,36 @@ public class Hall {
 
         return bestOffice;
     }
+
+    public int closeCashPoint(int id) {
+        TicketOffice ticketOffice = findTicketOfficeById(id);
+        if (ticketOffice == null) {
+            return  -1;
+        }
+
+        //reservedTicketOffice = ticketOffice;
+        CloseTicketOffice(ticketOffice);
+       // publishCashPointDeletedEvent(id);
+
+        return id;
+    }
+
+    // Finds the ticket office by ID
+    private TicketOffice findTicketOfficeById(int id) {
+        for (TicketOffice ticketOffice : ticketOffices) {
+            if (ticketOffice.getOfficeID() == id) {
+                return ticketOffice;
+            }
+        }
+        return null;
+    }
+
+    // Removes the ticket office from the list and closes it
+    private void CloseTicketOffice(TicketOffice ticketOffice) {
+        ticketOffice.closeOffice();
+        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " closed.");
+    }
+
     // Selects a random entrance
     private Entrance selectRandomEntrance() {
         int index = random.nextInt(entrances.size());

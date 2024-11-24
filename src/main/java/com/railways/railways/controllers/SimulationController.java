@@ -2,9 +2,7 @@ package com.railways.railways.controllers;
 
 import com.railways.railways.simulation.SimulationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/simulation")
@@ -27,6 +25,11 @@ public class SimulationController {
     public String pauseSimulation() {
         simulationService.stopSimulation();
         return "Simulation stopped!";
+    }
+
+    @PostMapping("/cashpoint/close")
+    public int cashPointClosed(@RequestParam int id) {
+        return simulationService.closeCashPoint(id);
     }
 
 }
