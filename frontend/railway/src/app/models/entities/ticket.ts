@@ -1,15 +1,15 @@
 export class Ticket {
   ticketId: number;
-  customerId: number;
+  clientId: number;
   price: number;
 
   constructor(
     ticketId: number,
-    customerId: number,
+    clientId: number,
     price: number
   ) {
     this.ticketId = ticketId;
-    this.customerId = customerId;
+    this.clientId = clientId;
     this.price = price;
   }
 }

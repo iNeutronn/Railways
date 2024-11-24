@@ -1,5 +1,5 @@
 import {CashDesk} from './cash-desk';
-import {Customer} from './client';
+import {Client} from './client';
 import {Entrance} from './entrance';
 
 export interface Station {
@@ -8,5 +8,5 @@ export interface Station {
   maxCapacity: number;
   currentOccupancy: number;
   entryPoints: number;
-  customers: Customer[];
+  clients: Client[];
 }

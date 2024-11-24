@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {CustomerGenerationType} from '../../models/enums/customer-generation';
+import {ClientGenerationType} from '../../models/enums/client-generation';
 import { StationConfigurationService } from '../../services/station-configuration/station-configuration.service';
 import { StationConfiguration } from '../../models/station-configuration';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ export class StartPageComponent {
     cashDeskCount: null,
     entranceCount: null,
     serviceTime: null,
-    generationType: CustomerGenerationType.Simple
+    generationType: ClientGenerationType.Simple
   };
 
   constructor(private stationConfigurationService: StationConfigurationService, private router: Router) { }

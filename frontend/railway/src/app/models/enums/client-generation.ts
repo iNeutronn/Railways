@@ -1,4 +1,4 @@
-export enum CustomerGenerationType {
+export enum ClientGenerationType {
   Simple = "Simple",
   Random = "Random",
 }

@@ -1,8 +1,8 @@
-import {CustomerGenerationType} from './enums/customer-generation';
+import {ClientGenerationType} from './enums/client-generation';
 
 export interface StationConfiguration {
   cashDeskCount: number | null;
   entranceCount: number | null;
   serviceTime: number | null;
-  generationType: CustomerGenerationType;
+  generationType: ClientGenerationType;
 }
