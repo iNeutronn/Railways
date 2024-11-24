@@ -103,4 +103,9 @@ public class SimulationService {
         }
         hallSimulator.start();
     }
+
+    public int openCashPoint(int id) {
+        Hall hall = Hall.getInstance();
+        return hall.openCashPoint(id);
+    }
 }

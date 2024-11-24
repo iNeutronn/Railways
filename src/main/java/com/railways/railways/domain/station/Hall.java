@@ -121,10 +121,36 @@ public class Hall {
         return id;
     }
 
+    public int openCashPoint(int id) {
+        TicketOffice ticketOffice = findTicketOfficeById(id);
+        if (ticketOffice == null) {
+            return  -1;
+        }
+
+        //reservedTicketOffice = ticketOffice;
+        OpenTicketOffice(ticketOffice);
+
+        return id;
+    }
+    // Finds the ticket office by ID
+    private TicketOffice findTicketOfficeById(int id) {
+        for (TicketOffice ticketOffice : ticketOffices) {
+            if (ticketOffice.getOfficeID() == id) {
+                return ticketOffice;
+            }
+        }
+        return null;
+    }
+
     // Removes the ticket office from the list and closes it
     private void CloseTicketOffice(TicketOffice ticketOffice) {
         ticketOffice.closeOffice();
         System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " closed.");
+    }
+
+    private void OpenTicketOffice(TicketOffice ticketOffice) {
+        ticketOffice.openOffice();
+        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " opened.");
     }
 
     // Selects a random entrance
