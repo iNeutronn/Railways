@@ -21,7 +21,7 @@ public class HallSimulator {
 
     public HallSimulator(ApplicationEventPublisher applicationEventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator) {
         this.hall = hall;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.applicationEventPublisher = applicationEventPublisher; // TODO delete
         this.appConfig = appConfig;
         this.clientGenerator = clientGenerator;
         this.executorService = Executors.newCachedThreadPool();
@@ -45,8 +45,6 @@ public class HallSimulator {
                 if (currentClientCount < appConfig.getMaxPeopleAllowed()) {
                     Client client = clientGenerator.generateClient(random.nextInt(100000));
 
-                    ClientCreatedEvent event = new ClientCreatedEvent(this, client);
-                    applicationEventPublisher.publishEvent(event);
 
                     if (client != null) {
                         executorService.submit(() -> hall.processClient(client));

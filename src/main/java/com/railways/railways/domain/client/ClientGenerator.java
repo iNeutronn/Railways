@@ -26,10 +26,9 @@ public class ClientGenerator {
         String firstName = getRandomElement(FIRST_NAMES);
         String lastName = getRandomElement(LAST_NAMES);
         int ticketsToBuy = random.nextInt(5) + 1; // Random tickets (1-5)
-        Point position = new Point();
         PrivilegeEnum privilege = getWeightedRandomPrivilege();
 
-        return new Client(clientID, firstName, lastName, ticketsToBuy, position, privilege);
+        return new Client(clientID, firstName, lastName, ticketsToBuy, privilege);
     }
 
     // Helper to select a weighted random privilege
