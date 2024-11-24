@@ -3,109 +3,118 @@ package com.railways.railways.Configuration;
 import com.railways.railways.domain.station.Direction;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Random;
 
 /**
- * A class for generating cash point locations on a map.
- * Cash points can only be placed on the left, right, or top wall of the map.
+ * A class for managing cash point locations on a map.
+ * Generates all possible locations for cash points on the top, left, and right walls of the map,
+ * excluding corner positions.
  */
 public class CashPointLocationGenerator {
-    private int xMapSize = 100;
-    private int yMapSize = 70;
-    private int xCashPoint = 5;
-    private int yCashPoint = 3;
+    private int xMapSize;
+    private int yMapSize;
+    private int xCashPoint;
+    private int yCashPoint;
+    private final List<CashPointConfig> possibleLocations = new ArrayList<>();
+    private final Random random = new Random();
 
     /**
-     * Default constructor with default map and cash point sizes.
-     */
-    public CashPointLocationGenerator() {
-    }
-
-    /**
-     * Constructor to initialize the map size and cash point dimensions.
+     * Constructor to initialize the map size and cash point dimensions, and generate all possible locations.
      *
      * @param xMapSize   the width of the map
      * @param yMapSize   the height of the map
      * @param xCashPoint the width of a cash point
      * @param yCashPoint the height of a cash point
+     * @throws IllegalArgumentException if any argument is invalid
      */
     public CashPointLocationGenerator(int xMapSize, int yMapSize, int xCashPoint, int yCashPoint) {
+        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
         this.xMapSize = xMapSize;
         this.yMapSize = yMapSize;
         this.xCashPoint = xCashPoint;
         this.yCashPoint = yCashPoint;
+        generateAllPossibleLocations();
     }
 
     /**
-     * Constructor to initialize the map size, with default cash point dimensions.
+     * Validates the input arguments.
      *
-     * @param xMapSize the width of the map
-     * @param yMapSize the height of the map
+     * @param xMapSize   the width of the map
+     * @param yMapSize   the height of the map
+     * @param xCashPoint the width of a cash point
+     * @param yCashPoint the height of a cash point
+     * @throws IllegalArgumentException if any dimension is invalid
      */
-    public CashPointLocationGenerator(int xMapSize, int yMapSize) {
-        this.xMapSize = xMapSize;
-        this.yMapSize = yMapSize;
+    private void validateArguments(int xMapSize, int yMapSize, int xCashPoint, int yCashPoint) {
+        if (xMapSize <= 0 || yMapSize <= 0) {
+            throw new IllegalArgumentException("Map dimensions must be greater than zero.");
+        }
+        if (xCashPoint <= 0 || yCashPoint <= 0) {
+            throw new IllegalArgumentException("Cash point dimensions must be greater than zero.");
+        }
+        if (xCashPoint >= xMapSize || yCashPoint >= yMapSize) {
+            throw new IllegalArgumentException("Cash point dimensions must fit within the map dimensions.");
+        }
     }
 
     /**
-     * Generates a list of cash point configurations for the specified number of cash points.
-     * Cash points are placed on the top, left, or right wall of the map without overlapping.
+     * Generates all possible locations for cash points on the top, left, and right walls,
+     * excluding corner positions.
+     */
+    private void generateAllPossibleLocations() {
+        // Top wall (excluding corners)
+        for (int x = xCashPoint; x + xCashPoint <= xMapSize - xCashPoint; x += xCashPoint) {
+            CashPointConfig config = new CashPointConfig();
+            config.x = x;
+            config.y = 0;
+            config.direction = Direction.Down;
+            possibleLocations.add(config);
+        }
+
+        // Left wall (excluding corners)
+        for (int y = yCashPoint; y + yCashPoint <= yMapSize - yCashPoint; y += yCashPoint) {
+            CashPointConfig config = new CashPointConfig();
+            config.x = 0;
+            config.y = y;
+            config.direction = Direction.Right;
+            possibleLocations.add(config);
+        }
+
+        // Right wall (excluding corners)
+        for (int y = yCashPoint; y + yCashPoint <= yMapSize - yCashPoint; y += yCashPoint) {
+            CashPointConfig config = new CashPointConfig();
+            config.x = xMapSize - xCashPoint;
+            config.y = y;
+            config.direction = Direction.Left;
+            possibleLocations.add(config);
+        }
+    }
+
+    /**
+     * Returns a specified number of cash point configurations.
+     * If randomOrder is true, the points are returned in random order.
+     * Otherwise, they are returned in order: top, left, right.
      *
-     * @param cashCount the number of cash points to generate
+     * @param count       the number of cash points to return
+     * @param randomOrder whether to return points in random order
      * @return a list of cash point configurations
-     * @throws IllegalArgumentException if there is insufficient space for the requested number of cash points
+     * @throws IllegalArgumentException if the requested count exceeds available locations
      */
-    public List<CashPointConfig> generate(int cashCount) {
-        int maxTopSpace = (xMapSize / xCashPoint)-1;//-1 to avoid placing cash point at the corner
-        int maxLeftSpace = (yMapSize / yCashPoint)-1;//-1 to avoid placing cash point at the corner
-        int maxRightSpace = maxLeftSpace;
-        int maxTotal = maxTopSpace + maxLeftSpace + maxRightSpace;
-
-        if (cashCount > maxTotal) {
-            throw new IllegalArgumentException("Insufficient space for the requested number of cash points.");
+    public List<CashPointConfig> getLocations(int count, boolean randomOrder) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("Count must be greater than zero.");
+        }
+        if (count > possibleLocations.size()) {
+            throw new IllegalArgumentException("Not enough locations available.");
         }
 
-        List<CashPointConfig> cashPoints = new ArrayList<>();
-        Set<String> occupied = new HashSet<>();
-
-        // Generate top wall cash points
-        for (int i = 1; i <= Math.min(cashCount, maxTopSpace); i++) { // Start from 1 to avoid placing cash point at the corner
-            int x = i * xCashPoint;
-            int y = 0;
-            addCashPoint(cashPoints, occupied, x, y, Direction.Up);
+        List<CashPointConfig> result = new ArrayList<>(possibleLocations);
+        if (randomOrder) {
+            Collections.shuffle(result, random);
         }
-        cashCount -= Math.min(cashCount, maxTopSpace);
-
-        // Generate left wall cash points
-        for (int i = 0; i < Math.min(cashCount, maxLeftSpace); i++) {
-            int x = 0;
-            int y = i * yCashPoint;
-            addCashPoint(cashPoints, occupied, x, y, Direction.Left);
-        }
-        cashCount -= Math.min(cashCount, maxLeftSpace);
-
-        // Generate right wall cash points
-        for (int i = 0; i < cashCount; i++) {
-            int x = xMapSize - xCashPoint;
-            int y = i * yCashPoint;
-            addCashPoint(cashPoints, occupied, x, y, Direction.Right);
-        }
-
-        return cashPoints;
-    }
-
-    private void addCashPoint(List<CashPointConfig> cashPoints, Set<String> occupied, int x, int y, Direction direction) {
-        String key = x + "," + y;
-        if (!occupied.contains(key)) {
-            CashPointConfig cashPoint = new CashPointConfig();
-            cashPoint.x = x;
-            cashPoint.y = y;
-            cashPoint.direction = direction;
-            cashPoints.add(cashPoint);
-            occupied.add(key);
-        }
+        return result.subList(0, count);
     }
 
     // Getters and setters
@@ -115,6 +124,7 @@ public class CashPointLocationGenerator {
     }
 
     public void setXMapSize(int xMapSize) {
+        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
         this.xMapSize = xMapSize;
     }
 
@@ -123,6 +133,7 @@ public class CashPointLocationGenerator {
     }
 
     public void setYMapSize(int yMapSize) {
+        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
         this.yMapSize = yMapSize;
     }
 
@@ -131,6 +142,7 @@ public class CashPointLocationGenerator {
     }
 
     public void setXCashPoint(int xCashPoint) {
+        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
         this.xCashPoint = xCashPoint;
     }
 
@@ -139,6 +151,11 @@ public class CashPointLocationGenerator {
     }
 
     public void setYCashPoint(int yCashPoint) {
+        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
         this.yCashPoint = yCashPoint;
+    }
+
+    public List<CashPointConfig> getPossibleLocations() {
+        return new ArrayList<>(possibleLocations);
     }
 }
