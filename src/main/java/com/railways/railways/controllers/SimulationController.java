@@ -16,7 +16,7 @@ public class SimulationController {
     }
 
     @GetMapping("/start")
-    public String resumeSimulation() {
+    public String startSimulation() {
         simulationService.startSimulation();
         return "Simulation started!";
     }
@@ -30,6 +30,12 @@ public class SimulationController {
     @PostMapping("/cashpoint/close")
     public int cashPointClosed(@RequestParam int id) {
         return simulationService.closeCashPoint(id);
+    }
+
+    @GetMapping("/resume")
+    public String resumeSimulation() {
+        simulationService.resumeSimulation();
+        return "Simulation resumed!";
     }
 
 }

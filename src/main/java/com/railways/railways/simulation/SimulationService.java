@@ -76,8 +76,9 @@ public class SimulationService {
 
         // Start hall simulation
         hallSimulator = new HallSimulator(eventPublisher, appConfig, hall, clientGenerator);
-        Thread simulationThread = new Thread(hallSimulator::run);
+        Thread simulationThread = new Thread(hallSimulator);
         simulationThread.start();
+        hallSimulator.start();
 
         System.out.println("Simulation started!");
     }
@@ -94,5 +95,12 @@ public class SimulationService {
     public int closeCashPoint(int id) {
         Hall hall = Hall.getInstance();
         return hall.closeCashPoint(id);
+    }
+
+    public void resumeSimulation() {
+        for (TicketOffice office : hall.getTicketOffices()) {
+            office.openOffice();
+        }
+        hallSimulator.start();
     }
 }

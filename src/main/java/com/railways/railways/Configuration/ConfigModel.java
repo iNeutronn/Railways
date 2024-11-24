@@ -34,7 +34,10 @@ public class ConfigModel {
     // Maximum number of people allowed in the premises
     private int maxPeopleAllowed;
 
-    public ConfigModel( GenerationPolicy generationPolicy, int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed) {
+    //speed of client
+    private double clientSpeed;
+
+    public ConfigModel( GenerationPolicy generationPolicy, int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed, double clientSpeed) {
         setGenerationPolicy(generationPolicy);
         setCashPointCount(CashPointCount);
         setCashpointConfigs(cashPointConfigs);
@@ -44,9 +47,14 @@ public class ConfigModel {
         setMaxPeopleAllowed(maxPeopleAllowed);
         setEntranceConfigs(entranceConfigs);
         setReservCashPointConfig(reservCashPointConfig);
+
     }
 
     public void setGenerationPolicy(GenerationPolicy generationPolicy) {
+        if (generationPolicy == null) {
+            throw new IllegalArgumentException("Generation policy cannot be null.");
+        }
+
         this.generationPolicy = generationPolicy;
     }
 
@@ -73,6 +81,11 @@ public class ConfigModel {
         if (cashpointConfigs == null || cashpointConfigs.isEmpty()) {
             throw new IllegalArgumentException("Cashpoint configs cannot be null or empty.");
         }
+        if (cashpointConfigs.size() != cashpointsCount) {
+            throw new IllegalArgumentException(
+                    "The size of cashpoint configs does not match cashpointsCount.");
+        }
+
         this.cashpointConfigs = cashpointConfigs;
     }
 
@@ -134,6 +147,49 @@ public class ConfigModel {
         setMaxPeopleAllowed(newConfig.getMaxPeopleAllowed());
     }
 
+    public void setEntranceConfigs(List<EntranceConfig> entranceConfigs) {
+        if (entranceConfigs == null || entranceConfigs.isEmpty()) {
+            throw new IllegalArgumentException("Entrance configs cannot be null or empty.");
+        }
+
+        if (entranceConfigs.size() != entranceCount) {
+            throw new IllegalArgumentException
+                    ("The size of entrance configs does not match entranceCount.");
+        }
+
+        this.entranceConfigs = entranceConfigs;
+    }
+
+    public List<EntranceConfig> getEntranceConfigs() {
+        return entranceConfigs;
+    }
+
+    public void setReservCashPointConfig(CashPointConfig reservCashPointConfig) {
+        if (reservCashPointConfig == null) {
+            throw new IllegalArgumentException(
+                    "ReserveCashPoint config cannot be null.");
+        }
+
+        this.reservCashPointConfig = reservCashPointConfig;
+    }
+    public CashPointConfig getReservCashPointConfig() {
+        return reservCashPointConfig;
+    }
+
+    public double getClientSpeed()
+    {
+        return clientSpeed;
+    }
+
+    public void  setClientSpeed(double newClientSpeed)
+    {
+        if (newClientSpeed <= 0) {
+            throw new IllegalArgumentException(
+                    "Client speed must be greater than zero.");
+        }
+        clientSpeed = newClientSpeed;
+    }
+
     @Override
     public String toString() {
         return "ConfigModel{" +
@@ -144,20 +200,5 @@ public class ConfigModel {
                 ", maxServiceTime=" + maxServiceTime +
                 ", maxPeopleAllowed=" + maxPeopleAllowed +
                 '}';
-    }
-
-    public void setEntranceConfigs(List<EntranceConfig> entranceConfigs) {
-        this.entranceConfigs = entranceConfigs;
-    }
-
-    public List<EntranceConfig> getEntranceConfigs() {
-        return entranceConfigs;
-    }
-
-    public void setReservCashPointConfig(CashPointConfig reservCashPointConfig) {
-        this.reservCashPointConfig = reservCashPointConfig;
-    }
-    public CashPointConfig getReservCashPointConfig() {
-        return reservCashPointConfig;
     }
 }
