@@ -36,20 +36,24 @@ public class ConfigController {
      * Endpoint to update the entire configuration.
      *
      * @param newConfig the new configuration model
+     * @return the updated configuration model
      */
-    @PutMapping
-    public void updateConfig(@RequestBody ConfigModel newConfig) {
+    @PostMapping
+    public ConfigModel updateConfig(@RequestBody ConfigModel newConfig) {
         configModel.updateConfig(newConfig);
+        return configModel;
     }
 
     /**
      * Endpoint to update the number of cashpoints.
      *
      * @param cashpointsCount the new number of cashpoints
+     * @return the updated configuration model
      */
-    @PutMapping("/cashpointsCount")
-    public void updateCashpointsCount(@RequestParam int cashpointsCount) {
+    @PostMapping("/cashpointsCount")
+    public ConfigModel updateCashpointsCount(@RequestParam int cashpointsCount) {
         configModel.setCashPointCount(cashpointsCount);
+        return configModel;
     }
 
     /**
@@ -57,7 +61,7 @@ public class ConfigController {
      *
      * @return the current number of cashpoints
      */
-    @GetMapping("/cashpointsCount")
+    @PostMapping("/cashpointsCount")
     public int getCashpointsCount() {
         return configModel.getCashPointCount();
     }
@@ -66,10 +70,12 @@ public class ConfigController {
      * Endpoint to update cashpoint locations.
      *
      * @param cashpointConfigs the new cashpoint locations
+     * @return the updated configuration model
      */
-    @PutMapping("/cashpointConfigs")
-    public void updateCashpointLocations(@RequestBody List<CashPointConfig> cashpointConfigs) {
+    @PostMapping("/cashpointConfigs")
+    public ConfigModel updateCashpointLocations(@RequestBody List<CashPointConfig> cashpointConfigs) {
         configModel.setCashpointConfigs(cashpointConfigs);
+        return configModel;
     }
 
     /**
@@ -77,7 +83,7 @@ public class ConfigController {
      *
      * @return the list of current entrance configurations
      */
-    @GetMapping("/entranceConfigs")
+    @PostMapping("/entranceConfigs")
     public List<EntranceConfig> getEntranceConfigs() {
         return configModel.getEntranceConfigs();
     }
@@ -86,10 +92,12 @@ public class ConfigController {
      * Endpoint to update the number of entrances.
      *
      * @param entranceCount the new number of entrances
+     * @return the updated configuration model
      */
-    @PutMapping("/entranceCount")
-    public void updateEntranceCount(@RequestParam int entranceCount) {
+    @PostMapping("/entranceCount")
+    public ConfigModel updateEntranceCount(@RequestParam int entranceCount) {
         configModel.setEntranceCount(entranceCount);
+        return configModel;
     }
 
     /**
@@ -97,7 +105,7 @@ public class ConfigController {
      *
      * @return the current minimum service time
      */
-    @GetMapping("/minServiceTime")
+    @PostMapping("/minServiceTime")
     public int getMinServiceTime() {
         return configModel.getMinServiceTime();
     }
@@ -106,10 +114,12 @@ public class ConfigController {
      * Endpoint to update the minimum service time.
      *
      * @param minServiceTime the new minimum service time
+     * @return the updated configuration model
      */
-    @PutMapping("/minServiceTime")
-    public void updateMinServiceTime(@RequestParam int minServiceTime) {
+    @PostMapping("/minServiceTime")
+    public ConfigModel updateMinServiceTime(@RequestParam int minServiceTime) {
         configModel.setMinServiceTime(minServiceTime);
+        return configModel;
     }
 
     /**
@@ -117,7 +127,7 @@ public class ConfigController {
      *
      * @return the current maximum service time
      */
-    @GetMapping("/maxServiceTime")
+    @PostMapping("/maxServiceTime")
     public int getMaxServiceTime() {
         return configModel.getMaxServiceTime();
     }
@@ -126,10 +136,12 @@ public class ConfigController {
      * Endpoint to update the maximum service time.
      *
      * @param maxServiceTime the new maximum service time
+     * @return the updated configuration model
      */
-    @PutMapping("/maxServiceTime")
-    public void updateMaxServiceTime(@RequestParam int maxServiceTime) {
+    @PostMapping("/maxServiceTime")
+    public ConfigModel updateMaxServiceTime(@RequestParam int maxServiceTime) {
         configModel.setMaxServiceTime(maxServiceTime);
+        return configModel;
     }
 
     /**
@@ -137,7 +149,7 @@ public class ConfigController {
      *
      * @return the current maximum number of people allowed
      */
-    @GetMapping("/maxPeopleAllowed")
+    @PostMapping("/maxPeopleAllowed")
     public int getMaxPeopleAllowed() {
         return configModel.getMaxPeopleAllowed();
     }
@@ -146,9 +158,11 @@ public class ConfigController {
      * Endpoint to update the maximum number of people allowed.
      *
      * @param maxPeopleAllowed the new maximum number of people allowed
+     * @return the updated configuration model
      */
-    @PutMapping("/maxPeopleAllowed")
-    public void updateMaxPeopleAllowed(@RequestParam int maxPeopleAllowed) {
+    @PostMapping("/maxPeopleAllowed")
+    public ConfigModel updateMaxPeopleAllowed(@RequestParam int maxPeopleAllowed) {
         configModel.setMaxPeopleAllowed(maxPeopleAllowed);
+        return configModel;
     }
 }
