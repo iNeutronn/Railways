@@ -51,6 +51,10 @@ public class ConfigModel {
     }
 
     public void setGenerationPolicy(GenerationPolicy generationPolicy) {
+        if (generationPolicy == null) {
+            throw new IllegalArgumentException("Generation policy cannot be null.");
+        }
+
         this.generationPolicy = generationPolicy;
     }
 
@@ -77,6 +81,11 @@ public class ConfigModel {
         if (cashpointConfigs == null || cashpointConfigs.isEmpty()) {
             throw new IllegalArgumentException("Cashpoint configs cannot be null or empty.");
         }
+        if (cashpointConfigs.size() != cashpointsCount) {
+            throw new IllegalArgumentException(
+                    "The size of cashpoint configs does not match cashpointsCount.");
+        }
+
         this.cashpointConfigs = cashpointConfigs;
     }
 
@@ -138,19 +147,16 @@ public class ConfigModel {
         setMaxPeopleAllowed(newConfig.getMaxPeopleAllowed());
     }
 
-    @Override
-    public String toString() {
-        return "ConfigModel{" +
-                "cashpointsCount=" + cashpointsCount +
-                ", cashpointLocations=" + cashpointConfigs +
-                ", entranceCount=" + entranceCount +
-                ", minServiceTime=" + minServiceTime +
-                ", maxServiceTime=" + maxServiceTime +
-                ", maxPeopleAllowed=" + maxPeopleAllowed +
-                '}';
-    }
-
     public void setEntranceConfigs(List<EntranceConfig> entranceConfigs) {
+        if (entranceConfigs == null || entranceConfigs.isEmpty()) {
+            throw new IllegalArgumentException("Entrance configs cannot be null or empty.");
+        }
+
+        if (entranceConfigs.size() != entranceCount) {
+            throw new IllegalArgumentException
+                    ("The size of entrance configs does not match entranceCount.");
+        }
+
         this.entranceConfigs = entranceConfigs;
     }
 
@@ -159,6 +165,11 @@ public class ConfigModel {
     }
 
     public void setReservCashPointConfig(CashPointConfig reservCashPointConfig) {
+        if (reservCashPointConfig == null) {
+            throw new IllegalArgumentException(
+                    "ReserveCashPoint config cannot be null.");
+        }
+
         this.reservCashPointConfig = reservCashPointConfig;
     }
     public CashPointConfig getReservCashPointConfig() {
@@ -172,6 +183,22 @@ public class ConfigModel {
 
     public void  setClientSpeed(double newClientSpeed)
     {
+        if (newClientSpeed <= 0) {
+            throw new IllegalArgumentException(
+                    "Client speed must be greater than zero.");
+        }
         clientSpeed = newClientSpeed;
+    }
+
+    @Override
+    public String toString() {
+        return "ConfigModel{" +
+                "cashpointsCount=" + cashpointsCount +
+                ", cashpointLocations=" + cashpointConfigs +
+                ", entranceCount=" + entranceCount +
+                ", minServiceTime=" + minServiceTime +
+                ", maxServiceTime=" + maxServiceTime +
+                ", maxPeopleAllowed=" + maxPeopleAllowed +
+                '}';
     }
 }
