@@ -5,6 +5,7 @@ import com.railways.railways.communication.DTO.ClientCreatedUpdate;
 import com.railways.railways.communication.DTO.GenerationUpdateDTO;
 import com.railways.railways.communication.DTO.GenerationUpdateTypes;
 import com.railways.railways.domain.client.Client;
+import com.railways.railways.domain.client.ClientCreated;
 import com.railways.railways.events.ClientCreatedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,9 @@ public class ClientCreatedListener {
 
     @EventListener
     public void onClientCreated(ClientCreatedEvent event) {
-        Client client = event.getClient();
-        GenerationUpdateDTO update = new ClientCreatedUpdate(client);
+        ClientCreated clientCreated = event.getClientCreated();
+
+        GenerationUpdateDTO update = new ClientCreatedUpdate(clientCreated);
         socketController.sendUpdate(update);
     }
 }

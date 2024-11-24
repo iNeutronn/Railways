@@ -1,5 +1,6 @@
 package com.railways.railways.domain.station;
 import com.railways.railways.domain.client.Client;
+import com.railways.railways.domain.client.ClientCreated;
 import com.railways.railways.events.ClientCreatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -14,6 +15,8 @@ public class Hall {
     private TicketOffice reservedTicketOffice;
     private Segment segment;
     private ApplicationEventPublisher applicationEventPublisher;
+    private final Random random;
+
 
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.applicationEventPublisher = applicationEventPublisher;
@@ -21,6 +24,7 @@ public class Hall {
 
     private Hall() {
         segment = new Segment(new Point(0, 0), new Point(100, 100));
+        random = new Random();
     }
 
     private static final class InstanceHolder {
@@ -61,22 +65,17 @@ public class Hall {
     }
 
     public void processClient(Client client) {
-        int index = new Random().nextInt(entrances.size());
-        System.out.println(index);
-        var entrancePoint = entrances.get(index).getStartPoint();
-        client.setPosition(entrancePoint);
+        Entrance selectedEntrance = selectRandomEntrance();
 
-        ClientCreatedEvent event = new ClientCreatedEvent(this, client);
-        applicationEventPublisher.publishEvent(event);
+        var entrancePoint = selectedEntrance.getStartPoint();
 
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        var ticketOffice = getBestTicketOffice(entrancePoint);
+
+        publishClientCreatedEvent(client, selectedEntrance, ticketOffice);
+
+        imitateMoving();
 
         // Add the client to the nearest ticket office
-        var ticketOffice = getBestTicketOffice(client);
         ticketOffice.addClient(client);
         System.out.println("Hall: Client " + client.getFullName() + " added to ticket office " + ticketOffice.getOfficeID());
     }
@@ -89,7 +88,7 @@ public class Hall {
         return count;
     }
 
-    public TicketOffice getBestTicketOffice(Client client) {
+    public TicketOffice getBestTicketOffice(Point entrancePoint) {
         TicketOffice bestOffice = null;
         int minQueueSize = Integer.MAX_VALUE;
         double minDistance = Double.MAX_VALUE;
@@ -98,7 +97,7 @@ public class Hall {
 
             int queueSize = office.getQueueSize();
             // Calculate the distance from the client's current position to the starting point of the office's segment
-            double clientDistance = client.getPosition().distance(office.getSegment().start);
+            double clientDistance = entrancePoint.distance(office.getSegment().start);
             if (queueSize < minQueueSize || (queueSize == minQueueSize && clientDistance < minDistance)) {
                 minQueueSize = queueSize;
                 minDistance = clientDistance;
@@ -107,6 +106,30 @@ public class Hall {
         }
 
         return bestOffice;
+    }
+    // Selects a random entrance
+    private Entrance selectRandomEntrance() {
+        int index = random.nextInt(entrances.size());
+        return entrances.get(index);
+    }
+
+    // Publishes a ClientCreatedEvent
+    private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice) {
+        ClientCreatedEvent event = new ClientCreatedEvent(
+                this,
+                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID())
+        );
+        applicationEventPublisher.publishEvent(event);
+    }
+
+    // Handles thread sleep with exception handling
+    private void imitateMoving() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            System.err.println("Thread interrupted: " + e.getMessage());
+        }
     }
 
     public Segment getSegment() {
