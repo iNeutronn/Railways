@@ -8,15 +8,13 @@ public class Client {
     private final String firstName;
     private final String lastName;
     private int ticketsToBuy;
-    private Point position;
     private final long timestamp; // New field to store insertion time
 
-    public Client(int clientID, String firstName, String lastName, int ticketsToBuy, Point position, PrivilegeEnum privilege) {
+    public Client(int clientID, String firstName, String lastName, int ticketsToBuy, PrivilegeEnum privilege) {
         this.clientID = clientID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.ticketsToBuy = ticketsToBuy;
-        this.position = position;
         this.timestamp = System.currentTimeMillis();
         this.privilege = privilege;
     }
@@ -53,10 +51,6 @@ public class Client {
         return ticketsToBuy;
     }
 
-    public Point getPosition() {
-        return position;
-    }
-
     public void setPrivilege(PrivilegeEnum privilege) {
         this.privilege = privilege;
     }
@@ -65,7 +59,4 @@ public class Client {
         this.ticketsToBuy = ticketsToBuy;
     }
 
-    public void setPosition(Point position) {
-        this.position = position;
-    }
 }
