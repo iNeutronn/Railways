@@ -160,7 +160,6 @@ public class TicketOffice implements Runnable {
     }
 
     public void setQueue(PriorityBlockingQueue<Client> queue) {
-        clientsQueue.clear();
         clientsQueue.addAll(queue);
     }
 
