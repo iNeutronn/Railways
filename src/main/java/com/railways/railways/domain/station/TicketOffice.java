@@ -49,14 +49,25 @@ public class TicketOffice implements Runnable {
 
     @Override
     public void run() {
-        while (isOpen) {
+        while (true)
+        {
+            while (isOpen) {
+                try {
+                    serveClient();
+                    Thread.sleep(100); // Short pause between clients
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+
             try {
-                serveClient();
-                Thread.sleep(100); // Short pause between clients
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+
         }
+
     }
 
     public void serveClient() throws InterruptedException {
@@ -101,6 +112,10 @@ public class TicketOffice implements Runnable {
 
     public void closeOffice() {
         isOpen = false;
+    }
+
+    public void openOffice() {
+        isOpen = true;
     }
 
     public ArrayList<ServeRecord> getServeRecords() {
