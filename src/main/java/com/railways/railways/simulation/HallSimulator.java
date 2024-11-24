@@ -45,8 +45,6 @@ public class HallSimulator {
                 if (currentClientCount < appConfig.getMaxPeopleAllowed()) {
                     Client client = clientGenerator.generateClient(random.nextInt(100000));
 
-                    ClientCreatedEvent event = new ClientCreatedEvent(this, client);
-                    applicationEventPublisher.publishEvent(event);
 
                     if (client != null) {
                         executorService.submit(() -> hall.processClient(client));

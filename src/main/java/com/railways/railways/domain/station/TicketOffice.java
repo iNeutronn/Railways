@@ -3,6 +3,7 @@ package com.railways.railways.domain.station;
 import com.railways.railways.domain.ServeRecord;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.events.ClientServedEvent;
+import com.railways.railways.events.QueueUpdatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.*;
@@ -91,6 +92,11 @@ public class TicketOffice implements Runnable {
 
     public void addClient(Client client) {
         clientsQueue.offer(client); // Thread-safe addition
+
+        QueueUpdate queueUpdate = new QueueUpdate(ticketOfficeID, clientsQueue.stream().map(Client::getClientID).mapToInt(i -> i).toArray());
+        QueueUpdatedEvent event = new QueueUpdatedEvent(this, queueUpdate);
+
+        eventPublisher.publishEvent(event);
     }
 
     public void closeOffice() {

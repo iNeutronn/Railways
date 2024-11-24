@@ -43,6 +43,8 @@ public class SimulationService {
     }
 
     private void setupHall() {
+        hall.setApplicationEventPublisher(eventPublisher);
+
         // Create ticket offices
         List<TicketOffice> ticketOffices = new ArrayList<>();
         for (int i = 0; i < appConfig.getCashPointCount(); i++) {

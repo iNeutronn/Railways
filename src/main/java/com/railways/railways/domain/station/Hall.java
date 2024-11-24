@@ -1,5 +1,7 @@
 package com.railways.railways.domain.station;
 import com.railways.railways.domain.client.Client;
+import com.railways.railways.events.ClientCreatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.awt.*;
 import java.util.*;
@@ -11,6 +13,11 @@ public class Hall {
     private List<Segment> entrances;
     private TicketOffice reservedTicketOffice;
     private Segment segment;
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     private Hall() {
         segment = new Segment(new Point(0, 0), new Point(100, 100));
@@ -58,6 +65,9 @@ public class Hall {
         System.out.println(index);
         var entrancePoint = entrances.get(index).start;
         client.setPosition(entrancePoint);
+
+        ClientCreatedEvent event = new ClientCreatedEvent(this, client);
+        applicationEventPublisher.publishEvent(event);
 
         try {
             Thread.sleep(100);
