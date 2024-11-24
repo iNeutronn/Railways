@@ -97,51 +97,6 @@ public class MapManager {
     }
 
     /**
-     * Checks if a specified segment is free for use, considering boundaries, entrances, and ticket
-     * offices.
-     *
-     * <p>This method verifies whether a given segment is suitable for use by checking several
-     * conditions: <br/>
-     * 1. It checks if the segment is within the defined bounds.
-     * 2. It checks if the segment overlaps with any entrance positions. <br/>
-     * 3. It checks if the segment overlaps with any ticket office positions. <br/>
-     * 4. It checks if the segment overlaps with any client positions in the queues of the ticket offices.
-     *
-     * @param segment The segment to check for availability.
-     * @param hall The hall where to check for availability queues.
-     * @return {@code true} if the segment is free, {@code false} otherwise.
-     */
-    public static Boolean IsSegmentFree(Segment segment, Hall hall) {
-        if (isOutOfBounds(segment, hall.getSegment())) return false;
-
-        if (hall.getEntrances().stream().anyMatch(pos -> segmentsOverlap(pos, segment))) {
-            return false;
-        }
-
-        if (
-                hall.getTicketOffices()
-                        .stream()
-                        .anyMatch(ticketOffice -> segmentsOverlap(ticketOffice.getSegment(), segment))
-        ) {
-            return false;
-        }
-
-        return hall.getTicketOffices()
-                .stream()
-                .noneMatch(
-                        ticketOffice -> ticketOffice
-                                .getQueue()
-                                .stream()
-                                .anyMatch(
-                                        client -> segmentContainsPoint(
-                                                segment,
-                                                client.getPosition()
-                                        )
-                                )
-                );
-    }
-
-    /**
      * Checks if a given segment is completely out of bounds based on a specified size.
      *
      * <p>This method determines whether a segment is entirely outside the boundaries defined by a

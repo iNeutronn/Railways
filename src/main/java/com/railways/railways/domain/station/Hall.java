@@ -8,7 +8,7 @@ import java.util.List;
 public class Hall {
 
     private List<TicketOffice> ticketOffices;
-    private List<Segment> entrances;
+    private List<Entrance> entrances;
     private TicketOffice reservedTicketOffice;
     private Segment segment;
 
@@ -37,11 +37,11 @@ public class Hall {
         this.ticketOffices = ticketOffices;
     }
 
-    public List<Segment> getEntrances() {
+    public List<Entrance> getEntrances() {
         return entrances;
     }
 
-    public void setEntrances(List<Segment> entrances) {
+    public void setEntrances(List<Entrance> entrances) {
         this.entrances = entrances;
     }
 
@@ -56,7 +56,7 @@ public class Hall {
     public void processClient(Client client) {
         int index = new Random().nextInt(entrances.size());
         System.out.println(index);
-        var entrancePoint = entrances.get(index).start;
+        var entrancePoint = entrances.get(index).getStartPoint();
         client.setPosition(entrancePoint);
 
         try {
