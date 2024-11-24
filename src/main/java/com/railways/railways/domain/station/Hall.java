@@ -116,7 +116,9 @@ public class Hall {
             return  -1;
         }
 
-        CloseTicketOffice(ticketOffice);
+        ticketOffice.closeOffice();
+        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " closed.");
+        transferClients(ticketOffice);
 
         return id;
     }
@@ -129,20 +131,16 @@ public class Hall {
             return  -1;
         }
 
-        OpenTicketOffice(ticketOffice);
+        ticketOffice.openOffice();
+        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " open.");
 
         return id;
     }
 
-    // Removes the ticket office from the list and closes it
-    private void CloseTicketOffice(TicketOffice ticketOffice) {
-        ticketOffice.closeOffice();
-        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " closed.");
-    }
+    private void transferClients(TicketOffice ticketOffice) {
+        reservedTicketOffice.setQueue(ticketOffice.getQueue());
+        ticketOffice.clearQueue();
 
-    private void OpenTicketOffice(TicketOffice ticketOffice) {
-        ticketOffice.openOffice();
-        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " opened.");
     }
 
     // Selects a random entrance

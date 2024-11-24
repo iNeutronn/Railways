@@ -96,11 +96,7 @@ public class TicketOffice implements Runnable {
 
     public void addClient(Client client) {
         clientsQueue.offer(client); // Thread-safe addition
-
-        QueueUpdate queueUpdate = new QueueUpdate(ticketOfficeID, clientsQueue.stream().map(Client::getClientID).mapToInt(i -> i).toArray());
-        QueueUpdatedEvent event = new QueueUpdatedEvent(this, queueUpdate);
-
-        eventPublisher.publishEvent(event);
+        publishQueueUpdate();
     }
 
     public void closeOffice() {
@@ -150,5 +146,21 @@ public class TicketOffice implements Runnable {
 
     public boolean isOpen() {
         return isOpen;
+    }
+
+    public void publishQueueUpdate() {
+        QueueUpdate queueUpdate = new QueueUpdate(ticketOfficeID, clientsQueue.stream().map(Client::getClientID).mapToInt(i -> i).toArray());
+        QueueUpdatedEvent event = new QueueUpdatedEvent(this, queueUpdate);
+
+        eventPublisher.publishEvent(event);
+    }
+
+    public void setQueue(PriorityBlockingQueue<Client> queue) {
+        clientsQueue.clear();
+        clientsQueue.addAll(queue);
+    }
+
+    public void clearQueue() {
+        clientsQueue.clear();
     }
 }
