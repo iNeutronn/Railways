@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { env } from 'process';
 import { environmentDev } from '../../environments/environment.development';
 import { StationConfiguration } from '../../models/station-configuration';
-import {of} from 'rxjs';
-import {urlToHttpOptions} from 'node:url';
+import {Observable} from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +14,44 @@ export class StationConfigurationService {
 
   stationConfigurationUrl: string = environmentDev.serverApi + '/config';
 
-    saveConfiguration(configuration: StationConfiguration) {
-      return this.httpClient.post(this.stationConfigurationUrl, configuration);
-    }
+  saveConfiguration(configuration: StationConfiguration): Observable<any> {
+    const entranceCount$ = this.setEntranceCount(configuration.entranceCount!);
+    const cashpointCount$ = this.setCashpointCount(configuration.cashPointCount!);
+    const minServeTime$ = this.setMinServeTime(configuration.minServiceTime);
+    const maxServeTime$ = this.setMaxServeTime(configuration.maxServiceTime);
+
+    return forkJoin([entranceCount$, cashpointCount$, minServeTime$, maxServeTime$]);
+  }
 
     getConfiguration(){
       return this.httpClient.get<StationConfiguration>(this.stationConfigurationUrl);
     }
+
+    private setMinServeTime(minServiceTime: number) {
+      const url = this.stationConfigurationUrl + '/minServiceTime';
+      return this.httpClient.post(url, null, {
+        params: { minServiceTime: minServiceTime },
+      });
+    }
+
+    private setMaxServeTime(maxServeTime: number) {
+      const url = this.stationConfigurationUrl + '/maxServiceTime';
+      return this.httpClient.post(url, null, {
+        params: { maxServiceTime: maxServeTime },
+      });
+    }
+
+    private setCashpointCount(cashPointCount: number) {
+      const url = this.stationConfigurationUrl + '/cashpointsCount';
+      return this.httpClient.post(url, null, {
+        params: { cashpointsCount: cashPointCount },
+      });
+    }
+
+  private setEntranceCount(entranceCount: number) {
+    const url = this.stationConfigurationUrl + '/entranceCount';
+    return this.httpClient.post(url, null, {
+      params: { entranceCount: entranceCount },
+    });
+  }
 }
