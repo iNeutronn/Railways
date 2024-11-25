@@ -14,11 +14,19 @@ import { Router } from '@angular/router';
   styleUrls: ['./start-page.component.css']
 })
 export class StartPageComponent {
-  stationConfiguration : StationConfiguration = {
-    cashDeskCount: null,
+  stationConfiguration: StationConfiguration = {
+    cashPointCount: null,
     entranceCount: null,
-    serviceTime: null,
-    generationType: ClientGenerationType.Simple
+    cashpointConfigs: {
+      position: { x: 0, y: 0 }, 
+    },
+    entranceConfigs: {
+      position: { x: 0, y: 0 }, 
+    },
+    minServiceTime: null,
+    maxServiceTime: null,
+    maxPeopleAllowed: 50,
+    generationType: ClientGenerationType.Simple,
   };
 
   constructor(private stationConfigurationService: StationConfigurationService, private router: Router) { }
