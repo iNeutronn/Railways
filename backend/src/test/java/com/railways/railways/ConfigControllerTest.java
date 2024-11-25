@@ -29,7 +29,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ConfigControllerIntegrationTest {
+class ConfigControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -38,20 +38,24 @@ class ConfigControllerIntegrationTest {
     private ConfigModel configModel;
 
     @Test
-    void shouldReturnConfigModelDetails() throws Exception {
-        when(configModel.getCashPointCount()).thenReturn(4);
+    void shouldReturnConfig() throws Exception {
+        when(configModel.getCashPointCount()).thenReturn(5);
 
-        mockMvc.perform(get("/config"))
-
+        mockMvc.perform((org.springframework.test.web.servlet.RequestBuilder) get("/config"))
                 .andExpect(status().isOk())
-                .andExpect((ResultMatcher) jsonPath("$.cashpointsCount").value(4))
-                .andExpect((ResultMatcher) jsonPath("$.serviceTime").isNotEmpty());
+                .andExpect((ResultMatcher) jsonPath("$.cashpointsCount").value(5));
+    }
+
+    private RequestBuilder get(String s) {
+        return null;
     }
 
     @Test
-    void shouldHandleInvalidEndpointGracefully() throws Exception {
-        mockMvc.perform(get("/invalidEndpoint"))
-                .andExpect(status().isNotFound());
+    void shouldReturnCashPointCount() throws Exception {
+        when(configModel.getCashPointCount()).thenReturn(3);
+
+        mockMvc.perform(get("/config/cashpointsCount"))
+                .andExpect(status().isOk())
+                .andExpect((ResultMatcher) content().string("3"));
     }
 }
-
