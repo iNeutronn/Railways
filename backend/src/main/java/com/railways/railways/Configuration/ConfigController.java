@@ -8,6 +8,7 @@ import java.util.List;
  * ConfigController provides REST API to access and modify the configuration of the railway ticketing system.
  */
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/config")
 public class ConfigController {
 

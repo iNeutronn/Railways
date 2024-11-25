@@ -20,13 +20,14 @@ public class AppConfig {
     public ConfigModel configModel() {
         // Створюємо дефолтні конфігурації для касових пунктів
         List<CashPointConfig> cashpointConfigs = Arrays.asList(
-                new CashPointConfig() {{ x = 0; y = 3; direction = Direction.Down; }},
-                new CashPointConfig() {{ x = 5; y = 3; direction = Direction.Down; }},
-                new CashPointConfig() {{ x = 10; y = 3; direction = Direction.Down; }}
+                new CashPointConfig() {{ id = 1; x = 0; y = 3; direction = Direction.Down; }},
+                new CashPointConfig() {{ id = 2; x = 5; y = 3; direction = Direction.Down; }},
+                new CashPointConfig() {{ id = 3; x = 10; y = 3; direction = Direction.Down; }}
         );
 
         // Створюємо дефолтну конфігурацію для резервного касового пункту
         CashPointConfig reservCashPointConfig = new CashPointConfig() {{
+            id = 4;
             x = 15;
             y = 3;
             direction = Direction.Down;
@@ -34,8 +35,8 @@ public class AppConfig {
 
         // Створюємо дефолтні конфігурації для входів
         List<EntranceConfig> entranceConfigs = Arrays.asList(
-                new EntranceConfig() {{ x = 10; y = 10; }},
-                new EntranceConfig() {{ x = 15; y = 15; }}
+                new EntranceConfig() {{id = 1; x = 10; y = 10; }},
+                new EntranceConfig() {{id = 2; x = 15; y = 15; }}
         );
 
         // Створюємо та повертаємо конфігурацію
@@ -51,9 +52,6 @@ public class AppConfig {
                 50, // Максимальна кількість людей
                 10 // швидкість руху клієнтів
         );
-
-
-
         return config;
     }
 }
