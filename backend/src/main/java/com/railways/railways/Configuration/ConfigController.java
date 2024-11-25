@@ -188,7 +188,7 @@ public class ConfigController {
      */
     @PostMapping("/mapSize")
     public ConfigModel updateMapSize(@RequestParam int width, @RequestParam int height) {
-        configModel.setMapSize(new MapSize(width, height));
+        mapGenerationHelper.updateMapSize(new MapSize(width, height));
         return configModel;
     }
 }

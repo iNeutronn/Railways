@@ -34,4 +34,11 @@ public class MapGenerationHelper {
         configModel.setCashpointConfigs(cashPointLocationGenerator.getLocations(cashPointCount, false));
     }
 
+    public void updateMapSize(MapSize mapSize) {
+        configModel.setMapSize(mapSize);
+        entranceLocationGenerator.updateMapSize(mapSize);
+        cashPointLocationGenerator.updateMapSize(mapSize);
+        updateCashPointConfigs(configModel.getCashPointCount());
+        updateEntranceConfigs(configModel.getEntranceCount());
+    }
 }
