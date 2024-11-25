@@ -4,6 +4,8 @@ import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.station.Hall;
+import com.railways.railways.logging.LogLevel;
+import com.railways.railways.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -25,17 +27,24 @@ public class HallSimulator implements Runnable {
     private boolean isRunning = false;
     private final Object pauseLock = new Object();
 
-    public HallSimulator(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator) {
+    private final Logger logger;
+
+    public HallSimulator(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Hall hall, ClientGenerator clientGenerator, Logger logger) {
         this.hall = hall;
         this.appConfig = appConfig;
         this.clientGenerator = clientGenerator;
         this.executorService = Executors.newCachedThreadPool();
         this.eventPublisher = eventPublisher;
+        this.logger = logger;
+
+        logger.log("HallSimulator initialized with " + appConfig.getMaxPeopleAllowed()
+                + " people and generation policy: " + appConfig.getGenerationPolicy().getSeconds() + " seconds", LogLevel.Info);
     }
 
     public void start() {
         synchronized (pauseLock) {
             isRunning = true;
+            logger.log("Simulation started", LogLevel.Info);
             pauseLock.notifyAll(); // Wake up the thread if it is waiting
         }
     }
@@ -43,11 +52,13 @@ public class HallSimulator implements Runnable {
     public void stop() {
         synchronized (pauseLock) {
             isRunning = false; // The thread will pause the next time it checks
+            logger.log("Simulation paused", LogLevel.Warning);
         }
     }
 
     @Override
     public void run() {
+        logger.log("HallSimulator started running.", LogLevel.Info);
         while (true) {
             synchronized (pauseLock) {
                 while (!isRunning) { // If paused, wait until notified

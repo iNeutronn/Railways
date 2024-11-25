@@ -8,8 +8,11 @@ import com.railways.railways.domain.station.Entrance;
 import com.railways.railways.domain.station.Hall;
 import com.railways.railways.domain.station.Segment;
 import com.railways.railways.domain.station.TicketOffice;
+import com.railways.railways.logging.LogLevel;
+import com.railways.railways.logging.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -28,10 +31,12 @@ public class SimulationService {
     private final ApplicationEventPublisher eventPublisher;
     private final ConfigModel appConfig;
 
-    public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig) {
+    private final Logger logger;
+
+    public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Logger logger) {
         this.eventPublisher = eventPublisher;
         this.appConfig = appConfig;
-        this.hall = new Hall(appConfig.getMapSize());
+        this.hall = new Hall(appConfig.getMapSize(), logger);
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
                 PrivilegeEnum.DEFAULT, 70,
@@ -40,6 +45,8 @@ public class SimulationService {
                 PrivilegeEnum.DISABLED, 10
         );
         this.clientGenerator = new ClientGenerator(privilegeMap);
+        this.logger = logger;
+
         setupHall();
     }
 
@@ -80,6 +87,8 @@ public class SimulationService {
         entrances.add(new Entrance(2, new Segment(new Point(9, 9), new Point(10, 9))));
 
         hall.setEntrances(entrances);
+
+        logger.log("Hall setup complete", LogLevel.Info);
     }
 
     public void startSimulation() {
@@ -89,12 +98,12 @@ public class SimulationService {
         }
 
         // Start hall simulation
-        hallSimulator = new HallSimulator(eventPublisher, appConfig, hall, clientGenerator);
+        hallSimulator = new HallSimulator(eventPublisher, appConfig, hall, clientGenerator, logger);
         Thread simulationThread = new Thread(hallSimulator);
         simulationThread.start();
         hallSimulator.start();
 
-        System.out.println("Simulation started!");
+        logger.log("Simulation started", LogLevel.Info);
     }
 
     public void stopSimulation() {
@@ -104,6 +113,7 @@ public class SimulationService {
         }
 
         hallSimulator.stop();
+        logger.log("Simulation stopped", LogLevel.Warning);
     }
 
     public int closeCashPoint(int id) {
@@ -115,6 +125,7 @@ public class SimulationService {
             office.openOffice();
         }
         hallSimulator.start();
+        logger.log("Simulation resumed", LogLevel.Info);
     }
 
     public int openCashPoint(int id) {
