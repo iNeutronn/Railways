@@ -44,13 +44,13 @@
 }
 
 .cash-desk {
-  background-color: #b5b3b3;
+  background-color: #e0ebf7;
   border-radius: 5px;
   border: 3px solid black;
 }
 
 .cash-desk-disabled {
-  background-color: #b5b3b3;
+  background-color: #e0ebf7;
   border-radius: 5px;
   border: 3px solid red;
 }
@@ -85,16 +85,16 @@
     width: 24px;
     height: 24px;
   }
-  
+
   .settings-icon {
     width: 100%;
     height: 100%;
-    transition: transform 1s ease; 
+    transition: transform 1s ease;
   }
-  
+
   .settings-icon:hover {
     transform: rotate(360deg);
-    cursor: pointer; 
+    cursor: pointer;
   }
 
   .stats {

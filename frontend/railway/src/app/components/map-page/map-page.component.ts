@@ -9,7 +9,6 @@ import {PrivilegeEnum, PrivilegeEnumLabels} from '../../models/enums/privilege-e
 import {StationConfigurationService} from '../../services/station-configuration/station-configuration.service';
 import {Router} from '@angular/router';
 import {StationConfiguration} from '../../models/station-configuration';
-import {Position} from '../../models/position';
 
 @Component({
   selector: 'app-map-page',
@@ -94,13 +93,6 @@ export class MapPageComponent implements OnInit {
         y: configuration.reservCashPointConfig.y
       },
     })
-  }
-
-  validatePosition(position: Position, maxX: number, maxY: number): { x: number; y: number } {
-    return {
-      x: position.x > maxX ? maxX : position.x < 0 ? 0 : position.x,
-      y: position.y > maxY ? maxY : position.y < 0 ? 0 : position.y,
-    };
   }
 
   calculateScaleFactor() {
