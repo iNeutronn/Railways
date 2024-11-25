@@ -17,14 +17,11 @@ export class StartPageComponent {
   stationConfiguration: StationConfiguration = {
     cashPointCount: null,
     entranceCount: null,
-    cashpointConfigs: {
-      position: { x: 0, y: 0 }, 
-    },
-    entranceConfigs: {
-      position: { x: 0, y: 0 }, 
-    },
-    minServiceTime: null,
-    maxServiceTime: null,
+    cashpointConfigs: [],
+    entranceConfigs: [],
+    reservCashPointConfig: {x: -1, y: -1},
+    minServiceTime: 1000,
+    maxServiceTime: 5000,
     maxPeopleAllowed: 50,
     generationType: ClientGenerationType.Simple,
   };

@@ -1,12 +1,15 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {NgClass, NgForOf} from '@angular/common';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {CashDesk} from '../../models/entities/cash-desk';
 import {Entrance} from '../../models/entities/entrance';
 import {Client} from '../../models/entities/client';
 import {PrivilegeEnum, PrivilegeEnumLabels} from '../../models/enums/privilege-enum';
+import {StationConfigurationService} from '../../services/station-configuration/station-configuration.service';
 import {Router} from '@angular/router';
+import {StationConfiguration} from '../../models/station-configuration';
+import {Position} from '../../models/position';
 
 @Component({
   selector: 'app-map-page',
@@ -29,25 +32,75 @@ import {Router} from '@angular/router';
     ])
   ]
 })
-export class MapPageComponent implements OnInit, AfterViewInit {
+export class MapPageComponent implements OnInit {
   @ViewChild('stationContainer', {static: false}) stationContainer!: ElementRef;
   maxIndexX: number = 0;
   maxIndexY: number = 0;
   cellSize: number = 50;
 
-  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef, private router: Router) {
+  constructor(
+    private configService: StationConfigurationService,
+    private router: Router) {
   }
 
   ngOnInit() {
+
     this.calculateScaleFactor();
+    this.configService.getConfiguration().subscribe(configuration => {
+
+      console.log(configuration, 'Configuration');
+      this.handleConfigurationResponse(configuration);
+      console.log(this.entrances, 'Entrances');
+      console.log(this.cashDesks, 'cashDesks');
+
+      this.initializeClients();
+      console.log(this.entrances)
+    });
   }
 
-  ngAfterViewInit() {
-    this.calculateScaleFactor();
-    this.initializeCashDesks();
-    this.initializeEntrances();
-    this.initializeClients();
-    this.cdRef.detectChanges();
+  handleConfigurationResponse(configuration: StationConfiguration) {
+    for (let i = 0; i < configuration.entranceConfigs.length; i++) {
+      this.entrances.push({
+        id: i,
+        position: {
+          x: configuration.entranceConfigs[i].x,
+          y: configuration.entranceConfigs[i].y
+        },
+      })
+    }
+
+    for (let i =  0; i < configuration.cashpointConfigs.length; i++) {
+      this.cashDesks.push({
+        id: i,
+        serviceTime: configuration.maxServiceTime,
+        isActive: true,
+        isReserve: false,
+        queue: [],
+        position: {
+          x: configuration.cashpointConfigs[i].x,
+          y: configuration.cashpointConfigs[i].y
+        },
+      })
+    }
+
+    this.cashDesks.push({
+      id: this.cashDesks.length + 1,
+      serviceTime: configuration.maxServiceTime,
+      isActive: false,
+      isReserve: true,
+      queue: [],
+      position: {
+        x: configuration.reservCashPointConfig.x,
+        y: configuration.reservCashPointConfig.y
+      },
+    })
+  }
+
+  validatePosition(position: Position, maxX: number, maxY: number): { x: number; y: number } {
+    return {
+      x: position.x > maxX ? maxX : position.x < 0 ? 0 : position.x,
+      y: position.y > maxY ? maxY : position.y < 0 ? 0 : position.y,
+    };
   }
 
   calculateScaleFactor() {
@@ -64,46 +117,6 @@ export class MapPageComponent implements OnInit, AfterViewInit {
       console.log('maxIndexY', this.maxIndexY);
 
     }
-  }
-
-  initializeCashDesks() {
-    console.log('maxIndexX 1', this.maxIndexX)
-    console.log('maxIndexY 1', this.maxIndexY)
-
-    this.cashDesks = [
-      {
-        id: 1,
-        position: {x: 0, y: 0},
-        isActive: true,
-        isReserve: false,
-        queue: [],
-        serviceTime: 5
-      },
-      {
-        id: 2,
-        position: {x: 1, y: 1},
-        isActive: true,
-        isReserve: false,
-        queue: [],
-        serviceTime: 7
-      },
-      {
-        id: 3,
-        position: {x: this.maxIndexX, y: this.maxIndexY},
-        isActive: false,
-        isReserve: true,
-        queue: [],
-        serviceTime: 10
-      }
-    ];
-  }
-
-  initializeEntrances() {
-    this.entrances = [
-      { id: 1, position: {x: this.maxIndexX, y: 3}},
-      { id: 2, position: {x: this.maxIndexX, y: 10}},
-      { id: 3, position: {x: this.maxIndexX, y: 21}},
-    ];
   }
 
   initializeClients(){
@@ -178,22 +191,3 @@ export class MapPageComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/start']);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

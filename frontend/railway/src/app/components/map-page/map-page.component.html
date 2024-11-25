@@ -29,6 +29,7 @@
 
   <div *ngFor="let cashDesk of cashDesks"
        class="marker cash-desk"
+       [ngClass]="{'cash-desk-disabled': cashDesk.isReserve, 'cash-desk': !cashDesk.isReserve}"
        [style.top.px]="cashDesk.position.x * cellSize"
        [style.left.px]="cashDesk.position.y * cellSize">
   </div>
