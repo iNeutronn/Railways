@@ -1,13 +1,15 @@
 <div class="header">
   <div class="title">RAILWAY</div>
   <div class="service-history">SERVICE HISTORY</div>
-  <div class="time"></div>
+  <div class="settings" (click)="goToSettings()">
+    <img src="/assets/images/settings.png" alt="Settings" class="settings-icon"/>
+  </div>
 </div>
 
 <div class="stats">
-  <span class="stat">POST OFFICES: <strong></strong></span>
-  <span class="stat">ENTRANCES: <strong></strong></span>
-  <span class="stat">CLIENTS: <strong></strong></span>
+  <span class="stat">POST OFFICES: <strong>{{cashDesks.length}}</strong></span>
+  <span class="stat">ENTRANCES: <strong>{{entrances.length}}</strong></span>
+  <span class="stat">CLIENTS: <strong>{{clients.length}}</strong></span>
 </div>
 
 <div class="station-container" #stationContainer >
@@ -22,6 +24,7 @@
        class="marker entrance"
        [style.top.px]="entrance.position.x * cellSize"
        [style.left.px]="entrance.position.y * cellSize">
+
   </div>
 
   <div *ngFor="let cashDesk of cashDesks"

@@ -6,6 +6,7 @@ import {CashDesk} from '../../models/entities/cash-desk';
 import {Entrance} from '../../models/entities/entrance';
 import {Client} from '../../models/entities/client';
 import {PrivilegeEnum, PrivilegeEnumLabels} from '../../models/enums/privilege-enum';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-map-page',
@@ -34,7 +35,7 @@ export class MapPageComponent implements OnInit, AfterViewInit {
   maxIndexY: number = 0;
   cellSize: number = 50;
 
-  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) {
+  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef, private router: Router) {
   }
 
   ngOnInit() {
@@ -99,8 +100,8 @@ export class MapPageComponent implements OnInit, AfterViewInit {
 
   initializeEntrances() {
     this.entrances = [
-      { id: 1, position: {x: 5, y: 29}},
-      { id: 2, position: {x: 10, y: 15}},
+      { id: 1, position: {x: this.maxIndexX, y: 3}},
+      { id: 2, position: {x: this.maxIndexX, y: 10}},
       { id: 3, position: {x: this.maxIndexX, y: 21}},
     ];
   }
@@ -172,6 +173,9 @@ export class MapPageComponent implements OnInit, AfterViewInit {
         ...this.clients.slice(clientIndex + 1)
       ];
     }
+  }
+  goToSettings(): void {
+    this.router.navigate(['/start']);
   }
 }
 
