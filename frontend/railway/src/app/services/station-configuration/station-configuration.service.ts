@@ -54,4 +54,11 @@ export class StationConfigurationService {
       params: { entranceCount: entranceCount },
     });
   }
+
+  setMapSize(width: number, height: number){
+    const url = this.stationConfigurationUrl + '/mapSize';
+    return this.httpClient.post(url, null, {
+      params: { width, height },
+    })
+  }
 }
