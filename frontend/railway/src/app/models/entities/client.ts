@@ -9,5 +9,4 @@ export interface Client {
   lastName: string;
   ticketsToBuy: number;
   privilege: PrivilegeEnum;
-  tickets: Ticket[];
 }
