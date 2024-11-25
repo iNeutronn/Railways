@@ -10,6 +10,7 @@ import {StationConfigurationService} from '../../services/station-configuration/
 import {Router} from '@angular/router';
 import {StationConfiguration} from '../../models/station-configuration';
 import {Position} from '../../models/position';
+import {WebSocketService} from '../../services/socket/web-socket.service';
 
 @Component({
   selector: 'app-map-page',
@@ -23,11 +24,11 @@ import {Position} from '../../models/position';
   animations: [
     trigger('moveDown', [
       transition(':enter', [
-        style({ top: '{{startTop}}px' }), // Стартова позиція
-        animate('1000ms ease-out', style({ top: '{{endTop}}px' })) // Плавна анімація
+        style({ top: '{{startTop}}px' }), 
+        animate('1000ms ease-out', style({ top: '{{endTop}}px' })) 
       ]),
       transition(':leave', [
-        animate('1000ms ease-out', style({ opacity: 0 })) // Плавне зникнення
+        animate('1000ms ease-out', style({ opacity: 0 })) 
       ])
     ])
   ]
@@ -40,10 +41,16 @@ export class MapPageComponent implements OnInit {
 
   constructor(
     private configService: StationConfigurationService,
-    private router: Router) {
+    private router: Router,
+    private webSocketService: WebSocketService) {
   }
 
   ngOnInit() {
+    this.webSocketService.connect();
+    this.webSocketService.getMessages().subscribe((message) => {
+      console.log('Received message:', message);
+      this.clients.push(message.data.client); 
+    });
 
     this.calculateScaleFactor();
     this.configService.getConfiguration().subscribe(configuration => {
@@ -121,16 +128,16 @@ export class MapPageComponent implements OnInit {
 
   initializeClients(){
     this.clients = [
-      { clientID: 1, position: {x: 0, y: 0}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 2, position: {x: 0, y: 1}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 3, position: {x: 0, y: 2}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 4, position: {x: 0, y: 3}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 5, position: {x: 0, y: 4}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 6, position: {x: 0, y: 5}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 7, position: {x: 0, y: 6}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 8, position: {x: 0, y: 7}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 9, position: {x: 0, y: 8}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
-      { clientID: 10, position: {x: 0, y: 9}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 1, position: {x: 0, y: 0}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 2, position: {x: 0, y: 1}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 3, position: {x: 0, y: 2}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 4, position: {x: 0, y: 3}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 5, position: {x: 0, y: 4}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 6, position: {x: 0, y: 5}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 7, position: {x: 0, y: 6}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 8, position: {x: 0, y: 7}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 9, position: {x: 0, y: 8}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', ticketsToBuy:0, },
+      { clientID: 10, position: {x: 0, y: 9}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', ticketsToBuy:0, },
     ]
   }
 
@@ -189,5 +196,8 @@ export class MapPageComponent implements OnInit {
   }
   goToSettings(): void {
     this.router.navigate(['/start']);
+  }
+  ngOnDestroy() {
+    this.webSocketService.closeConnection();
   }
 }
