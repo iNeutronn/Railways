@@ -10,23 +10,23 @@
   <span class="stat">CLIENTS: <strong></strong></span>
 </div>
 
-<div class="station-container">
+<div class="station-container" #stationContainer >
   <div *ngFor="let client of clients"
-       [ngClass]="client.label"
-       class="marker"
-       [style.top.px]="client.x * scaleFactor"
-       [style.left.px]="client.y * scaleFactor">
+       [ngClass]="getPrivilegeLabel(client.privilege)"
+       class="marker person"
+       [style.top.px]="client.position.x * cellSize"
+       [style.left.px]="client.position.y * cellSize">
   </div>
 
   <div *ngFor="let entrance of entrances"
        class="marker entrance"
-       [style.top.px]="entrance.x * scaleFactor"
-       [style.left.px]="entrance.y * scaleFactor">
+       [style.top.px]="entrance.position.x * cellSize"
+       [style.left.px]="entrance.position.y * cellSize">
   </div>
 
   <div *ngFor="let cashDesk of cashDesks"
        class="marker cash-desk"
-       [style.top.px]="cashDesk.x * scaleFactor"
-       [style.left.px]="cashDesk.y * scaleFactor">
+       [style.top.px]="cashDesk.position.x * cellSize"
+       [style.left.px]="cashDesk.position.y * cellSize">
   </div>
 </div>

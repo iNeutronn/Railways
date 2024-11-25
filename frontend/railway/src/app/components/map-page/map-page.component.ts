@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {NgClass, NgForOf} from '@angular/common';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {CashDesk} from '../../models/entities/cash-desk';
+import {Entrance} from '../../models/entities/entrance';
+import {Client} from '../../models/entities/client';
+import {PrivilegeEnum, PrivilegeEnumLabels} from '../../models/enums/privilege-enum';
 
 @Component({
   selector: 'app-map-page',
@@ -24,72 +28,106 @@ import {animate, style, transition, trigger} from '@angular/animations';
     ])
   ]
 })
-export class MapPageComponent {
-  // map has a size 11*30
-  // mocked entrances
-  entrances = [
-    { x: 5, y: 29, label: 'Entrance 1' },
-    { x: 11, y: 15, label: 'Entrance 2' },
-    { x: 11, y: 21, label: 'Entrance 3' },
-  ];
-  // mocked desks
-  cashDesks = [
-    { x: 5, y: 0, label: 'Cash Desk 1' },
-    { x: 7, y: 0, label: 'Cash Desk 2' },
-    { x: 11, y: 2, label: 'Cash Desk 3' },
-  ]
-  // mocked clients
-  clients = [
-    { id: 1, x: 0, y: 0, label: 'disabled' },
-    { id: 2, x: 0, y: 1, label: 'disabled' },
-    { id: 3, x: 0, y: 2, label: 'mother' },
-    { id: 4, x: 0, y: 3, label: 'person' },
-    { id: 5, x: 0, y: 4, label: 'mother' },
-    { id: 6, x: 0, y: 5, label: 'mother' },
-    { id: 7, x: 0, y: 6, label: 'disabled' },
-    { id: 8, x: 0, y: 7, label: 'person' },
-    { id: 9, x: 0, y: 8, label: 'mother' },
-    { id: 10, x: 0, y: 9, label: 'mother' },
-    { id: 11, x: 0, y: 10, label: 'mother' },
-    { id: 12, x: 0, y: 11, label: 'disabled' },
-    { id: 13, x: 0, y: 12, label: 'person' },
-    { id: 14, x: 0, y: 13, label: 'person' },
-    { id: 15, x: 0, y: 14, label: 'disabled' },
-    { id: 16, x: 0, y: 15, label: 'mother' },
-    { id: 17, x: 0, y: 16, label: 'disabled' },
-    { id: 18, x: 0, y: 17, label: 'mother' },
-    { id: 19, x: 0, y: 18, label: 'disabled' },
-    { id: 20, x: 0, y: 19, label: 'mother' },
-    { id: 21, x: 0, y: 20, label: 'disabled' },
-    { id: 22, x: 0, y: 21, label: 'mother' },
-    { id: 23, x: 0, y: 22, label: 'disabled' },
-    { id: 24, x: 0, y: 23, label: 'person' },
-    { id: 25, x: 0, y: 24, label: 'mother' },
-    { id: 26, x: 0, y: 25, label: 'person' },
-    { id: 27, x: 0, y: 26, label: 'disabled' },
-    { id: 28, x: 0, y: 27, label: 'mother' },
-    { id: 29, x: 0, y: 28, label: 'mother' },
-    { id: 30, x: 0, y: 29, label: 'disabled' },
-  ];
+export class MapPageComponent implements OnInit, AfterViewInit {
+  @ViewChild('stationContainer', {static: false}) stationContainer!: ElementRef;
+  maxIndexX: number = 0;
+  maxIndexY: number = 0;
+  cellSize: number = 50;
 
-  // scale (cell size)
-  scaleFactor = 50;
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) {
+  }
 
   ngOnInit() {
-    let calledNumber = 0;
-
-    const moveClient = () => {
-      if (calledNumber < 11) {
-        this.moveClients();
-        calledNumber++;
-        setTimeout(moveClient, 100);
-      }
-    };
-
-    //moveClient();
+    this.calculateScaleFactor();
   }
+
+  ngAfterViewInit() {
+    this.calculateScaleFactor();
+    this.initializeCashDesks();
+    this.initializeEntrances();
+    this.initializeClients();
+    this.cdRef.detectChanges();
+  }
+
+  calculateScaleFactor() {
+    if (this.stationContainer) {
+      const containerWidth = this.stationContainer.nativeElement.getBoundingClientRect().width;
+      const containerHeight = this.stationContainer.nativeElement.getBoundingClientRect().height;
+
+      console.log('width', containerWidth);
+      console.log('height', containerHeight);
+
+      this.maxIndexX = Math.floor(containerHeight / this.cellSize) - 1;
+      this.maxIndexY = Math.floor(containerWidth / this.cellSize) - 1;
+      console.log('maxIndexX', this.maxIndexX);
+      console.log('maxIndexY', this.maxIndexY);
+
+    }
+  }
+
+  initializeCashDesks() {
+    console.log('maxIndexX 1', this.maxIndexX)
+    console.log('maxIndexY 1', this.maxIndexY)
+
+    this.cashDesks = [
+      {
+        id: 1,
+        position: {x: 0, y: 0},
+        isActive: true,
+        isReserve: false,
+        queue: [],
+        serviceTime: 5
+      },
+      {
+        id: 2,
+        position: {x: 1, y: 1},
+        isActive: true,
+        isReserve: false,
+        queue: [],
+        serviceTime: 7
+      },
+      {
+        id: 3,
+        position: {x: this.maxIndexX, y: this.maxIndexY},
+        isActive: false,
+        isReserve: true,
+        queue: [],
+        serviceTime: 10
+      }
+    ];
+  }
+
+  initializeEntrances() {
+    this.entrances = [
+      { id: 1, position: {x: 5, y: 29}},
+      { id: 2, position: {x: 10, y: 15}},
+      { id: 3, position: {x: this.maxIndexX, y: 21}},
+    ];
+  }
+
+  initializeClients(){
+    this.clients = [
+      { clientID: 1, position: {x: 0, y: 0}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 2, position: {x: 0, y: 1}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 3, position: {x: 0, y: 2}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 4, position: {x: 0, y: 3}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 5, position: {x: 0, y: 4}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 6, position: {x: 0, y: 5}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 7, position: {x: 0, y: 6}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 8, position: {x: 0, y: 7}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 9, position: {x: 0, y: 8}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+      { clientID: 10, position: {x: 0, y: 9}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', tickets:[], ticketsToBuy:0, },
+    ]
+  }
+
+  getPrivilegeLabel(privilege: PrivilegeEnum): string {
+    return PrivilegeEnumLabels[privilege];
+  }
+
+  entrances: Entrance[] = [];
+  cashDesks: CashDesk[] = [];
+  clients: Client[] = [];
+
 
   // clients moving as a queue
   moveClients() {
@@ -99,22 +137,22 @@ export class MapPageComponent {
       const previousClient = previousPositions[i - 1];
       const currentClient = this.clients[i];
 
-      this.moveToPosition(currentClient.id, previousClient.x, previousClient.y);
+      this.moveToPosition(currentClient.clientID, previousClient.position.x, previousClient.position.y);
     }
 
     const firstClient = this.clients[0];
-    this.moveToPosition(firstClient.id, firstClient.x + 1, firstClient.y);
+    this.moveToPosition(firstClient.clientID, firstClient.position.x + 1, firstClient.position.y);
   }
 
   // clients move to exact position
   moveToPosition(id: number, newX: number, newY: number) {
-    const clientIndex = this.clients.findIndex(client => client.id === id);
+    const clientIndex = this.clients.findIndex(client => client.clientID === id);
     if (clientIndex !== -1) {
       const client = this.clients[clientIndex];
 
       this.clients = [
         ...this.clients.slice(0, clientIndex),
-        { ...client, x: newX, y: newY },
+        { ...client, position: {x: newX, y: newY} },
         ...this.clients.slice(clientIndex + 1)
       ];
     }
@@ -122,17 +160,36 @@ export class MapPageComponent {
 
   // move to position depending on offsets
   moveClientById(id: number, offsetX: number, offsetY: number) {
-    const clientIndex = this.clients.findIndex(client => client.id === id);
+    const clientIndex = this.clients.findIndex(client => client.clientID === id);
     if (clientIndex !== -1) {
       const client = this.clients[clientIndex];
-      const newX = client.x + offsetX;
-      const newY = client.y + offsetY;
+      const newX = client.position.x + offsetX;
+      const newY = client.position.y + offsetY;
 
       this.clients = [
         ...this.clients.slice(0, clientIndex),
-        { ...client, x: newX, y: newY },
+        { ...client, position: {x: newX, y: newY} },
         ...this.clients.slice(clientIndex + 1)
       ];
     }
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
