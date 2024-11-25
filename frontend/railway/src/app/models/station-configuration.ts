@@ -5,16 +5,12 @@ export interface StationConfiguration {
   cashPointCount: number | null;
   entranceCount: number | null;
 
-  cashpointConfigs: {
-    position: Position;
-  }
+  cashpointConfigs: Position[]
+  entranceConfigs: Position[]
+  reservCashPointConfig: Position;
 
-  entranceConfigs: {
-    position: Position;
-  }
-
-  minServiceTime: number | null;
-  maxServiceTime: number | null;
+  minServiceTime: number;
+  maxServiceTime: number;
   generationType: ClientGenerationType;
 
   maxPeopleAllowed: number;
