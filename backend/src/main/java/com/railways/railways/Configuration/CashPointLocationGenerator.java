@@ -57,9 +57,11 @@ public class CashPointLocationGenerator {
      * excluding corner positions.
      */
     private void generateAllPossibleLocations() {
+        int id = 0;
         // Top wall (excluding corners)
         for (int x = xCashPoint; x + xCashPoint <= mapSize.getWidth() - xCashPoint; x += xCashPoint) {
             CashPointConfig config = new CashPointConfig();
+            config.id = id++;
             config.x = x;
             config.y = 0;
             config.direction = Direction.Down;
@@ -69,6 +71,7 @@ public class CashPointLocationGenerator {
         // Left wall (excluding corners)
         for (int y = yCashPoint; y + yCashPoint <= mapSize.getHeight() - yCashPoint; y += yCashPoint) {
             CashPointConfig config = new CashPointConfig();
+            config.id = id++;
             config.x = 0;
             config.y = y;
             config.direction = Direction.Right;
@@ -78,6 +81,7 @@ public class CashPointLocationGenerator {
         // Right wall (excluding corners)
         for (int y = yCashPoint; y + yCashPoint <= mapSize.getHeight() - yCashPoint; y += yCashPoint) {
             CashPointConfig config = new CashPointConfig();
+            config.id = id++;
             config.x = mapSize.getWidth() - xCashPoint;
             config.y = y;
             config.direction = Direction.Left;
