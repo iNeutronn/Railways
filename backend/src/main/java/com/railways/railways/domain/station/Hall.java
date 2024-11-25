@@ -5,6 +5,8 @@ import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientCreated;
 import com.railways.railways.events.ClientCreatedEvent;
 import com.railways.railways.events.QueueTransferedEvent;
+import com.railways.railways.logging.Logger;
+import com.railways.railways.logging.LogLevel;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.awt.*;
@@ -21,13 +23,16 @@ public class Hall {
     private ApplicationEventPublisher applicationEventPublisher;
     private final Random random;
     private double moveSpeed = 100.0;
+    private final Logger logger;
 
 
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    public Hall(MapSize mapSize) {
+    public Hall(MapSize mapSize, Logger logger) {
+        this.logger = logger;
+
         this.mapSize = mapSize;
         this.random = new Random();
         this.ticketOffices = new ArrayList<>();
@@ -67,7 +72,10 @@ public class Hall {
     }
 
     public void processClient(Client client) {
+        logger.log("Processing client: " + client.getFullName(), LogLevel.Info);
+
         Entrance selectedEntrance = selectRandomEntrance();
+        logger.log("Selected entrance ID: " + selectedEntrance.getId(), LogLevel.Debug);
 
         var entrancePoint = selectedEntrance.getStartPoint();
 
@@ -87,9 +95,9 @@ public class Hall {
 
         // Add the client to the nearest ticket office
         ticketOffice.addClient(client);
-        System.out.println("Hall: Client " + client.getFullName()
-                + " added to ticket office " + ticketOffice.getOfficeID()
-                + " time to move: " + distance * moveSpeed);
+        logger.log("Client " + client.getFullName() +
+                " added to ticket office " + ticketOffice.getOfficeID()
+                + " with move time: " + distance * moveSpeed, LogLevel.Info);
     }
 
     public  int getClientCount() {
@@ -101,22 +109,23 @@ public class Hall {
     }
 
     public TicketOffice getBestTicketOffice(Point entrancePoint) {
+        logger.log("Finding best ticket office for entrance point: " + entrancePoint, LogLevel.Info);
         TicketOffice bestOffice = null;
         int minQueueSize = Integer.MAX_VALUE;
         double minDistance = Double.MAX_VALUE;
 
         for (TicketOffice office : ticketOffices.stream().filter(TicketOffice::isOpen).toList()) {
-
             int queueSize = office.getQueueSize();
             // Calculate the distance from the client's current position to the starting point of the office's segment
             double clientDistance = entrancePoint.distance(office.getSegment().start);
+
             if (queueSize < minQueueSize || (queueSize == minQueueSize && clientDistance < minDistance)) {
                 minQueueSize = queueSize;
                 minDistance = clientDistance;
                 bestOffice = office;
             }
         }
-
+        logger.log("Best office selected: " + (bestOffice != null ? bestOffice.getOfficeID() : "None"), LogLevel.Info);
         return bestOffice;
     }
 
@@ -125,11 +134,12 @@ public class Hall {
                 .stream().filter(office -> office.getOfficeID() == id)
                 .findFirst().orElse(null);
         if (ticketOffice == null) {
+            logger.log("Attempt to close non-existent ticket office with ID: " + id, LogLevel.Error);
             return  -1;
         }
 
         ticketOffice.closeOffice();
-        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " closed.");
+        logger.log("Ticket office " + ticketOffice.getOfficeID() + " closed.", LogLevel.Warning);
         transferClients(ticketOffice);
 
         return id;
@@ -140,23 +150,26 @@ public class Hall {
                 .stream().filter(office -> office.getOfficeID() == id)
                 .findFirst().orElse(null);
         if (ticketOffice == null) {
+            logger.log("Attempt to open non-existent ticket office with ID: " + id, LogLevel.Error);
             return  -1;
         }
 
         ticketOffice.openOffice();
-        System.out.println("Hall: Ticket office " + ticketOffice.getOfficeID() + " open.");
+        logger.log("Hall: Ticket office " + ticketOffice.getOfficeID() + " open.", LogLevel.Info);
 
         return id;
     }
 
     private void transferClients(TicketOffice ticketOffice) {
         if (reservedTicketOffice == null) {
+            logger.log("Reserved ticket office is not set", LogLevel.Error);
             throw new IllegalStateException("Reserved ticket office is not set");
         }
 
         if (ticketOffice.getQueueSize() == 0)
         {
-            System.out.println("Hall: nothing to transfer from ticket office " + ticketOffice.getOfficeID());
+            logger.log("Hall: nothing to transfer from ticket office " + ticketOffice.getOfficeID(),
+                    LogLevel.Warning);
             return;
         }
 
@@ -171,7 +184,7 @@ public class Hall {
 
         QueueTransferedEvent event = new QueueTransferedEvent(this, queueUpdate);
         applicationEventPublisher.publishEvent(event);
-        System.out.println("Hall: Clients transferred from ticket office " + ticketOffice.getOfficeID() + " to reserved ticket office.");
+        logger.log("Hall: Clients transferred from ticket office " + ticketOffice.getOfficeID() + " to reserved ticket office.", LogLevel.Info);
     }
 
     // Selects a random entrance
@@ -194,8 +207,8 @@ public class Hall {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
+            logger.log("Thread interrupted while imitating moving: " + e.getMessage(), LogLevel.Error);
             Thread.currentThread().interrupt(); // Restore interrupted status
-            System.err.println("Thread interrupted: " + e.getMessage());
         }
     }
 }

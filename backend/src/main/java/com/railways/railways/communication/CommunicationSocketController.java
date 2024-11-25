@@ -2,6 +2,8 @@ package com.railways.railways.communication;
 
 import com.google.gson.Gson;
 import com.railways.railways.communication.DTO.GenerationUpdateDTO;
+import com.railways.railways.logging.LogLevel;
+import com.railways.railways.logging.Logger;
 import com.railways.railways.simulation.SimulationService;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -23,8 +25,11 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     private final Gson gson = new Gson(); // Gson initialization
     private final SimulationService simulationService;
 
-    public CommunicationSocketController(SimulationService simulationService) {
+    private final Logger logger;
+
+    public CommunicationSocketController(SimulationService simulationService, Logger logger) {
         this.simulationService = simulationService;
+        this.logger = logger;
     }
     /**
      * Called after a new WebSocket connection is established.
@@ -34,7 +39,7 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) {
         sessions.add(session);
-        System.out.println("New connection established: " + session.getId());
+        logger.log("New WebSocket connection established: " + session.getId(), LogLevel.Info);
     }
 
     /**
@@ -46,7 +51,8 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         sessions.remove(session);
-        System.out.println("Connection closed: " + session.getId());
+        logger.log("WebSocket connection closed: " + session.getId() +
+                ", status: " + status.toString(), LogLevel.Info);
     }
 
     /**
@@ -64,7 +70,7 @@ public class CommunicationSocketController extends TextWebSocketHandler {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error sending message: " + e.getMessage());
+            logger.log("Error sending message: " + e.getMessage(), LogLevel.Error);
         }
     }
 
@@ -73,6 +79,7 @@ public class CommunicationSocketController extends TextWebSocketHandler {
      */
     public void resumeSimulation() {
         simulationService.startSimulation();
+        logger.log("Simulation resumed by WebSocket command.", LogLevel.Info);
     }
 
     /**
@@ -80,5 +87,6 @@ public class CommunicationSocketController extends TextWebSocketHandler {
      */
     public void pauseSimulation() {
         simulationService.stopSimulation();
+        logger.log("Simulation paused by WebSocket command.", LogLevel.Info);
     }
 }

@@ -4,6 +4,8 @@ import com.railways.railways.domain.ServeRecord;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.events.ClientServedEvent;
 import com.railways.railways.events.QueueUpdatedEvent;
+import com.railways.railways.logging.LogLevel;
+import com.railways.railways.logging.Logger;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.ZonedDateTime;
@@ -26,7 +28,9 @@ public class TicketOffice implements Runnable {
     private final int minServiceTime;
     private final int maxServiceTime;
 
-    public TicketOffice(ApplicationEventPublisher eventPublisher, int ticketOfficeID, Segment position, Direction direction, int minServiceTime, int maxServiceTime) {
+    private final Logger logger;
+
+    public TicketOffice(ApplicationEventPublisher eventPublisher, int ticketOfficeID, Segment position, Direction direction, int minServiceTime, int maxServiceTime, Logger logger) {
         this.eventPublisher = eventPublisher;
         this.ticketOfficeID = ticketOfficeID;
         this.direction = direction;
@@ -44,6 +48,11 @@ public class TicketOffice implements Runnable {
         this.isOpen = true;
         this.minServiceTime = minServiceTime;
         this.maxServiceTime = maxServiceTime;
+
+        this.logger = logger;
+
+        logger.log("TicketOffice created with ID: " + ticketOfficeID +
+                ", Direction: " + direction + ", Segment: " + segment, LogLevel.Info);
     }
 
     @Override
@@ -55,7 +64,7 @@ public class TicketOffice implements Runnable {
                         pauseLock.wait(); // Wait until notified to resume
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
-                        System.out.println("TicketOffice thread interrupted");
+                        logger.log("TicketOffice thread interrupted", LogLevel.Warning);
                         return; // Exit the thread gracefully
                     }
                 }
@@ -65,6 +74,7 @@ public class TicketOffice implements Runnable {
             try {
                 serveClient();
             } catch (InterruptedException e) {
+                logger.log("Error while serving client: " + e.getMessage(), LogLevel.Error);
                 throw new RuntimeException(e);
             }
 
@@ -77,13 +87,17 @@ public class TicketOffice implements Runnable {
         int serviceTime = getRandomServeTime();
         String startTime = ZonedDateTime.now().format(isoFormatter);
 
+        logger.log("Serving client " + client.getFullName() +
+                " (ID: " + client.getClientID() + ") at ticket office " + ticketOfficeID, LogLevel.Debug);
+
         sleep((long) serviceTime * client.getTicketsToBuy());
 
         String endTime = ZonedDateTime.now().format(isoFormatter);
 
         ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), startTime, endTime);
         serveRecords.add(record);
-        System.out.println("TicketOffice: Client " + client.getFullName() + " with id:" + client.getClientID() + " served by ticket office " + ticketOfficeID);
+        logger.log("TicketOffice: Client " + client.getFullName() + " with id:" +
+                client.getClientID() + " served by ticket office " + ticketOfficeID, LogLevel.Info);
 
         ClientServedEvent event = new ClientServedEvent(this, record);
         eventPublisher.publishEvent(event);
@@ -96,6 +110,8 @@ public class TicketOffice implements Runnable {
 
     public void addClient(Client client) {
         clientsQueue.offer(client); // Thread-safe addition
+        logger.log("Client " + client.getFullName() +
+                " (ID: " + client.getClientID() + ") added to the queue.", LogLevel.Info);
         publishQueueUpdate();
     }
 
@@ -103,6 +119,7 @@ public class TicketOffice implements Runnable {
         synchronized (pauseLock) {
             isOpen = false; // Mark as closed
         }
+        logger.log("TicketOffice " + ticketOfficeID + " closed.", LogLevel.Info);
     }
 
     public void openOffice() {
@@ -110,6 +127,7 @@ public class TicketOffice implements Runnable {
             isOpen = true; // Mark as open
             pauseLock.notifyAll(); // Notify all waiting threads
         }
+        logger.log("TicketOffice " + ticketOfficeID + " opened.", LogLevel.Info);
     }
 
     public ArrayList<ServeRecord> getServeRecords() {
@@ -157,6 +175,7 @@ public class TicketOffice implements Runnable {
         QueueUpdatedEvent event = new QueueUpdatedEvent(this, queueUpdate);
 
         eventPublisher.publishEvent(event);
+        logger.log("Queue updated for TicketOffice " + ticketOfficeID, LogLevel.Debug);
     }
 
     public void setQueue(PriorityBlockingQueue<Client> queue) {
