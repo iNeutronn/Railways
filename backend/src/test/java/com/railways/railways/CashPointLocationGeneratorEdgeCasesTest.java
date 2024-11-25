@@ -28,38 +28,24 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-class CashPointLocationGeneratorTest {
+
+class CashPointLocationGeneratorEdgeCasesTest {
 
     @Test
-    void shouldThrowExceptionForInvalidMapSize() {
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(-1, 100, 10, 10));
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(100, -1, 10, 10));
+    void shouldHandleBoundaryCasesForLocationGeneration() {
+        CashPointLocationGenerator generator = new CashPointLocationGenerator(10, 10, 1, 1);
+        List<CashPointConfig> locations = generator.getLocations(100, false);
+
+        assertTrue(locations.size() <= 100, "The number of generated locations should not exceed the request.");
+        assertTrue(locations.stream().allMatch(location -> location.x >= 0 && location.y >= 0), "Locations should be within boundaries.");
     }
 
     @Test
-    void shouldThrowExceptionForInvalidCashPointSize() {
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(100, 100, -10, 10));
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(100, 100, 10, -10));
-    }
-
-    @Test
-    void shouldThrowExceptionForTooLargeCashPointSize() {
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(10, 10, 10, 11));
-    }
-
-    @Test
-    void shouldReturnRequestedNumberOfLocations() {
+    void shouldReturnEmptyListWhenRequestedZeroLocations() {
         CashPointLocationGenerator generator = new CashPointLocationGenerator(100, 100, 10, 10);
-        List<CashPointConfig> locations = generator.getLocations(5, false);
-        assertEquals(5, locations.size(), "Expected 5 locations.");
-    }
+        List<CashPointConfig> locations = generator.getLocations(0, false);
 
-    @Test
-    void shouldShuffleLocationsWhenRandomOrderIsTrue() {
-        CashPointLocationGenerator generator = new CashPointLocationGenerator(100, 100, 10, 10);
-        List<CashPointConfig> ordered = generator.getLocations(5, false);
-        List<CashPointConfig> shuffled = generator.getLocations(5, true);
-        assertNotEquals(ordered, shuffled, "Expected shuffled order to differ from ordered.");
+        assertTrue(locations.isEmpty(), "Requesting 0 locations should return an empty list.");
     }
 }
 
