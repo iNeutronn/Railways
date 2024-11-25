@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 public class EntranceLocationGenerator {
-    private final MapSize mapSize;
+    private MapSize mapSize;
     private final int xEntrance;
     private final int yEntrance;
     private final List<EntranceConfig> possibleLocations = new ArrayList<>();
@@ -85,5 +85,11 @@ public class EntranceLocationGenerator {
 
     public List<EntranceConfig> getPossibleLocations() {
         return new ArrayList<>(possibleLocations);
+    }
+
+    public void updateMapSize(MapSize mapSize) {
+        validateArguments(mapSize.getWidth(), mapSize.getHeight(), xEntrance, yEntrance);
+        this.mapSize = mapSize;
+        generateAllPossibleLocations();
     }
 }

@@ -15,7 +15,7 @@ import java.util.Random;
  * excluding corner positions.
  */
 public class CashPointLocationGenerator {
-    private final MapSize mapSize;
+    private MapSize mapSize;
     private int xCashPoint;
     private int yCashPoint;
     private final List<CashPointConfig> possibleLocations = new ArrayList<>();
@@ -145,5 +145,11 @@ public class CashPointLocationGenerator {
 
     public List<CashPointConfig> getPossibleLocations() {
         return new ArrayList<>(possibleLocations);
+    }
+
+    public void updateMapSize(MapSize mapSize) {
+        validateArguments(mapSize.getWidth(), mapSize.getHeight(), xCashPoint, yCashPoint);
+        this.mapSize = mapSize;
+        generateAllPossibleLocations();
     }
 }
