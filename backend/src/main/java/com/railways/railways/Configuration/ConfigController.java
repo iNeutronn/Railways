@@ -13,14 +13,16 @@ import java.util.List;
 public class ConfigController {
 
     private final ConfigModel configModel;
+    private final MapGenerationHelper mapGenerationHelper;
 
     /**
      * Constructor for ConfigController, accepting a configuration model.
      *
      * @param configModel the configuration for the railway ticketing system
      */
-    public ConfigController(ConfigModel configModel) {
+    public ConfigController(ConfigModel configModel, MapGenerationHelper mapGenerationHelper) {
         this.configModel = configModel;
+        this.mapGenerationHelper = mapGenerationHelper;
     }
 
     /**
@@ -53,7 +55,7 @@ public class ConfigController {
      */
     @PostMapping("/cashpointsCount")
     public ConfigModel updateCashpointsCount(@RequestParam int cashpointsCount) {
-        configModel.setCashPointCount(cashpointsCount);
+        mapGenerationHelper.updateCashPointConfigs(cashpointsCount);
         return configModel;
     }
 
@@ -97,7 +99,7 @@ public class ConfigController {
      */
     @PostMapping("/entranceCount")
     public ConfigModel updateEntranceCount(@RequestParam int entranceCount) {
-        configModel.setEntranceCount(entranceCount);
+        mapGenerationHelper.updateEntranceConfigs(entranceCount);
         return configModel;
     }
 
