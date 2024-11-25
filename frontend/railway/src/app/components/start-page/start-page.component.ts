@@ -19,7 +19,7 @@ export class StartPageComponent {
     entranceCount: null,
     cashpointConfigs: [],
     entranceConfigs: [],
-    reservCashPointConfig: {x: -1, y: -1},
+    reservCashPointConfig: {id: 0, x: -1, y: -1},
     minServiceTime: 1000,
     maxServiceTime: 5000,
     maxPeopleAllowed: 50,

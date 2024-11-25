@@ -11,6 +11,7 @@ import {Router} from '@angular/router';
 import {StationConfiguration} from '../../models/station-configuration';
 import {Position} from '../../models/position';
 import {WebSocketService} from '../../services/socket/web-socket.service';
+import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
 
 @Component({
   selector: 'app-map-page',
@@ -24,11 +25,11 @@ import {WebSocketService} from '../../services/socket/web-socket.service';
   animations: [
     trigger('moveDown', [
       transition(':enter', [
-        style({ top: '{{startTop}}px' }), 
-        animate('1000ms ease-out', style({ top: '{{endTop}}px' })) 
+        style({ top: '{{startTop}}px' }),
+        animate('1000ms ease-out', style({ top: '{{endTop}}px' }))
       ]),
       transition(':leave', [
-        animate('1000ms ease-out', style({ opacity: 0 })) 
+        animate('1000ms ease-out', style({ opacity: 0 }))
       ])
     ])
   ]
@@ -38,6 +39,10 @@ export class MapPageComponent implements OnInit {
   maxIndexX: number = 0;
   maxIndexY: number = 0;
   cellSize: number = 50;
+
+  entrances: Entrance[] = [];
+  cashDesks: CashDesk[] = [];
+  clients: Client[] = [];
 
   constructor(
     private configService: StationConfigurationService,
@@ -49,7 +54,7 @@ export class MapPageComponent implements OnInit {
     this.webSocketService.connect();
     this.webSocketService.getMessages().subscribe((message) => {
       console.log('Received message:', message);
-      this.clients.push(message.data.client); 
+      this.handleClientCreatedEvent(message);
     });
 
     this.calculateScaleFactor();
@@ -60,15 +65,44 @@ export class MapPageComponent implements OnInit {
       console.log(this.entrances, 'Entrances');
       console.log(this.cashDesks, 'cashDesks');
 
-      this.initializeClients();
+      //this.initializeClients();
       console.log(this.entrances)
     });
+  }
+
+  handleClientCreatedEvent(clientCreated: ClientCreatedDto){
+    const entrancePosition = this.entrances
+      .find(e => e.id == clientCreated.data.entranceId)?.position;
+
+    if(entrancePosition) {
+      const clientPosition: Position = {
+        x: entrancePosition.x - 1,
+        y: entrancePosition.y - 1
+      }
+      const privilegeString = clientCreated.data.client.privilege; // e.g., "default"
+      const privilege = PrivilegeEnum[privilegeString.toString().toUpperCase() as keyof typeof PrivilegeEnum];
+
+      const client: Client = {
+        clientID: clientCreated.data.client.clientID,
+        position: clientPosition,
+        firstName: clientCreated.data.client.firstName,
+        lastName: clientCreated.data.client.lastName,
+        ticketsToBuy: clientCreated.data.client.ticketsToBuy,
+        privilege: privilege
+      };
+
+      this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId)
+        ?.queue.push(client);
+
+      console.log('Created client with id ' + client.clientID + ', assigned to ' + clientCreated.data.ticketOfficeId);
+      this.clients = [...this.clients, client];
+    }
   }
 
   handleConfigurationResponse(configuration: StationConfiguration) {
     for (let i = 0; i < configuration.entranceConfigs.length; i++) {
       this.entrances.push({
-        id: i,
+        id: configuration.entranceConfigs[i].id,
         position: {
           x: configuration.entranceConfigs[i].x,
           y: configuration.entranceConfigs[i].y
@@ -78,7 +112,7 @@ export class MapPageComponent implements OnInit {
 
     for (let i =  0; i < configuration.cashpointConfigs.length; i++) {
       this.cashDesks.push({
-        id: i,
+        id: configuration.cashpointConfigs[i].id,
         serviceTime: configuration.maxServiceTime,
         isActive: true,
         isReserve: false,
@@ -91,7 +125,7 @@ export class MapPageComponent implements OnInit {
     }
 
     this.cashDesks.push({
-      id: this.cashDesks.length + 1,
+      id: configuration.reservCashPointConfig.id,
       serviceTime: configuration.maxServiceTime,
       isActive: false,
       isReserve: true,
@@ -101,13 +135,6 @@ export class MapPageComponent implements OnInit {
         y: configuration.reservCashPointConfig.y
       },
     })
-  }
-
-  validatePosition(position: Position, maxX: number, maxY: number): { x: number; y: number } {
-    return {
-      x: position.x > maxX ? maxX : position.x < 0 ? 0 : position.x,
-      y: position.y > maxY ? maxY : position.y < 0 ? 0 : position.y,
-    };
   }
 
   calculateScaleFactor() {
@@ -122,7 +149,6 @@ export class MapPageComponent implements OnInit {
       this.maxIndexY = Math.floor(containerWidth / this.cellSize) - 1;
       console.log('maxIndexX', this.maxIndexX);
       console.log('maxIndexY', this.maxIndexY);
-
     }
   }
 
@@ -144,11 +170,6 @@ export class MapPageComponent implements OnInit {
   getPrivilegeLabel(privilege: PrivilegeEnum): string {
     return PrivilegeEnumLabels[privilege];
   }
-
-  entrances: Entrance[] = [];
-  cashDesks: CashDesk[] = [];
-  clients: Client[] = [];
-
 
   // clients moving as a queue
   moveClients() {
