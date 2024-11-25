@@ -42,16 +42,13 @@ public class ConfigModel {
     //speed of client
     private double clientSpeed;
 
-    public ConfigModel( GenerationPolicy generationPolicy,MapSize mapSize ,  int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed, double clientSpeed) {
+    public ConfigModel( GenerationPolicy generationPolicy,MapSize mapSize ,  int CashPointCount, int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed, double clientSpeed) {
         setGenerationPolicy(generationPolicy);
         setCashPointCount(CashPointCount);
-        setCashpointConfigs(cashPointConfigs);
         setEntranceCount(entranceCount);
         setMinServiceTime(minServiceTime);
         setMaxServiceTime(maxServiceTime);
         setMaxPeopleAllowed(maxPeopleAllowed);
-        setEntranceConfigs(entranceConfigs);
-        setReservCashPointConfig(reservCashPointConfig);
         setClientSpeed(clientSpeed);
         setMapSize(mapSize);
     }
