@@ -5,7 +5,8 @@ import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.Configuration.EntranceConfig;
 import com.railways.railways.Configuration.MapSize;
 import com.railways.railways.domain.station.Direction;
-import com.railways.railways.simulation.IntervalPolicy;
+import com.railways.railways.logging.Logger;
+import com.railways.railways.logging.ConsoleLogger;
 import com.railways.railways.simulation.RandomPolicy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,5 +59,13 @@ public class AppConfig {
 
         config.setCashPointSize(5,3);
         return config;
+    }
+
+
+    @Bean
+    @Scope("singleton")
+    public Logger logger()
+    {
+        return  new ConsoleLogger();
     }
 }
