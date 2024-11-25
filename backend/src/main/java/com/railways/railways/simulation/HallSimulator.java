@@ -66,7 +66,7 @@ public class HallSimulator implements Runnable {
                         pauseLock.wait(); // Release lock and wait to be resumed
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
-                        System.out.println("Thread interrupted, exiting simulation");
+                        logger.log("Thread interrupted, exiting simulation", LogLevel.Warning);
                         return;
                     }
                 }
@@ -76,10 +76,10 @@ public class HallSimulator implements Runnable {
                 Client client = clientGenerator.generateClient(random.nextInt(100000));
                 if (client != null) {
                     executorService.submit(() -> hall.processClient(client));
-                    System.out.println("HallSimulator: Client created and added");
+                    logger.log("HallSimulator: Client created and added", LogLevel.Info);
                 }
             } else {
-                System.out.println("Hall is full, pausing simulation");
+                logger.log("Hall is full, pausing simulation", LogLevel.Warning);
                 isOvercrowded = true;
             }
 
@@ -87,10 +87,10 @@ public class HallSimulator implements Runnable {
 
             if (isOvercrowded)
             {
-                System.out.println("Hall is overcrowded, checking condition to resume simulation");
+                logger.log("Hall is overcrowded, checking condition to resume simulation", LogLevel.Warning);
                 if (hall.getClientCount() < appConfig.getMaxPeopleAllowed() * 0.7) {
                     isOvercrowded = false;
-                    System.out.println("Hall is no longer overcrowded, resuming simulation");
+                    logger.log("Hall is no longer overcrowded, resuming simulation", LogLevel.Warning);
                 } else {
                     sleep(5000);
                 }

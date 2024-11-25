@@ -44,8 +44,9 @@ public class SimulationService {
                 PrivilegeEnum.WITHCHILD, 10,
                 PrivilegeEnum.DISABLED, 10
         );
-        this.clientGenerator = new ClientGenerator(privilegeMap);
         this.logger = logger;
+
+        this.clientGenerator = new ClientGenerator(privilegeMap, logger);
 
         setupHall();
     }
@@ -60,7 +61,7 @@ public class SimulationService {
 
             Segment segment = new Segment(new Point(cashPointConfig.x, cashPointConfig.y), new Point(cashPointConfig.x+4, cashPointConfig.y + 3));
 
-            TicketOffice office = new TicketOffice(eventPublisher, i,segment,cashPointConfig.direction, appConfig.getMinServiceTime(), appConfig.getMaxServiceTime());
+            TicketOffice office = new TicketOffice(eventPublisher, i,segment,cashPointConfig.direction, appConfig.getMinServiceTime(), appConfig.getMaxServiceTime(), logger);
             ticketOffices.add(office);
         }
 
@@ -75,7 +76,8 @@ public class SimulationService {
                 segment,
                 reservedCashPointConfig.direction,
                 appConfig.getMinServiceTime(),
-                appConfig.getMaxServiceTime());
+                appConfig.getMaxServiceTime(),
+                logger);
 
         hall.setReservedTicketOffice(reservedTicketOffice);
 

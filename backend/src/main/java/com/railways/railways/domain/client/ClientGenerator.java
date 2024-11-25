@@ -4,6 +4,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import com.railways.railways.logging.LogLevel;
+import com.railways.railways.logging.Logger;
 
 public class ClientGenerator {
     private static final List<String> FIRST_NAMES = List.of("John", "Jane", "Alice", "Bob", "Charlie", "David",
@@ -17,8 +19,11 @@ public class ClientGenerator {
     private final Map<PrivilegeEnum, Integer> privilegeWeights;
     private final Random random = new Random();
 
-    public ClientGenerator(Map<PrivilegeEnum, Integer> privilegeWeights) {
+    private final Logger logger;
+
+    public ClientGenerator(Map<PrivilegeEnum, Integer> privilegeWeights, Logger logger) {
         this.privilegeWeights = privilegeWeights;
+        this.logger = logger;
     }
 
     // Generate a random client
@@ -27,6 +32,9 @@ public class ClientGenerator {
         String lastName = getRandomElement(LAST_NAMES);
         int ticketsToBuy = random.nextInt(5) + 1; // Random tickets (1-5)
         PrivilegeEnum privilege = getWeightedRandomPrivilege();
+
+        logger.log("Generated client: " + firstName + " " + lastName +
+                ", Tickets: " + ticketsToBuy + ", Privilege: " + privilege, LogLevel.Info);
 
         return new Client(clientID, firstName, lastName, ticketsToBuy, privilege);
     }
