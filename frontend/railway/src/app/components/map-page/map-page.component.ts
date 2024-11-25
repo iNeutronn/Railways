@@ -99,8 +99,8 @@ export class MapPageComponent implements OnInit, AfterViewInit {
 
   initializeEntrances() {
     this.entrances = [
-      { id: 1, position: {x: 5, y: 29}},
-      { id: 2, position: {x: 10, y: 15}},
+      { id: 1, position: {x: this.maxIndexX, y: 3}},
+      { id: 2, position: {x: this.maxIndexX, y: 10}},
       { id: 3, position: {x: this.maxIndexX, y: 21}},
     ];
   }
