@@ -11,7 +11,7 @@
             type="number"
             class="input-field"
             placeholder=" "
-            [(ngModel)]="stationConfiguration.cashDeskCount"
+            [(ngModel)]="stationConfiguration.cashPointCount"
             name="ticketOfficesNumber"
             required
             min="1"
@@ -49,22 +49,43 @@
 
         <div class="field-group">
           <input
-            id="serviceTime"
+            id="minServiceTime"
             type="number"
             placeholder=" "
             class="input-field"
-            [(ngModel)]="stationConfiguration.serviceTime"
-            name="serviceTime"
+            [(ngModel)]="stationConfiguration.minServiceTime"
+            name="minServiceTime"
             required
             min="1"
             max="120"
-            #serviceTime="ngModel"
+            #minServiceTime="ngModel"
           />
-          <label for="serviceTime" class="input-label">SERVICE TIME (seconds)</label>
-          <div *ngIf="serviceTime.invalid && serviceTime.touched" class="error-block">
-            <small class="error-message" *ngIf="serviceTime.errors?.['required']">This field is required</small>
-            <small class="error-message" *ngIf="serviceTime.errors?.['min']">Value must be greater than 0</small>
-            <small class="error-message" *ngIf="serviceTime.errors?.['max']">Value must be less than or equal to 120</small>
+          <label for="minServiceTime" class="input-label">MIN SERVICE TIME (seconds)</label>
+          <div *ngIf="minServiceTime.invalid && minServiceTime.touched" class="error-block">
+            <small class="error-message" *ngIf="minServiceTime.errors?.['required']">This field is required</small>
+            <small class="error-message" *ngIf="minServiceTime.errors?.['min']">Value must be greater than 0</small>
+            <small class="error-message" *ngIf="minServiceTime.errors?.['max']">Value must be less than or equal to 120</small>
+          </div>
+        </div>
+        
+        <div class="field-group">
+          <input
+            id="maxServiceTime"
+            type="number"
+            placeholder=" "
+            class="input-field"
+            [(ngModel)]="stationConfiguration.maxServiceTime"
+            name="maxServiceTime"
+            required
+            min="1"
+            max="120"
+            #maxServiceTime="ngModel"
+          />
+          <label for="maxServiceTime" class="input-label">MAX SERVICE TIME (seconds)</label>
+          <div *ngIf="maxServiceTime.invalid && maxServiceTime.touched" class="error-block">
+            <small class="error-message" *ngIf="maxServiceTime.errors?.['required']">This field is required</small>
+            <small class="error-message" *ngIf="maxServiceTime.errors?.['min']">Value must be greater than 0</small>
+            <small class="error-message" *ngIf="maxServiceTime.errors?.['max']">Value must be less than or equal to 120</small>
           </div>
         </div>
       </div>

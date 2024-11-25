@@ -135,3 +135,8 @@ opacity: 1;
 .input-field.ng-invalid.ng-touched {
   border: 1px solid #FF8C00;
 }
+
+.content, form {
+  transform: scale(0.75); 
+  transform-origin: center center; 
+}
