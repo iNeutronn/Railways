@@ -1,7 +1,9 @@
 <div class="header">
   <div class="title">RAILWAY</div>
   <div class="service-history">SERVICE HISTORY</div>
-  <div class="time"></div>
+  <div class="settings" (click)="goToSettings()">
+    <img src="/assets/images/settings.png" alt="Settings" class="settings-icon"/>
+  </div>
 </div>
 
 <div class="stats">
@@ -22,6 +24,7 @@
        class="marker entrance"
        [style.top.px]="entrance.position.x * cellSize"
        [style.left.px]="entrance.position.y * cellSize">
+
   </div>
 
   <div *ngFor="let cashDesk of cashDesks"

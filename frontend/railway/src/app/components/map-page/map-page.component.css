@@ -79,9 +79,22 @@
     opacity: 0.8;
   }
 
-  .header .time {
-    font-size: 18px;
-    font-weight: bold;
+  .settings {
+    cursor: pointer;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+  }
+  
+  .settings-icon {
+    width: 100%;
+    height: 100%;
+    transition: transform 1s ease; 
+  }
+  
+  .settings-icon:hover {
+    transform: rotate(360deg);
+    cursor: pointer; 
   }
 
   .stats {
