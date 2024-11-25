@@ -1,8 +1,22 @@
 import {ClientGenerationType} from './enums/client-generation';
+import {Position} from './position';
 
 export interface StationConfiguration {
-  cashDeskCount: number | null;
+  cashPointCount: number | null;
   entranceCount: number | null;
-  serviceTime: number | null;
+
+  cashpointConfigs: {
+    position: Position;
+  }
+
+  entranceConfigs: {
+    position: Position;
+  }
+
+  minServiceTime: number | null;
+  maxServiceTime: number | null;
   generationType: ClientGenerationType;
+
+  maxPeopleAllowed: number;
+
 }
