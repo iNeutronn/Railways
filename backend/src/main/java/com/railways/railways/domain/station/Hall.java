@@ -1,4 +1,6 @@
 package com.railways.railways.domain.station;
+import com.railways.railways.Configuration.ConfigModel;
+import com.railways.railways.Configuration.MapSize;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientCreated;
 import com.railways.railways.events.ClientCreatedEvent;
@@ -9,12 +11,13 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+
 public class Hall {
 
     private List<TicketOffice> ticketOffices;
     private List<Entrance> entrances;
     private TicketOffice reservedTicketOffice;
-    private Segment segment;
+    private MapSize mapSize;
     private ApplicationEventPublisher applicationEventPublisher;
     private final Random random;
     private double moveSpeed = 100.0;
@@ -24,18 +27,11 @@ public class Hall {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    private Hall() {
-        segment = new Segment(new Point(0, 0), new Point(100, 100));
-        random = new Random();
-    }
-
-    private static final class InstanceHolder {
-        private static final Hall instance = new Hall();
-    }
-
-    public static Hall getInstance() {
-        // Double-check locking to ensure thread safety
-        return InstanceHolder.instance;
+    public Hall(MapSize mapSize) {
+        this.mapSize = mapSize;
+        this.random = new Random();
+        this.ticketOffices = new ArrayList<>();
+        this.entrances = new ArrayList<>();
     }
 
     public List<TicketOffice> getTicketOffices() {
@@ -201,9 +197,5 @@ public class Hall {
             Thread.currentThread().interrupt(); // Restore interrupted status
             System.err.println("Thread interrupted: " + e.getMessage());
         }
-    }
-
-    public Segment getSegment() {
-        return segment;
     }
 }

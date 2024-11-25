@@ -3,6 +3,7 @@ package com.railways.railways;
 import com.railways.railways.Configuration.CashPointConfig;
 import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.Configuration.EntranceConfig;
+import com.railways.railways.Configuration.MapSize;
 import com.railways.railways.domain.station.Direction;
 import com.railways.railways.simulation.IntervalPolicy;
 import com.railways.railways.simulation.RandomPolicy;
@@ -41,6 +42,7 @@ public class AppConfig {
         // Створюємо та повертаємо конфігурацію
         ConfigModel config = new ConfigModel(
                 new RandomPolicy(5.0,10.0),
+                new MapSize(100,70),
                 3, // Кількість касових пунктів
                 cashpointConfigs,
                 reservCashPointConfig,
@@ -53,7 +55,7 @@ public class AppConfig {
         );
 
 
-
+        config.setCashPointSize(5,3);
         return config;
     }
 }

@@ -6,21 +6,19 @@ import java.util.List;
 import java.util.Random;
 
 public class EntranceLocationGenerator {
-    private int xMapSize;
-    private int yMapSize;
-    private int xEntrance;
-    private int yEntrance;
+    private final MapSize mapSize;
+    private final int xEntrance;
+    private final int yEntrance;
     private final List<EntranceConfig> possibleLocations = new ArrayList<>();
     private final Random random = new Random();
 
 
-    public EntranceLocationGenerator(int xMapSize, int yMapSize, int xEntrance, int yEntrance) {
-        validateArguments(xMapSize, yMapSize, xEntrance, yEntrance);
+    public EntranceLocationGenerator(MapSize mapSize, int xEntranceSize, int yEntranceSize) {
+        validateArguments(mapSize.getWidth(), mapSize.getHeight(), xEntranceSize, yEntranceSize);
 
-        this.xMapSize = xMapSize;
-        this.yMapSize = yMapSize;
-        this.xEntrance = xEntrance;
-        this.yEntrance = yEntrance;
+        this.mapSize = mapSize;
+        this.xEntrance = xEntranceSize;
+        this.yEntrance = yEntranceSize;
 
         generateAllPossibleLocations();
     }
@@ -40,10 +38,10 @@ public class EntranceLocationGenerator {
     }
 
     private void generateAllPossibleLocations() {
-        for (int x = xEntrance; x + xEntrance <= xMapSize - xEntrance; x += xEntrance) {
+        for (int x = xEntrance; x + xEntrance <= mapSize.getWidth() - xEntrance; x += xEntrance) {
             EntranceConfig config = new EntranceConfig();
             config.x = x;
-            config.y = yMapSize - yEntrance;
+            config.y = mapSize.getHeight() - yEntrance;
             possibleLocations.add(config);
         }
     }
@@ -67,39 +65,19 @@ public class EntranceLocationGenerator {
     }
 
     public int getXMapSize() {
-        return xMapSize;
-    }
-
-    public void setXMapSize(int xMapSize) {
-        validateArguments(xMapSize, yMapSize, xEntrance, yEntrance);
-        this.xMapSize = xMapSize;
+        return mapSize.getWidth();
     }
 
     public int getYMapSize() {
-        return yMapSize;
-    }
-
-    public void setYMapSize(int yMapSize) {
-        validateArguments(xMapSize, yMapSize, xEntrance, yEntrance);
-        this.yMapSize = yMapSize;
+        return mapSize.getHeight();
     }
 
     public int getXCashPoint() {
         return xEntrance;
     }
 
-    public void setXCashPoint(int xEntrance) {
-        validateArguments(xMapSize, yMapSize, xEntrance, yEntrance);
-        this.xEntrance = xEntrance;
-    }
-
     public int getYCashPoint() {
         return yEntrance;
-    }
-
-    public void setYCashPoint(int yEntrance) {
-        validateArguments(xMapSize, yMapSize, xEntrance, yEntrance);
-        this.yEntrance = yEntrance;
     }
 
     public List<EntranceConfig> getPossibleLocations() {

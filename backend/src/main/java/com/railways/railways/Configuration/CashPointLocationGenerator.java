@@ -1,11 +1,13 @@
 package com.railways.railways.Configuration;
 
 import com.railways.railways.domain.station.Direction;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
 
 /**
  * A class for managing cash point locations on a map.
@@ -13,28 +15,19 @@ import java.util.Random;
  * excluding corner positions.
  */
 public class CashPointLocationGenerator {
-    private int xMapSize;
-    private int yMapSize;
+    private final MapSize mapSize;
     private int xCashPoint;
     private int yCashPoint;
     private final List<CashPointConfig> possibleLocations = new ArrayList<>();
     private final Random random = new Random();
 
-    /**
-     * Constructor to initialize the map size and cash point dimensions, and generate all possible locations.
-     *
-     * @param xMapSize   the width of the map
-     * @param yMapSize   the height of the map
-     * @param xCashPoint the width of a cash point
-     * @param yCashPoint the height of a cash point
-     * @throws IllegalArgumentException if any argument is invalid
-     */
-    public CashPointLocationGenerator(int xMapSize, int yMapSize, int xCashPoint, int yCashPoint) {
-        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
-        this.xMapSize = xMapSize;
-        this.yMapSize = yMapSize;
+
+
+    public CashPointLocationGenerator(MapSize mapSize , int xCashPoint , int yCashPoint) {
+        this.mapSize = mapSize;
         this.xCashPoint = xCashPoint;
         this.yCashPoint = yCashPoint;
+        validateArguments(mapSize.getWidth(), mapSize.getHeight(), xCashPoint, yCashPoint);
         generateAllPossibleLocations();
     }
 
@@ -65,7 +58,7 @@ public class CashPointLocationGenerator {
      */
     private void generateAllPossibleLocations() {
         // Top wall (excluding corners)
-        for (int x = xCashPoint; x + xCashPoint <= xMapSize - xCashPoint; x += xCashPoint) {
+        for (int x = xCashPoint; x + xCashPoint <= mapSize.getWidth() - xCashPoint; x += xCashPoint) {
             CashPointConfig config = new CashPointConfig();
             config.x = x;
             config.y = 0;
@@ -74,7 +67,7 @@ public class CashPointLocationGenerator {
         }
 
         // Left wall (excluding corners)
-        for (int y = yCashPoint; y + yCashPoint <= yMapSize - yCashPoint; y += yCashPoint) {
+        for (int y = yCashPoint; y + yCashPoint <= mapSize.getHeight() - yCashPoint; y += yCashPoint) {
             CashPointConfig config = new CashPointConfig();
             config.x = 0;
             config.y = y;
@@ -83,9 +76,9 @@ public class CashPointLocationGenerator {
         }
 
         // Right wall (excluding corners)
-        for (int y = yCashPoint; y + yCashPoint <= yMapSize - yCashPoint; y += yCashPoint) {
+        for (int y = yCashPoint; y + yCashPoint <= mapSize.getHeight() - yCashPoint; y += yCashPoint) {
             CashPointConfig config = new CashPointConfig();
-            config.x = xMapSize - xCashPoint;
+            config.x = mapSize.getWidth() - xCashPoint;
             config.y = y;
             config.direction = Direction.Left;
             possibleLocations.add(config);
@@ -120,29 +113,21 @@ public class CashPointLocationGenerator {
     // Getters and setters
 
     public int getXMapSize() {
-        return xMapSize;
+        return mapSize.getWidth();
     }
 
-    public void setXMapSize(int xMapSize) {
-        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
-        this.xMapSize = xMapSize;
-    }
 
     public int getYMapSize() {
-        return yMapSize;
+        return mapSize.getHeight();
     }
 
-    public void setYMapSize(int yMapSize) {
-        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
-        this.yMapSize = yMapSize;
-    }
 
     public int getXCashPoint() {
         return xCashPoint;
     }
 
     public void setXCashPoint(int xCashPoint) {
-        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
+
         this.xCashPoint = xCashPoint;
     }
 
@@ -151,7 +136,6 @@ public class CashPointLocationGenerator {
     }
 
     public void setYCashPoint(int yCashPoint) {
-        validateArguments(xMapSize, yMapSize, xCashPoint, yCashPoint);
         this.yCashPoint = yCashPoint;
     }
 

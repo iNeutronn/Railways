@@ -12,6 +12,11 @@ public class ConfigModel {
 
     private transient GenerationPolicy generationPolicy;
 
+    private MapSize mapSize;
+
+    private int cashPointXSize;
+    private int cashPointYSize;
+
     private int hallMaxCapacity;
 
     // Number of ticket cashpoints
@@ -37,7 +42,7 @@ public class ConfigModel {
     //speed of client
     private double clientSpeed;
 
-    public ConfigModel( GenerationPolicy generationPolicy, int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed, double clientSpeed) {
+    public ConfigModel( GenerationPolicy generationPolicy,MapSize mapSize ,  int CashPointCount, List<CashPointConfig> cashPointConfigs, CashPointConfig reservCashPointConfig , List<EntranceConfig> entranceConfigs , int entranceCount, int minServiceTime, int maxServiceTime, int maxPeopleAllowed, double clientSpeed) {
         setGenerationPolicy(generationPolicy);
         setCashPointCount(CashPointCount);
         setCashpointConfigs(cashPointConfigs);
@@ -48,7 +53,25 @@ public class ConfigModel {
         setEntranceConfigs(entranceConfigs);
         setReservCashPointConfig(reservCashPointConfig);
         setClientSpeed(clientSpeed);
+        setMapSize(mapSize);
+    }
 
+    public MapSize getMapSize() {
+        return mapSize;
+    }
+
+    public void setMapSize(int width, int height) {
+        if (width <= 0 || height <= 0) {
+            throw new IllegalArgumentException("Width and height must be positive");
+        }
+        this.mapSize = new MapSize(width, height);
+    }
+
+    public void setMapSize(MapSize mapSize) {
+        if (mapSize == null) {
+            throw new IllegalArgumentException("Map size cannot be null.");
+        }
+        this.mapSize = mapSize;
     }
 
     public void setGenerationPolicy(GenerationPolicy generationPolicy) {
@@ -190,6 +213,25 @@ public class ConfigModel {
         }
         clientSpeed = newClientSpeed;
     }
+
+    public int getCashPointXSize() {
+        return cashPointXSize;
+    }
+
+    public int getCashPointYSize() {
+        return cashPointYSize;
+    }
+
+    public  void  setCashPointSize(int x, int y)
+    {
+        if (x <= 0 || y <= 0) {
+            throw new IllegalArgumentException(
+                    "Cash point size must be greater than zero.");
+        }
+        cashPointXSize = x;
+        cashPointYSize = y;
+    }
+
 
     @Override
     public String toString() {

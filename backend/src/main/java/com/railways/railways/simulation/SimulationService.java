@@ -31,7 +31,7 @@ public class SimulationService {
     public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig) {
         this.eventPublisher = eventPublisher;
         this.appConfig = appConfig;
-        this.hall = Hall.getInstance(); // Singleton instance
+        this.hall = new Hall(appConfig.getMapSize());
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
                 PrivilegeEnum.DEFAULT, 70,
@@ -107,7 +107,6 @@ public class SimulationService {
     }
 
     public int closeCashPoint(int id) {
-        Hall hall = Hall.getInstance();
         return hall.closeTicketOffice(id);
     }
 
@@ -119,7 +118,6 @@ public class SimulationService {
     }
 
     public int openCashPoint(int id) {
-        Hall hall = Hall.getInstance();
         return hall.openTicketOffice(id);
     }
 }

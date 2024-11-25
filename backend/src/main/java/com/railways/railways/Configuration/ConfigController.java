@@ -165,4 +165,27 @@ public class ConfigController {
         configModel.setMaxPeopleAllowed(maxPeopleAllowed);
         return configModel;
     }
+
+    /**
+     * Endpoint to get the map size.
+     *
+     * @return the current map size
+     */
+    @GetMapping("/mapSize")
+    public MapSize getMapSize() {
+        return configModel.getMapSize();
+    }
+
+    /**
+     * Endpoint to update the map size.
+     *
+     * @param width the new width of the map
+     * @param height the new height of the map
+     * @return the updated configuration model
+     */
+    @PostMapping("/mapSize")
+    public ConfigModel updateMapSize(@RequestParam int width, @RequestParam int height) {
+        configModel.setMapSize(new MapSize(width, height));
+        return configModel;
+    }
 }

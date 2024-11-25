@@ -4,6 +4,7 @@ import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.station.Hall;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Random;
@@ -14,6 +15,7 @@ public class HallSimulator implements Runnable {
     private final Hall hall;
     private final Random random = new Random();
     private final ClientGenerator clientGenerator;
+
     private final ConfigModel appConfig;
     private final ExecutorService executorService;
     private final ApplicationEventPublisher eventPublisher;
