@@ -29,38 +29,17 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CashPointLocationGeneratorTest {
+class ClientMovedEventTest {
 
     @Test
-    void shouldThrowExceptionForInvalidMapSize() {
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(-1, 100, 10, 10));
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(100, -1, 10, 10));
-    }
+    public void testClientMovedEvent() {
+        // Створюємо клієнта
+        Client client = new Client(1, "John", "Doe", 2, null, PrivilegeEnum.BASIC);
 
-    @Test
-    void shouldThrowExceptionForInvalidCashPointSize() {
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(100, 100, -10, 10));
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(100, 100, 10, -10));
-    }
+        // Створюємо подію
+        ClientMovedEvent event = new ClientMovedEvent(this, client);
 
-    @Test
-    void shouldThrowExceptionForTooLargeCashPointSize() {
-        assertThrows(IllegalArgumentException.class, () -> new CashPointLocationGenerator(10, 10, 10, 11));
-    }
-
-    @Test
-    void shouldReturnRequestedNumberOfLocations() {
-        CashPointLocationGenerator generator = new CashPointLocationGenerator(100, 100, 10, 10);
-        List<CashPointConfig> locations = generator.getLocations(5, false);
-        assertEquals(5, locations.size(), "Expected 5 locations.");
-    }
-
-    @Test
-    void shouldShuffleLocationsWhenRandomOrderIsTrue() {
-        CashPointLocationGenerator generator = new CashPointLocationGenerator(100, 100, 10, 10);
-        List<CashPointConfig> ordered = generator.getLocations(5, false);
-        List<CashPointConfig> shuffled = generator.getLocations(5, true);
-        assertNotEquals(ordered, shuffled, "Expected shuffled order to differ from ordered.");
+        // Перевіряємо, чи правильно повертається клієнт з події
+        assertEquals(client, event.getClient(), "The client should be correctly associated with the event.");
     }
 }
-
