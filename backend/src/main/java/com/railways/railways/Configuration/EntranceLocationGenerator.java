@@ -13,6 +13,7 @@ public class EntranceLocationGenerator {
     private final Random random = new Random();
 
 
+
     public EntranceLocationGenerator(MapSize mapSize, int xEntranceSize, int yEntranceSize) {
         validateArguments(mapSize.getWidth(), mapSize.getHeight(), xEntranceSize, yEntranceSize);
 
@@ -38,8 +39,10 @@ public class EntranceLocationGenerator {
     }
 
     private void generateAllPossibleLocations() {
+        int id = 0;
         for (int x = xEntrance; x + xEntrance <= mapSize.getWidth() - xEntrance; x += xEntrance) {
             EntranceConfig config = new EntranceConfig();
+            config.id = id++;
             config.x = x;
             config.y = mapSize.getHeight() - yEntrance;
             possibleLocations.add(config);
