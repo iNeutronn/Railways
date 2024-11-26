@@ -180,7 +180,7 @@ public class Hall {
 
     // Selects a random entrance
     private Entrance selectRandomEntrance() {
-        int index = random.nextInt(entrances.size());
+        int index = random.nextInt(entrances.size() - 1);
         return entrances.get(index);
     }
 
