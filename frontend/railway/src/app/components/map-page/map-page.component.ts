@@ -207,6 +207,8 @@ export class MapPageComponent implements OnInit {
 
       if (distance < 3 && !cashDesk.queue.includes(client)) {
         cashDesk.queue.push(client);
+        console.log(`!!Client ${client.clientID} joined ` + cashDesk.id + ' cash point queue');
+        this.webSocketService.sendJoinedQueueEvent(client, cashDesk.id);
       }
 
       if (distance > 0) {

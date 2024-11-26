@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ClientCreatedDto } from '../../models/dtos/ClientCreatedDto';
+import {Client} from '../../models/entities/client';
+import {EventTypes} from '../../models/enums/event-type';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +41,22 @@ export class WebSocketService {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(message);
     }
+  }
+
+  sendJoinedQueueEvent(client: Client, cashPointId: number): void {
+    const payload = {
+      clientId: client.clientID,
+      queueId: cashPointId
+    };
+
+    // Create the message object
+    const message = {
+      eventType: EventTypes.JoinedQueue,
+      payload: payload
+    };
+
+    this.socket.send(JSON.stringify(message));
+    console.log('Sent JoinedQueue event:', message);
   }
 
   public closeConnection(): void {

@@ -1,8 +1,8 @@
-import {GenerationTypes} from '../enums/generation-type';
+import {EventTypes} from '../enums/event-type';
 import {Client} from '../entities/client';
 
 export interface ClientCreatedDto {
-  type: GenerationTypes,
+  type: EventTypes,
   data: {
     client: Client,
     entranceId: number,
