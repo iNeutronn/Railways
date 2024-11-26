@@ -7,7 +7,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class SimulationService {
 
-  simulationUrl: string = environmentDev.serverApi + '/simulation';
+  simulationUrl: string = environmentDev.serverApi + '/api/simulation';
 
   constructor(private httpClient: HttpClient) { }
 
@@ -17,7 +17,7 @@ export class SimulationService {
   }
 
   pauseSimulation() {
-    const url = this.simulationUrl + '/pause';
+    const url = this.simulationUrl + '/stop';
     return this.httpClient.get(url);
   }
 

@@ -12,6 +12,7 @@ import {StationConfiguration} from '../../models/station-configuration';
 import {Position} from '../../models/position';
 import {WebSocketService} from '../../services/socket/web-socket.service';
 import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
+import {SimulationService} from '../../services/simulation/simulation.service';
 
 @Component({
   selector: 'app-map-page',
@@ -36,6 +37,7 @@ import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
 })
 export class MapPageComponent implements OnInit {
   @ViewChild('stationContainer', {static: false}) stationContainer!: ElementRef;
+  isSimulationActive: boolean = false;
   maxIndexX: number = 0;
   maxIndexY: number = 0;
   cellSize: number = 50;
@@ -46,6 +48,7 @@ export class MapPageComponent implements OnInit {
 
   constructor(
     private configService: StationConfigurationService,
+    private simulationService: SimulationService,
     private router: Router,
     private webSocketService: WebSocketService) {
   }
@@ -76,8 +79,8 @@ export class MapPageComponent implements OnInit {
 
     if(entrancePosition) {
       const clientPosition: Position = {
-        x: entrancePosition.x - 1,
-        y: entrancePosition.y - 1
+        x: entrancePosition.x,
+        y: entrancePosition.y
       }
       const privilegeString = clientCreated.data.client.privilege; // e.g., "default"
       const privilege = PrivilegeEnum[privilegeString.toString().toUpperCase() as keyof typeof PrivilegeEnum];
@@ -102,12 +105,17 @@ export class MapPageComponent implements OnInit {
 
   handleConfigurationResponse(configuration: StationConfiguration) {
     for (let i = 0; i < configuration.entranceConfigs.length; i++) {
+      const position = this.findFreeCellNear(
+        configuration.entranceConfigs[i].x,
+        configuration.entranceConfigs[i].y
+      )
+
+      if(!position)
+        return;
+
       this.entrances.push({
         id: configuration.entranceConfigs[i].id,
-        position: {
-          x: configuration.entranceConfigs[i].x,
-          y: configuration.entranceConfigs[i].y
-        },
+        position: position,
       })
     }
 
@@ -143,29 +151,9 @@ export class MapPageComponent implements OnInit {
       const containerWidth = this.stationContainer.nativeElement.getBoundingClientRect().width;
       const containerHeight = this.stationContainer.nativeElement.getBoundingClientRect().height;
 
-      console.log('width', containerWidth);
-      console.log('height', containerHeight);
-
       this.maxIndexX = Math.floor(containerHeight / this.cellSize) - 1;
       this.maxIndexY = Math.floor(containerWidth / this.cellSize) - 1;
-      console.log('maxIndexX', this.maxIndexX);
-      console.log('maxIndexY', this.maxIndexY);
     }
-  }
-
-  initializeClients(){
-    this.clients = [
-      { clientID: 1, position: {x: 0, y: 0}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 2, position: {x: 0, y: 1}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 3, position: {x: 0, y: 2}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 4, position: {x: 0, y: 3}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 5, position: {x: 0, y: 4}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 6, position: {x: 0, y: 5}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 7, position: {x: 0, y: 6}, privilege: PrivilegeEnum.WITHCHILD, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 8, position: {x: 0, y: 7}, privilege: PrivilegeEnum.DEFAULT, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 9, position: {x: 0, y: 8}, privilege: PrivilegeEnum.WARVETERAN, firstName:'', lastName:'', ticketsToBuy:0, },
-      { clientID: 10, position: {x: 0, y: 9}, privilege: PrivilegeEnum.DISABLED, firstName:'', lastName:'', ticketsToBuy:0, },
-    ]
   }
 
   getPrivilegeLabel(privilege: PrivilegeEnum): string {
@@ -225,9 +213,73 @@ export class MapPageComponent implements OnInit {
       ];
     }
   }
+
+  moveLeft(id: number) {
+    this.moveClientById(id, 0, -1); // зсув по Y вліво
+  }
+
+  moveRight(id: number) {
+    this.moveClientById(id, 0, 1); // зсув по Y вправо
+  }
+
+  moveTop(id: number) {
+    this.moveClientById(id, -1, 0); // зсув по X вгору
+  }
+
+  moveBottom(id: number) {
+    this.moveClientById(id, 1, 0); // зсув по X вниз
+  }
+
+
+  findFreeCellNear(targetX: number, targetY: number): Position | null {
+    const directions: Position[] = [
+      { x: 0, y: -1 }, // Вгору
+      { x: 0, y: 1 },  // Вниз
+      { x: -1, y: 0 }, // Вліво
+      { x: 1, y: 0 }   // Вправо
+    ];
+
+    for (const direction of directions) {
+      const newX = targetX + direction.x;
+      const newY = targetY + direction.y;
+
+      if (this.isCellAvaliable(newX, newY)) {
+        return { x: newX, y: newY };
+      }
+    }
+
+    return null;
+  }
+
+  isCellAvaliable(x: number, y: number): boolean {
+    const targetPosition: Position = { x: x, y: y };
+    return !this.clients.some(c => c.position.x === targetPosition.x && c.position.y === targetPosition.y);
+  }
+
+  startSimulation(){
+    this.simulationService.startSimulation().subscribe(() => {
+      this.isSimulationActive = true;
+      console.log('Simulation started');
+    });
+  }
+
+  stopSimulation(){
+    if(!this.isSimulationActive){
+      this.simulationService.resumeSimulation()
+        .subscribe();
+    }
+    else{
+      this.simulationService.pauseSimulation()
+        .subscribe();
+    }
+
+    this.isSimulationActive = !this.isSimulationActive;
+  }
+
   goToSettings(): void {
     this.router.navigate(['/start']);
   }
+
   ngOnDestroy() {
     this.webSocketService.closeConnection();
   }

@@ -16,7 +16,7 @@
   height: 50px;
   cursor: pointer;
   background-size: contain;
-  transition: transform 0.2s ease;
+  transition: top 0.2s linear, left 0.2s linear;
 }
 
 .entrance {
@@ -69,6 +69,28 @@
     padding: 10px 20px;
     font-family: Arial, sans-serif;
   }
+
+.controls {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.start-simulation-btn {
+  background-color: #e0ebf7;
+  border: none;
+  padding: 5px 20px;
+  margin-right: 10px;
+  border-radius: 10px;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.start-simulation-btn:hover {
+  background-color: #c9d8f0;
+}
 
   .header .title {
     font-size: 24px;
