@@ -140,7 +140,10 @@ public class CashPointLocationGenerator {
         if (randomOrder) {
             Collections.shuffle(result, random);
         }
-        return result.subList(0, count);
+
+        var sublist = result.subList(0, count);
+        possibleLocations.removeAll(sublist);
+        return sublist;
     }
 
     /**
@@ -215,6 +218,26 @@ public class CashPointLocationGenerator {
     public void updateMapSize(MapSize mapSize) {
         validateArguments(mapSize.getWidth(), mapSize.getHeight(), xCashPoint, yCashPoint);
         this.mapSize = mapSize;
+        possibleLocations.clear();
         generateAllPossibleLocations();
+    }
+
+    public void reset()
+    {
+        possibleLocations.clear();
+        generateAllPossibleLocations();
+    }
+
+    public CashPointConfig getConfigByDirection(Direction direction)
+    {
+        for (CashPointConfig config : possibleLocations)
+        {
+            if (config.direction == direction)
+            {
+                possibleLocations.remove(config);
+                return config;
+            }
+        }
+        return null;
     }
 }
