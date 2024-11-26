@@ -1,5 +1,6 @@
 package com.railways.railways.Configuration;
 
+import com.railways.railways.domain.station.Direction;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -60,7 +61,9 @@ public class MapGenerationHelper {
      */
     public void updateCashPointConfigs(int cashPointCount) {
         configModel.setCashPointCount(cashPointCount);
+        cashPointLocationGenerator.reset();
         configModel.setCashpointConfigs(cashPointLocationGenerator.getLocations(cashPointCount, false));
+        configModel.setReservCashPointConfig(cashPointLocationGenerator.getConfigByDirection(Direction.Left));
     }
 
     /**
