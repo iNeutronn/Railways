@@ -1,8 +1,10 @@
 package com.railways.railways.domain.station;
 
+import com.railways.railways.communication.DTO.ClientServingStartedData;
 import com.railways.railways.domain.ServeRecord;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.events.ClientServedEvent;
+import com.railways.railways.events.ClientServingStartedEvent;
 import com.railways.railways.events.QueueUpdatedEvent;
 import com.railways.railways.logging.LogLevel;
 import com.railways.railways.logging.Logger;
@@ -130,13 +132,16 @@ public class TicketOffice implements Runnable {
                 }
             }
         }
-        int serviceTime = getRandomServeTime();
+        int serviceTime = getRandomServeTime() * client.getTicketsToBuy();
+        ClientServingStartedEvent servingEvent = new ClientServingStartedEvent(this, new ClientServingStartedData(ticketOfficeID,client.getClientID(), serviceTime/1000.0));
+        eventPublisher.publishEvent(servingEvent);
+
         String startTime = ZonedDateTime.now().format(isoFormatter);
 
         logger.log("Serving client " + client.getFullName() +
                 " (ID: " + client.getClientID() + ") at ticket office " + ticketOfficeID, LogLevel.Debug);
 
-        sleep((long) serviceTime * client.getTicketsToBuy());
+        sleep((long) serviceTime );
 
         String endTime = ZonedDateTime.now().format(isoFormatter);
 
@@ -284,6 +289,8 @@ public class TicketOffice implements Runnable {
         eventPublisher.publishEvent(event);
         logger.log("Queue updated for TicketOffice " + ticketOfficeID, LogLevel.Debug);
     }
+
+
 
     /**
      * Sets a new queue for the ticket office.
