@@ -16,13 +16,13 @@ public class MapGenerationHelper {
     // Cash point location generator for creating and updating cash point configurations
     private final CashPointLocationGenerator cashPointLocationGenerator;
     // Predefined size for entrances (width)
-    private final int xEntranceSize = 5;
+    private final int xEntranceSize = 1;
     // Predefined size for entrances (height)
-    private final int yEntranceSize = 8;
+    private final int yEntranceSize = 1;
     // Predefined size for cash points (width)
-    private final int xCashPointSize = 3;
+    private final int xCashPointSize = 1;
     // Predefined size for cash points (height)
-    private final int yCashPointSize = 5;
+    private final int yCashPointSize = 1;
     // Configuration model that holds the current settings for the map
     private final ConfigModel configModel;
 

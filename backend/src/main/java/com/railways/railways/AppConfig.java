@@ -57,9 +57,9 @@ public class AppConfig {
 
 
         EntranceLocationGenerator entranceLocationGenerator = new EntranceLocationGenerator(
-                config.getMapSize(), 5, 1);
+                config.getMapSize(), 1, 1);
         CashPointLocationGenerator cashPointLocationGenerator = new CashPointLocationGenerator(
-                config.getMapSize(), 5, 3);
+                config.getMapSize(), 1, 1);
         var entranceConfigs = entranceLocationGenerator.getLocations(config.getEntranceCount(), false);
 
         logger.log("Generated and set entrance configurations: " + entranceConfigs.size(), LogLevel.Debug);
