@@ -13,6 +13,7 @@ import {Position} from '../../models/position';
 import {WebSocketService} from '../../services/socket/web-socket.service';
 import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
 import {SimulationService} from '../../services/simulation/simulation.service';
+import {interval, Subscription, takeWhile} from 'rxjs';
 
 @Component({
   selector: 'app-map-page',
@@ -67,9 +68,6 @@ export class MapPageComponent implements OnInit {
       this.handleConfigurationResponse(configuration);
       console.log(this.entrances, 'Entrances');
       console.log(this.cashDesks, 'cashDesks');
-
-      //this.initializeClients();
-      console.log(this.entrances)
     });
   }
 
@@ -94,12 +92,20 @@ export class MapPageComponent implements OnInit {
         privilege: privilege
       };
 
-      this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId)
+      /*this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId)
         ?.queue.push(client);
+*/
 
-      console.log('Created client with id ' + client.clientID + ', assigned to ' + clientCreated.data.ticketOfficeId);
-      this.clients = [...this.clients, client];
-      this.moveClients(clientCreated.data.ticketOfficeId);
+      const cashPoint = this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId);
+
+      if(cashPoint){
+        console.log('Created client with id ' + client.clientID + ', assigned to ' + clientCreated.data.ticketOfficeId);
+        this.clients = [...this.clients, client];
+
+        this.moveClientToPoint(client.clientID, cashPoint);
+        //this.moveClients(clientCreated.data.ticketOfficeId);
+      }
+
     }
   }
 
@@ -174,6 +180,7 @@ export class MapPageComponent implements OnInit {
       const previousClient = previousPositions[i - 1];
       const currentClient = this.clients[i];
 
+
       this.moveClientById(currentClient.clientID, 0, -1);
 
       //this.moveToPosition(currentClient.clientID, previousClient.position.x, previousClient.position.y);
@@ -182,6 +189,74 @@ export class MapPageComponent implements OnInit {
     const firstClient = this.clients[0];
     this.moveClientById(firstClient.clientID, 0, -1);
     //this.moveToPosition(firstClient.clientID, firstClient.position.x + 1, firstClient.position.y);
+  }
+
+  moveClientToPoint(clientId: number, cashDesk: CashDesk, stepSize: number = 1, intervalMs: number = 100): Subscription {
+    const clientIndex = this.clients.findIndex(client => client.clientID === clientId);
+
+    const target = cashDesk.queue.length > 0
+      ? cashDesk.queue[cashDesk.queue.length - 1].position
+      : cashDesk.position;
+
+    console.log(cashDesk)
+    console.log("TargetX: ", target.x);
+    console.log("TargetY: ", target.y);
+
+    if (clientIndex < 0) {
+      console.error(`Client with ID ${clientId} not found.`);
+      return null!;
+    }
+
+    const client = this.clients[clientIndex];
+
+    return interval(intervalMs).pipe(
+      takeWhile(() => {
+
+        // Продовжувати рух, поки відстань до цілі більша за 1
+        const deltaX = target.x - client.position.x;
+        const deltaY = target.y + 1 - client.position.y;
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+        if(distance < 5){
+
+        }
+
+        return distance > 0;
+      })
+    ).subscribe(() => {
+      // Визначити кінцеву точку
+      /*const target = cashDesk.queue.length > 0
+        ? {
+          x: cashDesk.queue[cashDesk.queue.length - 1].position.x,
+          y: cashDesk.queue[cashDesk.queue.length - 1].position.y + 1
+        }
+        : { x: targetX, y: targetY };*/
+
+      const deltaX = target.x - client.position.x;
+      const deltaY = target.y - client.position.y;
+
+      // Обчислити відстань до цілі
+      const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+      if (distance < 6 && !cashDesk.queue.includes(client)) {
+        cashDesk.queue.push(client);
+      }
+
+      if (distance > 0) {
+        const moveX = Math.abs(deltaX) <= stepSize ? deltaX : Math.sign(deltaX) * stepSize;
+        const moveY = Math.abs(deltaY) <= stepSize ? deltaY : Math.sign(deltaY) * stepSize;
+
+        client.position.x += moveX;
+        client.position.y += moveY;
+      }
+    });
+
+
+
+  }
+
+  checkQueue(){
+
   }
 
   // clients move to exact position

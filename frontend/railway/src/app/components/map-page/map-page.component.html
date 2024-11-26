@@ -15,7 +15,7 @@
   <span class="stat">CLIENTS: <strong>{{clients.length}}</strong></span>
 </div>
 
-<div class="station-container" #stationContainer >
+<div class="station-container" #stationContainer>
   <div *ngFor="let client of clients"
        [ngClass]="getPrivilegeLabel(client.privilege)"
        class="marker person"
