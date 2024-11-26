@@ -14,6 +14,7 @@ import {WebSocketService} from '../../services/socket/web-socket.service';
 import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
 import {SimulationService} from '../../services/simulation/simulation.service';
 import {interval, Subscription, takeWhile} from 'rxjs';
+import {MapPositionHelper} from '../../helpers/mapPositionHelper';
 
 @Component({
   selector: 'app-map-page',
@@ -38,6 +39,12 @@ import {interval, Subscription, takeWhile} from 'rxjs';
 })
 export class MapPageComponent implements OnInit {
   @ViewChild('stationContainer', {static: false}) stationContainer!: ElementRef;
+  mapPositionHelper: MapPositionHelper = new MapPositionHelper();
+  mapSize: {width: number, height: number} = {
+    width: 0,
+    height: 0
+  }
+
   isSimulationActive: boolean = false;
   maxIndexX: number = 0;
   maxIndexY: number = 0;
@@ -52,6 +59,7 @@ export class MapPageComponent implements OnInit {
     private simulationService: SimulationService,
     private router: Router,
     private webSocketService: WebSocketService) {
+    this.mapPositionHelper = new MapPositionHelper();
   }
 
   ngOnInit() {
@@ -92,10 +100,6 @@ export class MapPageComponent implements OnInit {
         privilege: privilege
       };
 
-      /*this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId)
-        ?.queue.push(client);
-*/
-
       const cashPoint = this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId);
 
       if(cashPoint){
@@ -103,15 +107,20 @@ export class MapPageComponent implements OnInit {
         this.clients = [...this.clients, client];
 
         this.moveClientToPoint(client.clientID, cashPoint);
-        //this.moveClients(clientCreated.data.ticketOfficeId);
       }
-
     }
   }
 
   handleConfigurationResponse(configuration: StationConfiguration) {
+    console.log(configuration.mapSize.height)
+    this.mapSize.height = configuration.mapSize.height;
+    this.mapSize.width = configuration.mapSize.width;
+
+    console.log('mapSize', this.mapSize)
+    console.log(this.mapSize);
     for (let i = 0; i < configuration.entranceConfigs.length; i++) {
-      const position = this.findFreeCellNear(
+      const position = this.mapPositionHelper.findFreeCellNear(
+        this.clients,
         configuration.entranceConfigs[i].x,
         configuration.entranceConfigs[i].y
       )
@@ -166,37 +175,9 @@ export class MapPageComponent implements OnInit {
     return PrivilegeEnumLabels[privilege];
   }
 
-  // clients moving as a queue
-  moveClients(ticketOfficeId: number) {
-    const clients = this.cashDesks.find(c => c.id == ticketOfficeId)
-      ?.queue;
-
-    if(!clients)
-      return;
-
-    const previousPositions = [...this.clients];
-
-    for (let i = 1; i < clients.length; i++) {
-      const previousClient = previousPositions[i - 1];
-      const currentClient = this.clients[i];
-
-
-      this.moveClientById(currentClient.clientID, 0, -1);
-
-      //this.moveToPosition(currentClient.clientID, previousClient.position.x, previousClient.position.y);
-    }
-
-    const firstClient = this.clients[0];
-    this.moveClientById(firstClient.clientID, 0, -1);
-    //this.moveToPosition(firstClient.clientID, firstClient.position.x + 1, firstClient.position.y);
-  }
-
-  moveClientToPoint(clientId: number, cashDesk: CashDesk, stepSize: number = 1, intervalMs: number = 100): Subscription {
+  moveClientToPoint(clientId: number, cashDesk: CashDesk, stepSize: number = 1, intervalMs: number = 200): Subscription {
     const clientIndex = this.clients.findIndex(client => client.clientID === clientId);
-
-    const target = cashDesk.queue.length > 0
-      ? cashDesk.queue[cashDesk.queue.length - 1].position
-      : cashDesk.position;
+    let target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
 
     console.log(cashDesk)
     console.log("TargetX: ", target.x);
@@ -212,33 +193,19 @@ export class MapPageComponent implements OnInit {
     return interval(intervalMs).pipe(
       takeWhile(() => {
 
-        // Продовжувати рух, поки відстань до цілі більша за 1
         const deltaX = target.x - client.position.x;
-        const deltaY = target.y + 1 - client.position.y;
+        const deltaY = target.y - client.position.y;
         const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
-        if(distance < 5){
-
-        }
 
         return distance > 0;
       })
     ).subscribe(() => {
-      // Визначити кінцеву точку
-      /*const target = cashDesk.queue.length > 0
-        ? {
-          x: cashDesk.queue[cashDesk.queue.length - 1].position.x,
-          y: cashDesk.queue[cashDesk.queue.length - 1].position.y + 1
-        }
-        : { x: targetX, y: targetY };*/
-
       const deltaX = target.x - client.position.x;
       const deltaY = target.y - client.position.y;
 
-      // Обчислити відстань до цілі
       const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
 
-      if (distance < 6 && !cashDesk.queue.includes(client)) {
+      if (distance < 3 && !cashDesk.queue.includes(client)) {
         cashDesk.queue.push(client);
       }
 
@@ -246,20 +213,39 @@ export class MapPageComponent implements OnInit {
         const moveX = Math.abs(deltaX) <= stepSize ? deltaX : Math.sign(deltaX) * stepSize;
         const moveY = Math.abs(deltaY) <= stepSize ? deltaY : Math.sign(deltaY) * stepSize;
 
-        client.position.x += moveX;
-        client.position.y += moveY;
+        if(!this.mapPositionHelper.isCellOccupied(
+          {
+            x: client.position.x + moveX,
+            y: client.position.y + moveY
+          },this.clients))
+        {
+          client.position.x += moveX;
+          client.position.y += moveY;
+        }
       }
     });
-
-
-
   }
 
-  checkQueue(){
+  // clients moving as a queue
+  moveQueue(ticketOfficeId: number) {
+    const clients = this.cashDesks.find(c => c.id == ticketOfficeId)
+      ?.queue;
 
+    if(!clients)
+      return;
+
+    const previousPositions = [...this.clients];
+
+    for (let i = 1; i < clients.length; i++) {
+      const previousClient = previousPositions[i - 1];
+      const currentClient = this.clients[i];
+      this.moveClientById(currentClient.clientID, 0, -1);
+    }
+
+    const firstClient = this.clients[0];
+    this.moveClientById(firstClient.clientID, 0, -1);
   }
 
-  // clients move to exact position
   moveToPosition(id: number, newX: number, newY: number) {
     const clientIndex = this.clients.findIndex(client => client.clientID === id);
     if (clientIndex !== -1) {
@@ -287,48 +273,6 @@ export class MapPageComponent implements OnInit {
         ...this.clients.slice(clientIndex + 1)
       ];
     }
-  }
-
-  moveLeft(id: number) {
-    this.moveClientById(id, 0, -1); // зсув по Y вліво
-  }
-
-  moveRight(id: number) {
-    this.moveClientById(id, 0, 1); // зсув по Y вправо
-  }
-
-  moveTop(id: number) {
-    this.moveClientById(id, -1, 0); // зсув по X вгору
-  }
-
-  moveBottom(id: number) {
-    this.moveClientById(id, 1, 0); // зсув по X вниз
-  }
-
-
-  findFreeCellNear(targetX: number, targetY: number): Position | null {
-    const directions: Position[] = [
-      { x: 0, y: -1 }, // Вгору
-      { x: 0, y: 1 },  // Вниз
-      { x: -1, y: 0 }, // Вліво
-      { x: 1, y: 0 }   // Вправо
-    ];
-
-    for (const direction of directions) {
-      const newX = targetX + direction.x;
-      const newY = targetY + direction.y;
-
-      if (this.isCellAvaliable(newX, newY)) {
-        return { x: newX, y: newY };
-      }
-    }
-
-    return null;
-  }
-
-  isCellAvaliable(x: number, y: number): boolean {
-    const targetPosition: Position = { x: x, y: y };
-    return !this.clients.some(c => c.position.x === targetPosition.x && c.position.y === targetPosition.y);
   }
 
   startSimulation(){

@@ -19,6 +19,7 @@ export class StartPageComponent {
     entranceCount: null,
     cashpointConfigs: [],
     entranceConfigs: [],
+    mapSize: {width: 31, height: 11},
     reservCashPointConfig: {id: 0, x: -1, y: -1},
     minServiceTime: 1000,
     maxServiceTime: 5000,
