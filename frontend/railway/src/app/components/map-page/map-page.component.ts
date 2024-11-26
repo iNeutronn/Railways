@@ -96,6 +96,7 @@ export class MapPageComponent implements OnInit {
 
       console.log('Created client with id ' + client.clientID + ', assigned to ' + clientCreated.data.ticketOfficeId);
       this.clients = [...this.clients, client];
+      this.moveClients(clientCreated.data.ticketOfficeId);
     }
   }
 
@@ -172,18 +173,27 @@ export class MapPageComponent implements OnInit {
   }
 
   // clients moving as a queue
-  moveClients() {
+  moveClients(ticketOfficeId: number) {
+    const clients = this.cashDesks.find(c => c.id == ticketOfficeId)
+      ?.queue;
+
+    if(!clients)
+      return;
+
     const previousPositions = [...this.clients];
 
-    for (let i = 1; i < this.clients.length; i++) {
+    for (let i = 1; i < clients.length; i++) {
       const previousClient = previousPositions[i - 1];
       const currentClient = this.clients[i];
 
-      this.moveToPosition(currentClient.clientID, previousClient.position.x, previousClient.position.y);
+      this.moveClientById(currentClient.clientID, 0, -1);
+
+      //this.moveToPosition(currentClient.clientID, previousClient.position.x, previousClient.position.y);
     }
 
     const firstClient = this.clients[0];
-    this.moveToPosition(firstClient.clientID, firstClient.position.x + 1, firstClient.position.y);
+    this.moveClientById(firstClient.clientID, 0, -1);
+    //this.moveToPosition(firstClient.clientID, firstClient.position.x + 1, firstClient.position.y);
   }
 
   // clients move to exact position
