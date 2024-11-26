@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * ConfigController provides REST API to access and modify the configuration of the railway ticketing system.
+ * ConfigController provides a REST API to access and modify the configuration of the railway ticketing system.
+ * It includes endpoints for retrieving and updating various configuration settings.
  */
 @RestController
 @CrossOrigin(origins = "*")
@@ -19,6 +20,7 @@ public class ConfigController {
      * Constructor for ConfigController, accepting a configuration model.
      *
      * @param configModel the configuration for the railway ticketing system
+     * @param mapGenerationHelper the helper for generating and updating map configurations
      */
     public ConfigController(ConfigModel configModel, MapGenerationHelper mapGenerationHelper) {
         this.configModel = configModel;

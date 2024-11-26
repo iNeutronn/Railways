@@ -14,22 +14,48 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.PriorityBlockingQueue;
 
+/**
+ * Represents a Ticket Office in the railway system.
+ * The office serves clients, maintains a queue, and tracks service records.
+ * This class implements Runnable to handle the client-serving process in a separate thread.
+ */
 public class TicketOffice implements Runnable {
+    /** The ID of the ticket office. */
     private final int ticketOfficeID;
+    /** The queue of clients waiting to be served. */
     private final PriorityBlockingQueue<Client> clientsQueue;
+    /** The list of records for served clients. */
     private final ArrayList<ServeRecord> serveRecords;
+    /** Flag indicating whether the office is open or closed. */
     private boolean isOpen;
-    private final Object pauseLock = new Object(); // Lock object for synchronization
+    /** Lock object used for synchronization during open/close operations. */
+    private final Object pauseLock = new Object();
+    /** The segment where the ticket office is located. */
     private Segment segment;
+    /** The direction the ticket office serves. */
     private Direction direction;
+    /** The event publisher used to publish events such as client served or queue updated. */
     private ApplicationEventPublisher eventPublisher;
+    /** Formatter for the time. */
     private final DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME;
-
+    /** The minimum service time for a client. */
     private final int minServiceTime;
+    /** The maximum service time for a client. */
     private final int maxServiceTime;
-
+    /** The logger used for logging events and actions. */
     private final Logger logger;
 
+    /**
+     * Constructs a TicketOffice with specified properties.
+     *
+     * @param eventPublisher the event publisher used for publishing events
+     * @param ticketOfficeID the unique ID for this ticket office
+     * @param position the segment where the office is located
+     * @param direction the direction the ticket office serves
+     * @param minServiceTime the minimum time to serve a client
+     * @param maxServiceTime the maximum time to serve a client
+     * @param logger the logger used to log actions
+     */
     public TicketOffice(ApplicationEventPublisher eventPublisher, int ticketOfficeID, Segment position, Direction direction, int minServiceTime, int maxServiceTime, Logger logger) {
         this.eventPublisher = eventPublisher;
         this.ticketOfficeID = ticketOfficeID;
@@ -55,6 +81,9 @@ public class TicketOffice implements Runnable {
                 ", Direction: " + direction + ", Segment: " + segment, LogLevel.Info);
     }
 
+    /**
+     * The main logic for serving clients is executed in this method. It runs in a loop, serving clients in the queue.
+     */
     @Override
     public void run() {
         while (true) {
@@ -81,6 +110,11 @@ public class TicketOffice implements Runnable {
         }
     }
 
+    /**
+     * Serves a client from the queue. The client is processed and a service record is created.
+     *
+     * @throws InterruptedException if the thread is interrupted while serving
+     */
     public void serveClient() throws InterruptedException {
         Client client = clientsQueue.take();
 
@@ -103,11 +137,21 @@ public class TicketOffice implements Runnable {
         eventPublisher.publishEvent(event);
     }
 
+    /**
+     * Generates a random service time within the defined range (min and max).
+     *
+     * @return the random service time in milliseconds
+     */
     private int getRandomServeTime() {
         Random random = new Random();
         return random.nextInt(maxServiceTime - minServiceTime + 1) + minServiceTime;
     }
 
+    /**
+     * Adds a client to the queue for serving.
+     *
+     * @param client the client to be added
+     */
     public void addClient(Client client) {
         clientsQueue.offer(client); // Thread-safe addition
         logger.log("Client " + client.getFullName() +
@@ -115,6 +159,9 @@ public class TicketOffice implements Runnable {
         publishQueueUpdate();
     }
 
+    /**
+     * Closes the ticket office, preventing new clients from being served.
+     */
     public void closeOffice() {
         synchronized (pauseLock) {
             isOpen = false; // Mark as closed
@@ -122,6 +169,9 @@ public class TicketOffice implements Runnable {
         logger.log("TicketOffice " + ticketOfficeID + " closed.", LogLevel.Info);
     }
 
+    /**
+     * Opens the ticket office, allowing it to serve clients again.
+     */
     public void openOffice() {
         synchronized (pauseLock) {
             isOpen = true; // Mark as open
@@ -130,30 +180,65 @@ public class TicketOffice implements Runnable {
         logger.log("TicketOffice " + ticketOfficeID + " opened.", LogLevel.Info);
     }
 
+    /**
+     * Gets the list of records for clients who have been served by this office.
+     *
+     * @return the list of service records
+     */
     public ArrayList<ServeRecord> getServeRecords() {
         return serveRecords;
     }
 
+    /**
+     * Returns the current size of the queue.
+     *
+     * @return the number of clients in the queue
+     */
     public int getQueueSize() {
         return clientsQueue.size();
     }
 
+    /**
+     * Gets the segment where the ticket office is located.
+     *
+     * @return the segment of the ticket office
+     */
     public Segment getSegment() {
         return segment;
     }
 
+    /**
+     * Gets the direction the ticket office serves.
+     *
+     * @return the direction of the ticket office
+     */
     public Direction getDirection() {
         return direction;
     }
 
+    /**
+     * Gets the queue of clients waiting to be served.
+     *
+     * @return the queue of clients
+     */
     public PriorityBlockingQueue<Client> getQueue() {
         return clientsQueue;
     }
 
+    /**
+     * Gets the ID of the ticket office.
+     *
+     * @return the ticket office ID
+     */
     public int getOfficeID() {
         return ticketOfficeID;
     }
 
+    /**
+     * Sleeps the thread for the specified time.
+     *
+     * @param millis the time to sleep in milliseconds
+     */
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
@@ -162,10 +247,18 @@ public class TicketOffice implements Runnable {
         }
     }
 
+    /**
+     * Checks if the ticket office is open.
+     *
+     * @return true if the ticket office is open, false otherwise
+     */
     public boolean isOpen() {
         return isOpen;
     }
 
+    /**
+     * Publishes an event when the queue is updated.
+     */
     public void publishQueueUpdate() {
         QueueUpdate queueUpdate = new QueueUpdate(ticketOfficeID, clientsQueue
                 .stream()
@@ -178,10 +271,18 @@ public class TicketOffice implements Runnable {
         logger.log("Queue updated for TicketOffice " + ticketOfficeID, LogLevel.Debug);
     }
 
+    /**
+     * Sets a new queue for the ticket office.
+     *
+     * @param queue the new queue to set
+     */
     public void setQueue(PriorityBlockingQueue<Client> queue) {
         clientsQueue.addAll(queue);
     }
 
+    /**
+     * Clears the queue of all clients.
+     */
     public void clearQueue() {
         clientsQueue.clear();
     }

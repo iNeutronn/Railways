@@ -10,19 +10,45 @@ import java.util.Random;
 
 
 /**
- * A class for managing cash point locations on a map.
- * Generates all possible locations for cash points on the top, left, and right walls of the map,
- * excluding corner positions.
+ * A class for managing the generation and retrieval of cash point locations on a map.
+ *
+ * This class generates all possible locations for placing cash points along the top, left, and right walls of a map,
+ * excluding the corner positions. It provides functionality to validate input dimensions, generate the cash point
+ * locations, and retrieve specific numbers of cash points either in ordered or random order.
+ *
  */
 public class CashPointLocationGenerator {
+    /**
+     * The map size that defines the dimensions of the map.
+     */
     private MapSize mapSize;
+    /**
+     * The width of a cash point.
+     */
     private int xCashPoint;
+    /**
+     * The height of a cash point.
+     */
     private int yCashPoint;
+    /**
+     * A list of possible locations where cash points can be placed on the map.
+     */
     private final List<CashPointConfig> possibleLocations = new ArrayList<>();
+    /**
+     * A random number generator used for shuffling the locations.
+     */
     private final Random random = new Random();
 
-
-
+    /**
+     * Constructs a {@code CashPointLocationGenerator} instance with the specified map size and cash point dimensions.
+     *
+     * The constructor validates the provided dimensions and generates all possible locations for cash points.
+     *
+     * @param mapSize the dimensions of the map
+     * @param xCashPoint the width of a cash point
+     * @param yCashPoint the height of a cash point
+     * @throws IllegalArgumentException if any of the dimensions are invalid
+     */
     public CashPointLocationGenerator(MapSize mapSize , int xCashPoint , int yCashPoint) {
         this.mapSize = mapSize;
         this.xCashPoint = xCashPoint;
@@ -32,10 +58,12 @@ public class CashPointLocationGenerator {
     }
 
     /**
-     * Validates the input arguments.
+     * Validates the input arguments for the map size and cash point dimensions.
      *
-     * @param xMapSize   the width of the map
-     * @param yMapSize   the height of the map
+     * Throws an {@code IllegalArgumentException} if any dimension is invalid.
+     *
+     * @param xMapSize the width of the map
+     * @param yMapSize the height of the map
      * @param xCashPoint the width of a cash point
      * @param yCashPoint the height of a cash point
      * @throws IllegalArgumentException if any dimension is invalid
@@ -53,8 +81,8 @@ public class CashPointLocationGenerator {
     }
 
     /**
-     * Generates all possible locations for cash points on the top, left, and right walls,
-     * excluding corner positions.
+     * Generates all possible locations for placing cash points on the top, left, and right walls,
+     * excluding the corner positions. Cash points are placed with a specified gap on each wall.
      */
     private void generateAllPossibleLocations() {
         int id = 0;
@@ -91,11 +119,12 @@ public class CashPointLocationGenerator {
 
     /**
      * Returns a specified number of cash point configurations.
-     * If randomOrder is true, the points are returned in random order.
-     * Otherwise, they are returned in order: top, left, right.
      *
-     * @param count       the number of cash points to return
-     * @param randomOrder whether to return points in random order
+     * If the {@code randomOrder} flag is true, the returned locations will be in a random order;
+     * otherwise, they will be in the default order: top wall, left wall, right wall.
+     *
+     * @param count the number of cash point configurations to return
+     * @param randomOrder whether to return the points in random order
      * @return a list of cash point configurations
      * @throws IllegalArgumentException if the requested count exceeds available locations
      */
@@ -114,39 +143,75 @@ public class CashPointLocationGenerator {
         return result.subList(0, count);
     }
 
-    // Getters and setters
-
+    /**
+     * Returns the width of the map.
+     *
+     * @return the width of the map
+     */
     public int getXMapSize() {
         return mapSize.getWidth();
     }
 
-
+    /**
+     * Returns the height of the map.
+     *
+     * @return the height of the map
+     */
     public int getYMapSize() {
         return mapSize.getHeight();
     }
 
-
+    /**
+     * Returns the width of a cash point.
+     *
+     * @return the width of a cash point
+     */
     public int getXCashPoint() {
         return xCashPoint;
     }
 
+    /**
+     * Sets the width of a cash point.
+     *
+     * @param xCashPoint the new width of the cash point
+     */
     public void setXCashPoint(int xCashPoint) {
 
         this.xCashPoint = xCashPoint;
     }
 
+    /**
+     * Returns the height of a cash point.
+     *
+     * @return the height of a cash point
+     */
     public int getYCashPoint() {
         return yCashPoint;
     }
 
+    /**
+     * Sets the height of a cash point.
+     *
+     * @param yCashPoint the new height of the cash point
+     */
     public void setYCashPoint(int yCashPoint) {
         this.yCashPoint = yCashPoint;
     }
 
+    /**
+     * Returns a list of all possible cash point locations.
+     *
+     * @return a list of all possible cash point configurations
+     */
     public List<CashPointConfig> getPossibleLocations() {
         return new ArrayList<>(possibleLocations);
     }
 
+    /**
+     * Updates the map size and regenerates the possible cash point locations.
+     *
+     * @param mapSize the new map size
+     */
     public void updateMapSize(MapSize mapSize) {
         validateArguments(mapSize.getWidth(), mapSize.getHeight(), xCashPoint, yCashPoint);
         this.mapSize = mapSize;

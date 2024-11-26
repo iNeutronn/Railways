@@ -16,25 +16,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CommunicationSocketController is a WebSocket handler that manages WebSocket sessions
- * and facilitates sending updates to connected clients.
+ * The {@code CommunicationSocketController} is a WebSocket handler responsible for managing
+ * WebSocket sessions and sending updates to all connected clients.
+ *
+ * This component handles WebSocket connections, maintains active sessions, and allows
+ * for sending real-time updates to the clients. It is also responsible for controlling
+ * the simulation state (resuming and pausing) via WebSocket commands.
+ *
+ * @see TextWebSocketHandler
+ * @see WebSocketSession
+ * @see GenerationUpdateDTO
  */
 @Component
 public class CommunicationSocketController extends TextWebSocketHandler {
     private final List<WebSocketSession> sessions = new ArrayList<>();
     private final Gson gson = new Gson(); // Gson initialization
     private final SimulationService simulationService;
-
     private final Logger logger;
 
+    /**
+     * Constructs a {@code CommunicationSocketController} with the provided services.
+     *
+     * @param simulationService the service that manages the simulation logic
+     * @param logger the logger for logging communication events
+     */
     public CommunicationSocketController(SimulationService simulationService, Logger logger) {
         this.simulationService = simulationService;
         this.logger = logger;
     }
     /**
-     * Called after a new WebSocket connection is established.
+     * Called when a new WebSocket connection is established.
      *
-     * @param session the WebSocket session
+     * This method adds the new session to the list of active sessions and logs the connection event.
+     *
+     * @param session the WebSocket session representing the new connection
      */
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) {
@@ -43,9 +58,11 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     }
 
     /**
-     * Called after a WebSocket connection is closed.
+     * Called when a WebSocket connection is closed.
      *
-     * @param session the WebSocket session
+     * This method removes the session from the list of active sessions and logs the disconnection event.
+     *
+     * @param session the WebSocket session representing the closed connection
      * @param status the status of the closed connection
      */
     @Override
@@ -58,7 +75,10 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     /**
      * Sends an update to all connected WebSocket clients.
      *
-     * @param update the update to be sent
+     * The update is serialized into a JSON message using Gson, and then sent to all open sessions.
+     *
+     * @param update the update to be sent to all clients
+     * @throws IllegalArgumentException if the update cannot be serialized
      */
     public void sendUpdate(@NonNull GenerationUpdateDTO update) {
         try {
@@ -75,7 +95,9 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     }
 
     /**
-     * Resumes the simulation by calling the start method of the simulation service.
+     * Resumes the simulation by calling the start method of the {@link SimulationService}.
+     *
+     * This method allows the simulation to resume when triggered by a WebSocket command.
      */
     public void resumeSimulation() {
         simulationService.startSimulation();
@@ -83,7 +105,9 @@ public class CommunicationSocketController extends TextWebSocketHandler {
     }
 
     /**
-     * Pauses the simulation by calling the stop method of the simulation service.
+     * Pauses the simulation by calling the stop method of the {@link SimulationService}.
+     *
+     * This method allows the simulation to pause when triggered by a WebSocket command.
      */
     public void pauseSimulation() {
         simulationService.stopSimulation();
