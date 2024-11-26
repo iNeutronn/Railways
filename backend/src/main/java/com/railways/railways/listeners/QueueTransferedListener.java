@@ -5,6 +5,7 @@ import com.railways.railways.communication.DTO.GenerationUpdateDTO;
 import com.railways.railways.communication.DTO.QueueTransferedUpdate;
 import com.railways.railways.communication.DTO.QueueUpdatedUpdate;
 import com.railways.railways.domain.station.QueueUpdate;
+import com.railways.railways.events.QueueTransferedEvent;
 import com.railways.railways.events.QueueUpdatedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class QueueTransferedListener {
      * @param event the queue update event
      */
     @EventListener
-    public void onQueueTransfer(QueueUpdatedEvent event) {
+    public void onQueueTransfer(QueueTransferedEvent event) {
         QueueUpdate queueUpdate = event.getQueueUpdate();
         GenerationUpdateDTO update = new QueueTransferedUpdate(queueUpdate);
         socketController.sendUpdate(update);
