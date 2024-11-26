@@ -239,7 +239,7 @@ public class Hall {
      * @return a randomly selected entrance
      */
     private Entrance selectRandomEntrance() {
-        int index = random.nextInt(entrances.size() - 1);
+        int index = random.nextInt(0,entrances.size() - 1);
         return entrances.get(index);
     }
 
