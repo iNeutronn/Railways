@@ -81,6 +81,7 @@ public class TicketOffice implements Runnable {
                 ", Direction: " + direction + ", Segment: " + segment, LogLevel.Info);
     }
 
+
     /**
      * The main logic for serving clients is executed in this method. It runs in a loop, serving clients in the queue.
      */
