@@ -21,9 +21,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The SimulationService class is responsible for managing the simulation of a railway station hall.
+ * It configures the hall, ticket offices, entrances, and manages the client generation and service.
+ * It provides methods for starting, stopping, and resuming the simulation as well as controlling cash points.
+ */
 @Service
 public class SimulationService {
-
     private final Hall hall;
     private final ExecutorService executorService;
     private final ClientGenerator clientGenerator;
@@ -33,6 +37,13 @@ public class SimulationService {
 
     private final Logger logger;
 
+    /**
+     * Constructor for initializing the SimulationService with necessary configurations.
+     *
+     * @param eventPublisher The publisher used to publish application events.
+     * @param appConfig Configuration model containing the simulation settings.
+     * @param logger Logger used to log simulation activities.
+     */
     public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Logger logger) {
         this.eventPublisher = eventPublisher;
         this.appConfig = appConfig;
@@ -51,6 +62,9 @@ public class SimulationService {
         setupHall();
     }
 
+    /**
+     * Configures the hall by setting up ticket offices, entrances, and other necessary components.
+     */
     private void setupHall() {
         hall.setApplicationEventPublisher(eventPublisher);
 
@@ -93,6 +107,9 @@ public class SimulationService {
         logger.log("Hall setup complete", LogLevel.Info);
     }
 
+    /**
+     * Starts the simulation by initiating ticket office threads and the hall simulation.
+     */
     public void startSimulation() {
         // Start ticket office threads
         for (TicketOffice office : hall.getTicketOffices()) {
@@ -108,6 +125,9 @@ public class SimulationService {
         logger.log("Simulation started", LogLevel.Info);
     }
 
+    /**
+     * Stops the simulation by closing ticket office threads and halting the hall simulation.
+     */
     public void stopSimulation() {
         // Stop ticket office threads
         for (TicketOffice office : hall.getTicketOffices()) {
@@ -118,10 +138,19 @@ public class SimulationService {
         logger.log("Simulation stopped", LogLevel.Warning);
     }
 
+    /**
+     * Closes the cash point with the given ID.
+     *
+     * @param id The ID of the cash point to close.
+     * @return The status or result of closing the cash point.
+     */
     public int closeCashPoint(int id) {
         return hall.closeTicketOffice(id);
     }
 
+    /**
+     * Resumes the simulation by opening the ticket offices and restarting the hall simulation.
+     */
     public void resumeSimulation() {
         for (TicketOffice office : hall.getTicketOffices()) {
             office.openOffice();
@@ -130,6 +159,12 @@ public class SimulationService {
         logger.log("Simulation resumed", LogLevel.Info);
     }
 
+    /**
+     * Opens the cash point with the given ID.
+     *
+     * @param id The ID of the cash point to open.
+     * @return The status or result of opening the cash point.
+     */
     public int openCashPoint(int id) {
         return hall.openTicketOffice(id);
     }

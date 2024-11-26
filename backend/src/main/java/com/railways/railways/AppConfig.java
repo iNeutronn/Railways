@@ -15,13 +15,25 @@ import java.util.List;
 
 @Configuration
 public class AppConfig {
-
+    /**
+     * Bean for logger: Singleton instance of FileLogger.
+     * The logger is used to log messages throughout the application.
+     *
+     * @return A singleton instance of FileLogger.
+     */
     @Bean
     @Scope("singleton")
     public Logger logger() {
         return new FileLogger();
     }
 
+    /**
+     * Bean for ConfigModel: Singleton instance of configuration model.
+     * Initializes configuration with default values, including random client generation policy, map size, etc.
+     *
+     * @param logger The logger used to log the configuration creation process.
+     * @return A singleton instance of ConfigModel.
+     */
     @Bean
     @Scope("singleton")
     public ConfigModel configModel(Logger logger) {
