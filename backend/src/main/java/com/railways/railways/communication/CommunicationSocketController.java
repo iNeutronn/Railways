@@ -1,7 +1,10 @@
 package com.railways.railways.communication;
 
 import com.google.gson.Gson;
+import com.railways.railways.communication.DTO.ClientReachedQueue;
+
 import com.railways.railways.communication.DTO.GenerationUpdateDTO;
+import com.railways.railways.communication.DTO.GenerationUpdateTypes;
 import com.railways.railways.logging.LogLevel;
 import com.railways.railways.logging.Logger;
 import com.railways.railways.simulation.SimulationService;
@@ -93,6 +96,24 @@ public class CommunicationSocketController extends TextWebSocketHandler {
             logger.log("Error sending message: " + e.getMessage(), LogLevel.Error);
         }
     }
+
+    @Override
+    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
+        String payload = message.getPayload();
+        logger.log("Received message: " + payload + " from session: " + session.getId(), LogLevel.Info);
+
+        try {
+            ClientReachedQueue queueUpdate = gson.fromJson(payload, ClientReachedQueue.class);
+
+            int clientID = queueUpdate.getClientId();
+            int queueID = queueUpdate.getQueueId();
+            simulationService.getHall().clientReachedCashPoint(clientID,queueID);
+
+        } catch (Exception e) {
+            logger.log("Error processing message: " + e.getMessage(), LogLevel.Error);
+        }
+    }
+
 
     /**
      * Resumes the simulation by calling the start method of the {@link SimulationService}.

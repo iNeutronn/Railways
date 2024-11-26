@@ -168,4 +168,8 @@ public class SimulationService {
     public int openCashPoint(int id) {
         return hall.openTicketOffice(id);
     }
+
+    public Hall getHall() {
+        return hall;
+    }
 }

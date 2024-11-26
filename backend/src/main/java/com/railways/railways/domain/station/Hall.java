@@ -1,6 +1,6 @@
 package com.railways.railways.domain.station;
-import com.railways.railways.Configuration.ConfigModel;
 import com.railways.railways.Configuration.MapSize;
+import com.railways.railways.Configuration.WebSocketConfig;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientCreated;
 import com.railways.railways.events.ClientCreatedEvent;
@@ -8,6 +8,7 @@ import com.railways.railways.events.QueueTransferedEvent;
 import com.railways.railways.logging.Logger;
 import com.railways.railways.logging.LogLevel;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 
 import java.awt.*;
 import java.util.*;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 public class Hall {
 
+    private final List<Client> clientsThatAreGoingToCashPoint = new ArrayList<>();
     private List<TicketOffice> ticketOffices;
     private List<Entrance> entrances;
     private TicketOffice reservedTicketOffice;
@@ -99,23 +101,9 @@ public class Hall {
 
         var ticketOffice = getBestTicketOffice(entrancePoint);
 
+        clientsThatAreGoingToCashPoint.add(client);
+        publishClientCreatedEvent(client, selectedEntrance, ticketOffice);
 
-        var distance = entrancePoint.distance(ticketOffice.getSegment().start);
-        distance -= ticketOffice.getQueueSize();
-        var time = (double) (distance * moveSpeed);
-        publishClientCreatedEvent(client, selectedEntrance, ticketOffice,time);
-
-
-        if (distance < 0) {
-            distance = 1;
-        }
-        imitateMoving((long) time);
-
-        // Add the client to the nearest ticket office
-        ticketOffice.addClient(client);
-        logger.log("Client " + client.getFullName() +
-                " added to ticket office " + ticketOffice.getOfficeID()
-                + " with move time: " + distance * moveSpeed, LogLevel.Info);
     }
 
     /**
@@ -249,27 +237,27 @@ public class Hall {
      * @param client the client being processed
      * @param entrance the entrance the client is using
      * @param ticketOffice the ticket office the client is directed to
-     * @param time the time taken for the client to reach the office
      */
-    private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice, double time) {
+    private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice) {
         ClientCreatedEvent event = new ClientCreatedEvent(
                 this,
-                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID(), time)
+                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID())
         );
         applicationEventPublisher.publishEvent(event);
     }
 
-    /**
-     * Imitates the client's movement by sleeping the current thread for the given amount of time.
-     *
-     * @param millis the time in milliseconds to simulate movement
-     */
-    private void imitateMoving(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            logger.log("Thread interrupted while imitating moving: " + e.getMessage(), LogLevel.Error);
-            Thread.currentThread().interrupt(); // Restore interrupted status
+    private void waitToReachCashPoint(@NonNull Client client) {
+      while (true)
+        {
+            if(!client.isClientGoingToCashPoint().get())
+                break;
+
         }
+    }
+
+    public void clientReachedCashPoint(int clientId,int cashPointId) {
+        Client client = clientsThatAreGoingToCashPoint.stream().filter(c -> c.getClientID() == clientId).findFirst().orElse(null);
+        clientsThatAreGoingToCashPoint.remove(client);
+        ticketOffices.stream().filter(ticketOffice -> ticketOffice.getOfficeID() == cashPointId).findFirst().ifPresent(ticketOffice -> ticketOffice.addClient(client));
     }
 }

@@ -46,4 +46,5 @@ public abstract class GenerationUpdateDTO implements Serializable {
         this.type = type;
         this.data = data;
     }
+
 }

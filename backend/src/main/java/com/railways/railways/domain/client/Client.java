@@ -1,6 +1,7 @@
 package com.railways.railways.domain.client;
 
 import java.awt.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a client with personal details, ticket information, and privilege level.
@@ -19,6 +20,7 @@ public class Client {
     private int ticketsToBuy;
     // Timestamp indicating when the client was created (in milliseconds)
     private final long timestamp;
+    private AtomicBoolean isClientGoingToCashPoint = new AtomicBoolean(true);
 
     /**
      * Constructs a Client object with the provided details.
@@ -127,6 +129,14 @@ public class Client {
      */
     public void setTicketsToBuy(int ticketsToBuy) {
         this.ticketsToBuy = ticketsToBuy;
+    }
+
+    public void setClientGoingToCashPoint(AtomicBoolean isClientGoingToCashPoint) {
+        this.isClientGoingToCashPoint = isClientGoingToCashPoint;
+    }
+
+    public AtomicBoolean isClientGoingToCashPoint() {
+        return isClientGoingToCashPoint;
     }
 
 }

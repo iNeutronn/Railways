@@ -11,8 +11,6 @@ public class ClientCreated {
     private  int entranceId;
     // The ID of the ticket office associated with this event
     private  int ticketOfficeId;
-    // The time when the client was created (in some time unit, e.g., seconds)
-    private double time;
 
     /**
      * Constructs a ClientCreated event with the given details.
@@ -20,12 +18,10 @@ public class ClientCreated {
      * @param client the client that was created
      * @param entranceId the ID of the entrance where the client is located
      * @param ticketOfficeId the ID of the ticket office associated with the event
-     * @param time the time when the client was created
      */
-    public ClientCreated(Client client, int entranceId, int ticketOfficeId, double time) {
+    public ClientCreated(Client client, int entranceId, int ticketOfficeId) {
         this.client = client;
         this.entranceId = entranceId;
         this.ticketOfficeId = ticketOfficeId;
-        this.time = time;
     }
 }

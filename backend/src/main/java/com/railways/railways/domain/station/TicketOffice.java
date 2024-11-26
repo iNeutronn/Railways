@@ -45,6 +45,9 @@ public class TicketOffice implements Runnable {
     /** The logger used for logging events and actions. */
     private final Logger logger;
 
+    private final Object queueLock = new Object();
+
+
     /**
      * Constructs a TicketOffice with specified properties.
      *
@@ -117,8 +120,16 @@ public class TicketOffice implements Runnable {
      * @throws InterruptedException if the thread is interrupted while serving
      */
     public void serveClient() throws InterruptedException {
-        Client client = clientsQueue.take();
-
+        Client client;
+        while (true)
+        {
+            synchronized (queueLock) {
+                if(!clientsQueue.isEmpty()) {
+                    client = clientsQueue.take();
+                    break;
+                }
+            }
+        }
         int serviceTime = getRandomServeTime();
         String startTime = ZonedDateTime.now().format(isoFormatter);
 
@@ -154,10 +165,12 @@ public class TicketOffice implements Runnable {
      * @param client the client to be added
      */
     public void addClient(Client client) {
-        clientsQueue.offer(client); // Thread-safe addition
+        synchronized (queueLock) {
+            clientsQueue.offer(client); // Thread-safe addition
+            publishQueueUpdate();
+        }
         logger.log("Client " + client.getFullName() +
                 " (ID: " + client.getClientID() + ") added to the queue.", LogLevel.Info);
-        publishQueueUpdate();
     }
 
     /**

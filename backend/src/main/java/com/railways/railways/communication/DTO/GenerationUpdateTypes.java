@@ -23,6 +23,7 @@ public enum GenerationUpdateTypes {
      * Represents an update indicating that the queue has been updated.
      */
     QueueUpdated,
+    ClientReachedQueue,
     /**
      * Represents an update indicating that a client has been transferred to a different queue.
      */
