@@ -61,16 +61,18 @@ public class AppConfig {
         CashPointLocationGenerator cashPointLocationGenerator = new CashPointLocationGenerator(
                 config.getMapSize(), 1, 1);
         var entranceConfigs = entranceLocationGenerator.getLocations(config.getEntranceCount(), false);
+        config.setEntranceConfigs(entranceConfigs);
+
 
         logger.log("Generated and set entrance configurations: " + entranceConfigs.size(), LogLevel.Debug);
+        var cashPointConfigs = cashPointLocationGenerator.getLocations(config.getCashPointCount(), false);
 
-        var cashPointConfigs = cashPointLocationGenerator.getLocations(config.getCashPointCount()+1, false);
-        config.setEntranceConfigs(entranceConfigs);
+
+        config.setCashpointConfigs(cashPointConfigs.subList(0, cashPointConfigs.size() ));
+        var reservedCashPointConfig = cashPointLocationGenerator.getConfigByDirection(Direction.Left);
+        config.setReservCashPointConfig(reservedCashPointConfig);
+
         logger.log("Generated cash point configurations: " + cashPointConfigs.size(), LogLevel.Debug);
-
-        //set all cash point without last one (last is reserved)
-        config.setCashpointConfigs(cashPointConfigs.subList(0, cashPointConfigs.size() - 1));
-        config.setReservCashPointConfig(cashPointConfigs.getLast());
 
 
         logger.log("Configuration model successfully created", LogLevel.Info);
