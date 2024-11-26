@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
  * It provides endpoints for starting, stopping, resuming the simulation, and managing cashpoints.
  */
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/simulation")
 public class SimulationController {
     // The service that handles simulation logic
