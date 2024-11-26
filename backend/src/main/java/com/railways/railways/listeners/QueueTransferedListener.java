@@ -9,14 +9,27 @@ import com.railways.railways.events.QueueUpdatedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Listener for handling queue transfer events.
+ */
 @Component
 public class QueueTransferedListener {
     private final CommunicationSocketController socketController;
 
+    /**
+     * Constructor to inject the CommunicationSocketController.
+     *
+     * @param socketController the socket controller to send updates
+     */
     public QueueTransferedListener(CommunicationSocketController socketController) {
         this.socketController = socketController;
     }
 
+    /**
+     * Handles QueueUpdatedEvent by sending a queue transfer update.
+     *
+     * @param event the queue update event
+     */
     @EventListener
     public void onQueueTransfer(QueueUpdatedEvent event) {
         QueueUpdate queueUpdate = event.getQueueUpdate();

@@ -1,10 +1,10 @@
 package com.railways.railways;
 
-import com.railways.railways.Configuration.CashPointConfig;
-import com.railways.railways.Configuration.ConfigModel;
-import com.railways.railways.Configuration.EntranceConfig;
+import com.railways.railways.Configuration.*;
 import com.railways.railways.domain.station.Direction;
-import com.railways.railways.simulation.IntervalPolicy;
+import com.railways.railways.logging.FileLogger;
+import com.railways.railways.logging.LogLevel;
+import com.railways.railways.logging.Logger;
 import com.railways.railways.simulation.RandomPolicy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,43 +15,67 @@ import java.util.List;
 
 @Configuration
 public class AppConfig {
+    /**
+     * Bean for logger: Singleton instance of FileLogger.
+     * The logger is used to log messages throughout the application.
+     *
+     * @return A singleton instance of FileLogger.
+     */
     @Bean
     @Scope("singleton")
-    public ConfigModel configModel() {
-        // Створюємо дефолтні конфігурації для касових пунктів
-        List<CashPointConfig> cashpointConfigs = Arrays.asList(
-                new CashPointConfig() {{ id = 1; x = 0; y = 3; direction = Direction.Down; }},
-                new CashPointConfig() {{ id = 2; x = 5; y = 3; direction = Direction.Down; }},
-                new CashPointConfig() {{ id = 3; x = 10; y = 3; direction = Direction.Down; }}
-        );
+    public Logger logger() {
+        return new FileLogger();
+    }
 
-        // Створюємо дефолтну конфігурацію для резервного касового пункту
-        CashPointConfig reservCashPointConfig = new CashPointConfig() {{
-            id = 4;
-            x = 15;
-            y = 3;
-            direction = Direction.Down;
-        }};
-
-        // Створюємо дефолтні конфігурації для входів
-        List<EntranceConfig> entranceConfigs = Arrays.asList(
-                new EntranceConfig() {{id = 1; x = 10; y = 10; }},
-                new EntranceConfig() {{id = 2; x = 15; y = 15; }}
-        );
+    /**
+     * Bean for ConfigModel: Singleton instance of configuration model.
+     * Initializes configuration with default values, including random client generation policy, map size, etc.
+     *
+     * @param logger The logger used to log the configuration creation process.
+     * @return A singleton instance of ConfigModel.
+     */
+    @Bean
+    @Scope("singleton")
+    public ConfigModel configModel(Logger logger) {
+        logger.log("Creating default configuration", LogLevel.Info);
 
         // Створюємо та повертаємо конфігурацію
         ConfigModel config = new ConfigModel(
                 new RandomPolicy(5.0,10.0),
+                new MapSize(100,70),
                 3, // Кількість касових пунктів
-                cashpointConfigs,
-                reservCashPointConfig,
-                entranceConfigs,
                 2, // Кількість входів
                 1000, // Мінімальний час обслуговування
                 5000, // Максимальний час обслуговування
                 50, // Максимальна кількість людей
                 10 // швидкість руху клієнтів
         );
+        logger.log("Base ConfigModel object created", LogLevel.Debug);
+
+        config.setCashPointSize(5,3);
+        logger.log("CashPoint size set to 5x3", LogLevel.Debug);
+
+
+        EntranceLocationGenerator entranceLocationGenerator = new EntranceLocationGenerator(
+                config.getMapSize(), 5, 1);
+        CashPointLocationGenerator cashPointLocationGenerator = new CashPointLocationGenerator(
+                config.getMapSize(), 5, 3);
+        var entranceConfigs = entranceLocationGenerator.getLocations(config.getEntranceCount(), false);
+
+        logger.log("Generated and set entrance configurations: " + entranceConfigs.size(), LogLevel.Debug);
+
+        var cashPointConfigs = cashPointLocationGenerator.getLocations(config.getCashPointCount()+1, false);
+        config.setEntranceConfigs(entranceConfigs);
+        logger.log("Generated cash point configurations: " + cashPointConfigs.size(), LogLevel.Debug);
+
+        //set all cash point without last one (last is reserved)
+        config.setCashpointConfigs(cashPointConfigs.subList(0, cashPointConfigs.size() - 1));
+        config.setReservCashPointConfig(cashPointConfigs.getLast());
+
+
+        logger.log("Configuration model successfully created", LogLevel.Info);
         return config;
     }
+
+
 }

@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * ConfigController provides REST API to access and modify the configuration of the railway ticketing system.
+ * ConfigController provides a REST API to access and modify the configuration of the railway ticketing system.
+ * It includes endpoints for retrieving and updating various configuration settings.
  */
 @RestController
 @CrossOrigin(origins = "*")
@@ -13,14 +14,17 @@ import java.util.List;
 public class ConfigController {
 
     private final ConfigModel configModel;
+    private final MapGenerationHelper mapGenerationHelper;
 
     /**
      * Constructor for ConfigController, accepting a configuration model.
      *
      * @param configModel the configuration for the railway ticketing system
+     * @param mapGenerationHelper the helper for generating and updating map configurations
      */
-    public ConfigController(ConfigModel configModel) {
+    public ConfigController(ConfigModel configModel, MapGenerationHelper mapGenerationHelper) {
         this.configModel = configModel;
+        this.mapGenerationHelper = mapGenerationHelper;
     }
 
     /**
@@ -53,7 +57,7 @@ public class ConfigController {
      */
     @PostMapping("/cashpointsCount")
     public ConfigModel updateCashpointsCount(@RequestParam int cashpointsCount) {
-        configModel.setCashPointCount(cashpointsCount);
+        mapGenerationHelper.updateCashPointConfigs(cashpointsCount);
         return configModel;
     }
 
@@ -97,7 +101,7 @@ public class ConfigController {
      */
     @PostMapping("/entranceCount")
     public ConfigModel updateEntranceCount(@RequestParam int entranceCount) {
-        configModel.setEntranceCount(entranceCount);
+        mapGenerationHelper.updateEntranceConfigs(entranceCount);
         return configModel;
     }
 
@@ -164,6 +168,29 @@ public class ConfigController {
     @PostMapping("/maxPeopleAllowed")
     public ConfigModel updateMaxPeopleAllowed(@RequestParam int maxPeopleAllowed) {
         configModel.setMaxPeopleAllowed(maxPeopleAllowed);
+        return configModel;
+    }
+
+    /**
+     * Endpoint to get the map size.
+     *
+     * @return the current map size
+     */
+    @GetMapping("/mapSize")
+    public MapSize getMapSize() {
+        return configModel.getMapSize();
+    }
+
+    /**
+     * Endpoint to update the map size.
+     *
+     * @param width the new width of the map
+     * @param height the new height of the map
+     * @return the updated configuration model
+     */
+    @PostMapping("/mapSize")
+    public ConfigModel updateMapSize(@RequestParam int width, @RequestParam int height) {
+        mapGenerationHelper.updateMapSize(new MapSize(width, height));
         return configModel;
     }
 }
