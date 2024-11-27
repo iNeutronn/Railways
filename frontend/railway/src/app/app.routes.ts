@@ -5,5 +5,5 @@ import { StartPageComponent } from './components/start-page/start-page.component
 export const routes: Routes = [
     {path:'map', component: MapPageComponent},
     {path:'start', component: StartPageComponent},
-    { path: '', redirectTo: '/map', pathMatch: 'full' }
+    { path: '', redirectTo: '/start', pathMatch: 'full' }
 ];
