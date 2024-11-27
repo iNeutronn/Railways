@@ -49,6 +49,7 @@ public class MapGenerationHelper {
      * @param entranceCount the number of entrances to be configured
      */
     public void updateEntranceConfigs(int entranceCount) {
+        cashPointLocationGenerator.updateMapSize(configModel.getMapSize());
         configModel.setEntranceCount(entranceCount);
         configModel.setEntranceConfigs(entranceLocationGenerator.getLocations(entranceCount, false));
     }
@@ -62,6 +63,7 @@ public class MapGenerationHelper {
     public void updateCashPointConfigs(int cashPointCount) {
         configModel.setCashPointCount(cashPointCount);
         cashPointLocationGenerator.reset();
+        cashPointLocationGenerator.updateMapSize(configModel.getMapSize());
         configModel.setCashpointConfigs(cashPointLocationGenerator.getLocations(cashPointCount, false));
         configModel.setReservCashPointConfig(cashPointLocationGenerator.getConfigByDirection(Direction.Left));
     }
