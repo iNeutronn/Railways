@@ -30,7 +30,7 @@ export class MapPositionHelper {
     return !clients.some(c => c.position.x === targetPosition.x && c.position.y === targetPosition.y);
   }
 
-  findCashServingPoint(map: MapSize, cashDesk: CashDesk): Position{
+  findCashServingPoint(map: MapSize, client: Client, cashDesk: CashDesk): Position{
     const cashDeskPosition: Position = cashDesk.position;
     const maxIndexX = map.height - 1;
     const maxIndexY = map.width - 1;
@@ -40,22 +40,25 @@ export class MapPositionHelper {
       y: cashDeskPosition.y,
     }
 
-    console.log(cashDeskPosition, maxIndexX, maxIndexY);
+    let queueOffset = cashDesk.queue.findIndex(c => c.clientID === client.clientID);
+
+    if(queueOffset < 0)
+      queueOffset = 0;
+
     if(cashDeskPosition.x == 0) {
-      position.x += cashDesk.queue.length + 1;
+      position.x += queueOffset + 1;
     }
 
     if(cashDeskPosition.x >= maxIndexX) {
-      position.x -= cashDesk.queue.length - 1;
+      position.x -= (queueOffset + 1);
     }
 
     if(cashDeskPosition.y == 0) {
-      position.y += cashDesk.queue.length + 1;
+      position.y += queueOffset + 1;
     }
 
     if(cashDeskPosition.y >= maxIndexY) {
-      console.log('invoked')
-      position.y -= (cashDesk.queue.length + 1);
+      position.y -= (queueOffset + 1);
     }
 
     return position;

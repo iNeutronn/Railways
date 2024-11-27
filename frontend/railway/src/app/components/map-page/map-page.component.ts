@@ -13,7 +13,7 @@ import {Position} from '../../models/position';
 import {WebSocketService} from '../../services/socket/web-socket.service';
 import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
 import {SimulationService} from '../../services/simulation/simulation.service';
-import {interval, map, Subscription, takeWhile} from 'rxjs';
+import {interval, Subscription, takeWhile} from 'rxjs';
 import {MapPositionHelper} from '../../helpers/mapPositionHelper';
 import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
 
@@ -48,8 +48,6 @@ export class MapPageComponent implements OnInit {
 
   isSimulationActive: boolean = false;
   isSidebarOpen: boolean = false;
-  maxIndexX: number = 0;
-  maxIndexY: number = 0;
   cellSize: number = 50;
 
   entrances: Entrance[] = [];
@@ -67,7 +65,7 @@ export class MapPageComponent implements OnInit {
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
-  
+
   ngOnInit() {
     this.webSocketService.connect();
     this.webSocketService.getCreatedClientsMessages().subscribe((message) => {
@@ -80,11 +78,10 @@ export class MapPageComponent implements OnInit {
       this.handleClientServingStartedEvent(message);
     });
 
-    this.calculateScaleFactor();
     this.configService.getConfiguration().subscribe(configuration => {
 
-      console.log(configuration, 'Configuration');
       this.handleConfigurationResponse(configuration);
+      console.log(configuration, 'Configuration');
       console.log(this.entrances, 'Entrances');
       console.log(this.cashDesks, 'cashDesks');
     });
@@ -107,10 +104,12 @@ export class MapPageComponent implements OnInit {
         console.log(`Client ${clientId} finished serving at ticket office ${ticketOfficeId}`);
 
         // Видалити клієнта зі списку
+        this.clients = this.clients.filter(c => c.clientID !== clientId);
         ticketOffice.queue = ticketOffice.queue.filter(c => c.clientID !== clientId);
         console.log('new queue', ticketOffice.queue.map(q => q.clientID).join(', '));
-        this.clients = this.clients.filter(c => c.clientID !== clientId);
-      }, timeNeeded * 1000); // `timeNeeded` переводимо у мілісекунди
+
+        this.updateQueuePositions(ticketOffice);
+      }, timeNeeded * 1000);
     } else {
       console.warn(`Client or ticket office not found for event:`, clientServing);
     }
@@ -199,16 +198,6 @@ export class MapPageComponent implements OnInit {
     })
   }
 
-  calculateScaleFactor() {
-    if (this.stationContainer) {
-      const containerWidth = this.stationContainer.nativeElement.getBoundingClientRect().width;
-      const containerHeight = this.stationContainer.nativeElement.getBoundingClientRect().height;
-
-      this.maxIndexX = Math.floor(containerHeight / this.cellSize) - 1;
-      this.maxIndexY = Math.floor(containerWidth / this.cellSize) - 1;
-    }
-  }
-
   getPrivilegeLabel(privilege: PrivilegeEnum): string {
     return PrivilegeEnumLabels[privilege];
   }
@@ -221,26 +210,39 @@ export class MapPageComponent implements OnInit {
     }
 
     const client = this.clients[clientIndex];
-    let target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
+    let target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, client, cashDesk);
 
     return interval(intervalMs).pipe(
-      takeWhile(() => this.calculateDistance(client.position, target) > 0),
+      takeWhile(() => this.calculateDistance(client.position, target) != 0),
     ).subscribe(() => {
+
+      target = this.mapPositionHelper.findCashServingPoint(this.mapSize, client, cashDesk);
       const distance = this.calculateDistance(client.position, target);
 
-      if(cashDesk.queue.length == 0){
-        target = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
-      }
-
-      if (distance < 2 && !cashDesk.queue.includes(client)) {
+      if (distance == 1 && !cashDesk.queue.map(c => c.clientID).includes(client.clientID)) {
         this.joinQueue(client, cashDesk);
       }
 
-      if (distance > 0) {
+      if (distance != 0) {
         this.moveClient(client, target, stepSize);
       }
+
+      /*// Якщо клієнт досяг цілі, оновіть позиції інших клієнтів в черзі
+      if (distance === 0 && client.clientID === cashDesk.queue[0]?.clientID) {
+        this.updateQueuePositions(cashDesk);
+      }*/
     });
   }
+
+  updateQueuePositions(cashDesk: CashDesk) {
+    // Оновлення позицій всіх клієнтів після того, як один з них вийшов з черги
+    for (let i = 0; i < cashDesk.queue.length; i++) {
+      const client = cashDesk.queue[i];
+      let target = this.mapPositionHelper.findCashServingPoint(this.mapSize, client, cashDesk);
+      this.moveClient(client, target, 1);
+    }
+  }
+
 
   private calculateDistance(position: Position, target: Position): number {
     const deltaX = target.x - position.x;
@@ -266,61 +268,6 @@ export class MapPageComponent implements OnInit {
       { x: client.position.x + moveX, y: client.position.y + moveY }, this.clients)) {
       client.position.x += moveX;
       client.position.y += moveY;
-    }
-  }
-
-  serveClient(client: Client, cashDesk: CashDesk): void {
-    if(cashDesk.queue.find(c => c.clientID == client.clientID)) {
-
-    }
-  }
-
-  // clients moving as a queue
-  moveQueue(ticketOfficeId: number) {
-    const clients = this.cashDesks.find(c => c.id == ticketOfficeId)
-      ?.queue;
-
-    if(!clients)
-      return;
-
-    const previousPositions = [...this.clients];
-
-    for (let i = 1; i < clients.length; i++) {
-      const previousClient = previousPositions[i - 1];
-      const currentClient = this.clients[i];
-      this.moveClientById(currentClient.clientID, 0, -1);
-    }
-
-    const firstClient = this.clients[0];
-    this.moveClientById(firstClient.clientID, 0, -1);
-  }
-
-  moveToPosition(id: number, newX: number, newY: number) {
-    const clientIndex = this.clients.findIndex(client => client.clientID === id);
-    if (clientIndex !== -1) {
-      const client = this.clients[clientIndex];
-
-      this.clients = [
-        ...this.clients.slice(0, clientIndex),
-        { ...client, position: {x: newX, y: newY} },
-        ...this.clients.slice(clientIndex + 1)
-      ];
-    }
-  }
-
-  // move to position depending on offsets
-  moveClientById(id: number, offsetX: number, offsetY: number) {
-    const clientIndex = this.clients.findIndex(client => client.clientID === id);
-    if (clientIndex !== -1) {
-      const client = this.clients[clientIndex];
-      const newX = client.position.x + offsetX;
-      const newY = client.position.y + offsetY;
-
-      this.clients = [
-        ...this.clients.slice(0, clientIndex),
-        { ...client, position: {x: newX, y: newY} },
-        ...this.clients.slice(clientIndex + 1)
-      ];
     }
   }
 
