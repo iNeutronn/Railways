@@ -1,5 +1,7 @@
 package com.railways.railways.Configuration;
 
+import com.railways.railways.simulation.IntervalGenerationPolicy;
+import com.railways.railways.simulation.RandomGenerationPolicy;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -193,4 +195,17 @@ public class ConfigController {
         mapGenerationHelper.updateMapSize(new MapSize(width, height));
         return configModel;
     }
+
+    @PostMapping("/setRandomGenerationPolicy")
+    public ConfigModel setGenerationPolicy(@RequestParam double minTime, @RequestParam double maxTime) {
+        configModel.setGenerationPolicy(new RandomGenerationPolicy(minTime, maxTime));
+        return configModel;
+    }
+
+    @PostMapping("/setIntervalGenerationPolicy")
+    public ConfigModel setIntervalGenerationPolicy(@RequestParam double interval) {
+        configModel.setGenerationPolicy(new IntervalGenerationPolicy(interval));
+        return configModel;
+    }
+
 }

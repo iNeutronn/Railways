@@ -5,13 +5,10 @@ import com.railways.railways.domain.station.Direction;
 import com.railways.railways.logging.FileLogger;
 import com.railways.railways.logging.LogLevel;
 import com.railways.railways.logging.Logger;
-import com.railways.railways.simulation.RandomPolicy;
+import com.railways.railways.simulation.RandomGenerationPolicy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class AppConfig {
@@ -41,7 +38,7 @@ public class AppConfig {
 
         // Створюємо та повертаємо конфігурацію
         ConfigModel config = new ConfigModel(
-                new RandomPolicy(5.0,10.0),
+                new RandomGenerationPolicy(5.0,10.0),
                 new MapSize(100,70),
                 3, // Кількість касових пунктів
                 2, // Кількість входів

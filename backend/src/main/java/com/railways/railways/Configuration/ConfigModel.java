@@ -1,5 +1,8 @@
 package com.railways.railways.Configuration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.railways.railways.communication.DTO.GenerationUpdateDTO;
 import com.railways.railways.simulation.GenerationPolicy;
 
@@ -42,6 +45,14 @@ public class ConfigModel {
     //speed of client
     private double clientSpeed;
 
+    @JsonProperty("generationType")
+    public String getGenerationType() {
+        return generationPolicy != null ? generationPolicy.getClass().getSimpleName() : null;
+    }
+    @JsonProperty("generationPolicySerialized")
+    public Object getGenerationPolicyForSerialization() {
+       return generationPolicy.toJson();
+    }
     /**
      * Constructor to initialize the configuration with given parameters.
      *
