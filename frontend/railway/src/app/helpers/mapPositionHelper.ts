@@ -1,7 +1,5 @@
-import {Injectable} from '@angular/core';
 import {Position} from '../models/position';
 import {Client} from '../models/entities/client';
-import {Entrance} from '../models/entities/entrance';
 import {MapSize} from '../models/dtos/map-size';
 import {CashDesk} from '../models/entities/cash-desk';
 
@@ -34,17 +32,20 @@ export class MapPositionHelper {
 
   findCashServingPoint(map: MapSize, cashDesk: CashDesk): Position{
     const cashDeskPosition: Position = cashDesk.position;
+    const maxIndexX = map.height - 1;
+    const maxIndexY = map.width - 1;
 
     let position: Position = {
       x: cashDeskPosition.x,
       y: cashDeskPosition.y,
     }
 
+    console.log(cashDeskPosition, maxIndexX, maxIndexY);
     if(cashDeskPosition.x == 0) {
       position.x += cashDesk.queue.length + 1;
     }
 
-    if(cashDeskPosition.x > map.height) {
+    if(cashDeskPosition.x >= maxIndexX) {
       position.x -= cashDesk.queue.length - 1;
     }
 
@@ -52,8 +53,9 @@ export class MapPositionHelper {
       position.y += cashDesk.queue.length + 1;
     }
 
-    if(cashDeskPosition.y > map.width) {
-      position.y -= cashDesk.queue.length - 1;
+    if(cashDeskPosition.y >= maxIndexY) {
+      console.log('invoked')
+      position.y -= (cashDesk.queue.length + 1);
     }
 
     return position;
