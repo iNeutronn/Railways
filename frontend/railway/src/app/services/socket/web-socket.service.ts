@@ -4,6 +4,7 @@ import { ClientCreatedDto } from '../../models/dtos/ClientCreatedDto';
 import {Client} from '../../models/entities/client';
 import {EventTypes} from '../../models/enums/event-type';
 import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
+import { QueueUpdatedDto } from '../../models/dtos/QueueUpdatedDto';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class WebSocketService {
   private socket!: WebSocket;
   private clientCreatedMessageSubject = new Subject<ClientCreatedDto>()
   private clientServingStartedSubject = new Subject<ClientServingStartedDto>();
+  private queueUpdatedSubject = new Subject<QueueUpdatedDto>();
 
   constructor() { }
 
@@ -49,6 +51,10 @@ export class WebSocketService {
 
   public getClientServingStartedMessages() {
     return this.clientServingStartedSubject.asObservable();
+  }
+
+  public getQueueUpdatedMessages() {
+    return this.queueUpdatedSubject.asObservable();
   }
 
   public sendMessage(message: string): void {
