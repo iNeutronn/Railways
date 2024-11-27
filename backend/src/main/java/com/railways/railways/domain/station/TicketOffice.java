@@ -161,7 +161,7 @@ public class TicketOffice implements Runnable {
      */
     private int getRandomServeTime() {
         Random random = new Random();
-        return random.nextInt(maxServiceTime - minServiceTime + 1) + minServiceTime;
+        return random.nextInt(minServiceTime, maxServiceTime + 1);
     }
 
     /**
