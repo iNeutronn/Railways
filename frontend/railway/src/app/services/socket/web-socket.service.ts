@@ -9,7 +9,7 @@ import {EventTypes} from '../../models/enums/event-type';
 })
 export class WebSocketService {
   private socket!: WebSocket;
-  private messageSubject = new Subject<ClientCreatedDto>();
+  private clientCreatedMessageSubject = new Subject<ClientCreatedDto>();
   constructor() { }
 
   public connect(): void {
@@ -21,7 +21,7 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const message: ClientCreatedDto = JSON.parse(event.data);
-      this.messageSubject.next(message);
+      this.clientCreatedMessageSubject.next(message);
     };
 
     this.socket.onclose = () => {
@@ -33,8 +33,8 @@ export class WebSocketService {
     };
   }
 
-  public getMessages() {
-    return this.messageSubject.asObservable();
+  public getCreatedClientsMessages() {
+    return this.clientCreatedMessageSubject.asObservable();
   }
 
   public sendMessage(message: string): void {
@@ -50,13 +50,13 @@ export class WebSocketService {
     };
 
     // Create the message object
-    const message = {
-      eventType: EventTypes.JoinedQueue,
+    /*const message = {
+      eventType: EventTypes[EventTypes.JoinedQueue],
       payload: payload
-    };
+    };*/
 
-    this.socket.send(JSON.stringify(message));
-    console.log('Sent JoinedQueue event:', message);
+    this.socket.send(JSON.stringify(payload));
+    console.log('Sent JoinedQueue event:', payload);
   }
 
   public closeConnection(): void {
