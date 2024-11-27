@@ -16,6 +16,7 @@ import {SimulationService} from '../../services/simulation/simulation.service';
 import {interval, Subscription, takeWhile} from 'rxjs';
 import {MapPositionHelper} from '../../helpers/mapPositionHelper';
 import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
+import { QueueUpdatedDto } from '../../models/dtos/QueueUpdatedDto';
 
 @Component({
   selector: 'app-map-page',
@@ -78,6 +79,11 @@ export class MapPageComponent implements OnInit {
       console.log('Received message:', message);
       this.handleClientServingStartedEvent(message);
     });
+
+    this.webSocketService.getQueueUpdatedMessages().subscribe((message) => {
+      console.log('Received message:', message);
+      this.handleQueueUpdatedEvent(message);
+     });
 
     this.configService.getConfiguration().subscribe(configuration => {
 
@@ -148,6 +154,20 @@ export class MapPageComponent implements OnInit {
       }
     }
   }
+
+  handleQueueUpdatedEvent(queueUpdated: QueueUpdatedDto) {  
+    const cashDesk = this.cashDesks.find(c => c.id === queueUpdated.data.ticketOfficeID);
+    if (cashDesk && cashDesk.queue.length > 0) {    
+      const firstClient = cashDesk.queue[0];
+  
+      const remainingClients = cashDesk.queue.slice(1);
+  
+      const sortedQueue = queueUpdated.data.queue.map(id => remainingClients.find(client => client.clientID === id))
+      .filter(client => client !== undefined); 
+ 
+      cashDesk.queue = [firstClient, ...sortedQueue];
+    }}
+  
 
   handleConfigurationResponse(configuration: StationConfiguration) {
     console.log(configuration.mapSize.height)
