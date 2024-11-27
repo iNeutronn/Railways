@@ -1,7 +1,7 @@
 <div class="header">
   <div class="title">RAILWAY</div>
-  <div class="service-history">SERVICE HISTORY</div>
   <div class="controls">
+    <button class="service-history" (click)="toggleSidebar()">SERVICE HISTORY</button>
     <button class="start-simulation-btn" (click)="startSimulation()">Start</button>
   </div>
   <div class="settings" (click)="goToSettings()">
@@ -9,11 +9,16 @@
   </div>
 </div>
 
+
+<div class="sidebar" [ngClass]="{'open': isSidebarOpen}">
+</div>
+
 <div class="stats">
   <span class="stat">POST OFFICES: <strong>{{cashDesks.length}}</strong></span>
   <span class="stat">ENTRANCES: <strong>{{entrances.length}}</strong></span>
   <span class="stat">CLIENTS: <strong>{{clients.length}}</strong></span>
 </div>
+
 
 <div class="station-container" #stationContainer>
   <div *ngFor="let client of clients"
