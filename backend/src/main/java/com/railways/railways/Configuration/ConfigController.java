@@ -208,4 +208,16 @@ public class ConfigController {
         return configModel;
     }
 
+    @PostMapping("/setPolicyWithDefaultValues")
+    public ConfigModel setPolicyWithDefaultValues(@RequestParam String policy) {
+        policy = policy.toLowerCase();
+        if (policy.equals("random")) {
+            configModel.setGenerationPolicy(new RandomGenerationPolicy(5.0, 10.0));
+        } else if (policy.equals("interval")) {
+            configModel.setGenerationPolicy(new IntervalGenerationPolicy(7.0));
+        }
+        return configModel;
+
+    }
+
 }
