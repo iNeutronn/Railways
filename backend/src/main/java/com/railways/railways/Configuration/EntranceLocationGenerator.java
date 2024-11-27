@@ -62,6 +62,7 @@ public class EntranceLocationGenerator {
      * Entrance configurations are stored in the `possibleLocations` list.
      */
     private void generateAllPossibleLocations() {
+        possibleLocations.clear();
         int id = 0;
         for (int x = xEntrance; x + xEntrance <= mapSize.getWidth() - xEntrance; x += xEntrance) {
             EntranceConfig config = new EntranceConfig();

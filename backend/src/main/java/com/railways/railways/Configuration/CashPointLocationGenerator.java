@@ -85,6 +85,7 @@ public class CashPointLocationGenerator {
      * excluding the corner positions. Cash points are placed with a specified gap on each wall.
      */
     private void generateAllPossibleLocations() {
+        possibleLocations.clear();
         int id = 0;
         // Top wall (excluding corners)
         for (int x = xCashPoint; x + xCashPoint <= mapSize.getWidth() - xCashPoint; x += xCashPoint) {
