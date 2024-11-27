@@ -13,8 +13,9 @@ import {Position} from '../../models/position';
 import {WebSocketService} from '../../services/socket/web-socket.service';
 import {ClientCreatedDto} from '../../models/dtos/ClientCreatedDto';
 import {SimulationService} from '../../services/simulation/simulation.service';
-import {interval, Subscription, takeWhile} from 'rxjs';
+import {interval, map, Subscription, takeWhile} from 'rxjs';
 import {MapPositionHelper} from '../../helpers/mapPositionHelper';
+import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
 
 @Component({
   selector: 'app-map-page',
@@ -69,6 +70,11 @@ export class MapPageComponent implements OnInit {
       this.handleClientCreatedEvent(message);
     });
 
+    this.webSocketService.getClientServingStartedMessages().subscribe((message) => {
+      console.log('Received message:', message);
+      this.handleClientServingStartedEvent(message);
+    });
+
     this.calculateScaleFactor();
     this.configService.getConfiguration().subscribe(configuration => {
 
@@ -78,6 +84,33 @@ export class MapPageComponent implements OnInit {
       console.log(this.cashDesks, 'cashDesks');
     });
   }
+
+  handleClientServingStartedEvent(clientServing: ClientServingStartedDto): void {
+    const { clientId, ticketOfficeId, timeNeeded } = clientServing.data;
+
+    // Знайти клієнта у списку клієнтів
+    const client = this.clients.find(c => c.clientID === clientId);
+
+    // Знайти касу, до якої прив'язаний клієнт
+    const ticketOffice = this.cashDesks.find(c => c.id === ticketOfficeId);
+
+    if (client && ticketOffice) {
+      console.log(`Client ${clientId} started being served at ticket office ${ticketOfficeId}`);
+
+      // Залишити клієнта на точці протягом заданого часу
+      setTimeout(() => {
+        console.log(`Client ${clientId} finished serving at ticket office ${ticketOfficeId}`);
+
+        // Видалити клієнта зі списку
+        ticketOffice.queue = ticketOffice.queue.filter(c => c.clientID !== clientId);
+        console.log('new queue', ticketOffice.queue.map(q => q.clientID).join(', '));
+        this.clients = this.clients.filter(c => c.clientID !== clientId);
+      }, timeNeeded * 1000); // `timeNeeded` переводимо у мілісекунди
+    } else {
+      console.warn(`Client or ticket office not found for event:`, clientServing);
+    }
+  }
+
 
   handleClientCreatedEvent(clientCreated: ClientCreatedDto){
     const entrancePosition = this.entrances
@@ -183,19 +216,21 @@ export class MapPageComponent implements OnInit {
     }
 
     const client = this.clients[clientIndex];
-    const target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
+    let target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
 
     return interval(intervalMs).pipe(
-      takeWhile(() => this.calculateDistance(client.position, target) > 0)
+      takeWhile(() => this.calculateDistance(client.position, target) > 0),
     ).subscribe(() => {
       const distance = this.calculateDistance(client.position, target);
 
-      // Handle queue joining if the client is close enough
-      if (distance < 3 && !cashDesk.queue.includes(client)) {
+      if(cashDesk.queue.length == 0){
+        target = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
+      }
+
+      if (distance < 2 && !cashDesk.queue.includes(client)) {
         this.joinQueue(client, cashDesk);
       }
 
-      // Move the client if the distance is greater than 0 and the cell is not occupied
       if (distance > 0) {
         this.moveClient(client, target, stepSize);
       }

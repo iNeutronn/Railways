@@ -3,13 +3,16 @@ import { Subject } from 'rxjs';
 import { ClientCreatedDto } from '../../models/dtos/ClientCreatedDto';
 import {Client} from '../../models/entities/client';
 import {EventTypes} from '../../models/enums/event-type';
+import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebSocketService {
   private socket!: WebSocket;
-  private clientCreatedMessageSubject = new Subject<ClientCreatedDto>();
+  private clientCreatedMessageSubject = new Subject<ClientCreatedDto>()
+  private clientServingStartedSubject = new Subject<ClientServingStartedDto>();
+
   constructor() { }
 
   public connect(): void {
@@ -20,8 +23,15 @@ export class WebSocketService {
     };
 
     this.socket.onmessage = (event) => {
-      const message: ClientCreatedDto = JSON.parse(event.data);
-      this.clientCreatedMessageSubject.next(message);
+      const message = JSON.parse(event.data);
+      console.log(message)
+
+      if(message.type.toString() === EventTypes[EventTypes.ClientCreated]) {
+        this.clientCreatedMessageSubject.next(message);
+      }
+      else if(message.type.toString() === EventTypes[EventTypes.ClientServingStarted]) {
+        this.clientServingStartedSubject.next(message);
+      }
     };
 
     this.socket.onclose = () => {
@@ -35,6 +45,10 @@ export class WebSocketService {
 
   public getCreatedClientsMessages() {
     return this.clientCreatedMessageSubject.asObservable();
+  }
+
+  public getClientServingStartedMessages() {
+    return this.clientServingStartedSubject.asObservable();
   }
 
   public sendMessage(message: string): void {
