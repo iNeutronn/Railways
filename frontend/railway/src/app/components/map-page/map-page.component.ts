@@ -46,6 +46,7 @@ export class MapPageComponent implements OnInit {
     height: 0
   }
 
+  closedCashDeskId: number = -1;
   isSimulationActive: boolean = false;
   isSidebarOpen: boolean = false;
   cellSize: number = 50;
@@ -185,6 +186,7 @@ export class MapPageComponent implements OnInit {
       })
     }
 
+    this.closedCashDeskId = configuration.reservCashPointConfig.id;
     this.cashDesks.push({
       id: configuration.reservCashPointConfig.id,
       serviceTime: configuration.maxServiceTime,
@@ -289,6 +291,21 @@ export class MapPageComponent implements OnInit {
     }
 
     this.isSimulationActive = !this.isSimulationActive;
+  }
+
+  toggleCashDesk(id: number){
+    if(this.closedCashDeskId == id){
+    this.simulationService.cashPointOpenSimulation(id)
+      .subscribe((id) => {
+        this.closedCashDeskId = -1;
+      });
+    }
+    else {
+      this.simulationService.cashPointCloseSimulation(id)
+        .subscribe((id) => {
+          this.closedCashDeskId = id;
+        });
+    }
   }
 
   goToSettings(): void {
