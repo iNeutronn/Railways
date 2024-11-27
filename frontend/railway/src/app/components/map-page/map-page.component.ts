@@ -182,55 +182,62 @@ export class MapPageComponent implements OnInit {
 
   moveClientToPoint(clientId: number, cashDesk: CashDesk, stepSize: number = 1, intervalMs: number = 200): Subscription {
     const clientIndex = this.clients.findIndex(client => client.clientID === clientId);
-    let target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
-
-    console.log(cashDesk)
-    console.log("TargetX: ", target.x);
-    console.log("TargetY: ", target.y);
-
     if (clientIndex < 0) {
       console.error(`Client with ID ${clientId} not found.`);
       return null!;
     }
 
     const client = this.clients[clientIndex];
+    const target: Position = this.mapPositionHelper.findCashServingPoint(this.mapSize, cashDesk);
 
     return interval(intervalMs).pipe(
-      takeWhile(() => {
-
-        const deltaX = target.x - client.position.x;
-        const deltaY = target.y - client.position.y;
-        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
-        return distance > 0;
-      })
+      takeWhile(() => this.calculateDistance(client.position, target) > 0)
     ).subscribe(() => {
-      const deltaX = target.x - client.position.x;
-      const deltaY = target.y - client.position.y;
+      const distance = this.calculateDistance(client.position, target);
 
-      const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
+      // Handle queue joining if the client is close enough
       if (distance < 3 && !cashDesk.queue.includes(client)) {
-        cashDesk.queue.push(client);
-        console.log(`!!Client ${client.clientID} joined ` + cashDesk.id + ' cash point queue');
-        this.webSocketService.sendJoinedQueueEvent(client, cashDesk.id);
+        this.joinQueue(client, cashDesk);
       }
 
+      // Move the client if the distance is greater than 0 and the cell is not occupied
       if (distance > 0) {
-        const moveX = Math.abs(deltaX) <= stepSize ? deltaX : Math.sign(deltaX) * stepSize;
-        const moveY = Math.abs(deltaY) <= stepSize ? deltaY : Math.sign(deltaY) * stepSize;
-
-        if(!this.mapPositionHelper.isCellOccupied(
-          {
-            x: client.position.x + moveX,
-            y: client.position.y + moveY
-          },this.clients))
-        {
-          client.position.x += moveX;
-          client.position.y += moveY;
-        }
+        this.moveClient(client, target, stepSize);
       }
     });
+  }
+
+  private calculateDistance(position: Position, target: Position): number {
+    const deltaX = target.x - position.x;
+    const deltaY = target.y - position.y;
+    return Math.sqrt(deltaX ** 2 + deltaY ** 2);
+  }
+
+  private joinQueue(client: Client, cashDesk: CashDesk): void {
+    cashDesk.queue.push(client);
+    console.log(`!!Client ${client.clientID} joined ${cashDesk.id} cash point queue`);
+    this.webSocketService.sendJoinedQueueEvent(client, cashDesk.id);
+  }
+
+  private moveClient(client: Client, target: Position, stepSize: number): void {
+    const deltaX = target.x - client.position.x;
+    const deltaY = target.y - client.position.y;
+
+    const moveX = Math.abs(deltaX) <= stepSize ? deltaX : Math.sign(deltaX) * stepSize;
+    const moveY = Math.abs(deltaY) <= stepSize ? deltaY : Math.sign(deltaY) * stepSize;
+
+    // Ensure that the new position is not occupied
+    if (!this.mapPositionHelper.isCellOccupied(
+      { x: client.position.x + moveX, y: client.position.y + moveY }, this.clients)) {
+      client.position.x += moveX;
+      client.position.y += moveY;
+    }
+  }
+
+  serveClient(client: Client, cashDesk: CashDesk): void {
+    if(cashDesk.queue.find(c => c.clientID == client.clientID)) {
+
+    }
   }
 
   // clients moving as a queue

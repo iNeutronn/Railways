@@ -19,8 +19,9 @@ export class StationConfigurationService {
     const cashpointCount$ = this.setCashpointCount(configuration.cashPointCount!);
     const minServeTime$ = this.setMinServeTime(configuration.minServiceTime);
     const maxServeTime$ = this.setMaxServeTime(configuration.maxServiceTime);
+    const mapSize$ = this.setMapSize(configuration.mapSize.width, configuration.mapSize.height);
 
-    return forkJoin([entranceCount$, cashpointCount$, minServeTime$, maxServeTime$]);
+    return forkJoin([entranceCount$, cashpointCount$, minServeTime$, maxServeTime$, mapSize$]);
   }
 
     getConfiguration(){
