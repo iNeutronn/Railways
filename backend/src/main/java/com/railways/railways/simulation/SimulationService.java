@@ -2,6 +2,7 @@ package com.railways.railways.simulation;
 
 import com.railways.railways.Configuration.CashPointConfig;
 import com.railways.railways.Configuration.ConfigModel;
+import com.railways.railways.Configuration.EntranceConfig;
 import com.railways.railways.domain.client.ClientGenerator;
 import com.railways.railways.domain.client.PrivilegeEnum;
 import com.railways.railways.domain.station.Entrance;
@@ -28,7 +29,7 @@ import java.util.concurrent.Executors;
  */
 @Service
 public class SimulationService {
-    private final Hall hall;
+    private Hall hall;
     private final ExecutorService executorService;
     private final ClientGenerator clientGenerator;
     private HallSimulator hallSimulator;
@@ -47,7 +48,7 @@ public class SimulationService {
     public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Logger logger) {
         this.eventPublisher = eventPublisher;
         this.appConfig = appConfig;
-        this.hall = new Hall(appConfig.getMapSize(), logger);
+        this.hall = new Hall(appConfig, appConfig.getMapSize(), logger);
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
                 PrivilegeEnum.DEFAULT, 70,
@@ -97,12 +98,6 @@ public class SimulationService {
 
         hall.setMoveSpeed(appConfig.getClientSpeed());
 
-        // Configure entrances
-        List<Entrance> entrances = new ArrayList<>();
-        entrances.add(new Entrance(1, new Segment(new Point(0, 0), new Point(0, 1))));
-        entrances.add(new Entrance(2, new Segment(new Point(9, 9), new Point(10, 9))));
-
-        hall.setEntrances(entrances);
 
         logger.log("Hall setup complete", LogLevel.Info);
     }

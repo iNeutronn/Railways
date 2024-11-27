@@ -1,4 +1,7 @@
 package com.railways.railways.domain.station;
+import com.railways.railways.AppConfig;
+import com.railways.railways.Configuration.ConfigModel;
+import com.railways.railways.Configuration.EntranceConfig;
 import com.railways.railways.Configuration.MapSize;
 import com.railways.railways.Configuration.WebSocketConfig;
 import com.railways.railways.domain.client.Client;
@@ -22,13 +25,13 @@ public class Hall {
 
     private final List<Client> clientsThatAreGoingToCashPoint = new ArrayList<>();
     private List<TicketOffice> ticketOffices;
-    private List<Entrance> entrances;
     private TicketOffice reservedTicketOffice;
     private MapSize mapSize;
     private ApplicationEventPublisher applicationEventPublisher;
     private final Random random;
     private double moveSpeed = 100.0;
     private final Logger logger;
+    private final ConfigModel config;
 
     /**
      * Sets the ApplicationEventPublisher for event publishing.
@@ -45,13 +48,13 @@ public class Hall {
      * @param mapSize the size of the map
      * @param logger the logger used for logging events
      */
-    public Hall(MapSize mapSize, Logger logger) {
+    public Hall(ConfigModel config, MapSize mapSize, Logger logger) {
         this.logger = logger;
-
+        this.config = config;
         this.mapSize = mapSize;
         this.random = new Random();
         this.ticketOffices = new ArrayList<>();
-        this.entrances = new ArrayList<>();
+
     }
 
     public List<TicketOffice> getTicketOffices() {
@@ -66,13 +69,6 @@ public class Hall {
         this.ticketOffices = ticketOffices;
     }
 
-    public List<Entrance> getEntrances() {
-        return entrances;
-    }
-
-    public void setEntrances(List<Entrance> entrances) {
-        this.entrances = entrances;
-    }
 
     public TicketOffice getReservedTicketOffice() {
         return reservedTicketOffice;
@@ -94,10 +90,11 @@ public class Hall {
     public void processClient(Client client) {
         logger.log("Processing client: " + client.getFullName(), LogLevel.Info);
 
-        Entrance selectedEntrance = selectRandomEntrance();
-        logger.log("Selected entrance ID: " + selectedEntrance.getId(), LogLevel.Debug);
+        EntranceConfig selectedEntrance = selectRandomEntrance();
+        logger.log("Selected entrance ID: " + selectedEntrance.id, LogLevel.Debug);
 
-        var entrancePoint = selectedEntrance.getStartPoint();
+
+        var entrancePoint = new Point(selectedEntrance.x, selectedEntrance.y);
 
         var ticketOffice = getBestTicketOffice(entrancePoint);
 
@@ -226,9 +223,9 @@ public class Hall {
      *
      * @return a randomly selected entrance
      */
-    private Entrance selectRandomEntrance() {
-        int index = random.nextInt(0,entrances.size() );
-        return entrances.get(index);
+    private EntranceConfig selectRandomEntrance() {
+        int index = random.nextInt(0, config.getEntranceCount() );
+        return config.getEntranceConfigs().get(index);
     }
 
     /**
@@ -238,10 +235,10 @@ public class Hall {
      * @param entrance the entrance the client is using
      * @param ticketOffice the ticket office the client is directed to
      */
-    private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice) {
+    private void publishClientCreatedEvent(Client client, EntranceConfig entrance, TicketOffice ticketOffice) {
         ClientCreatedEvent event = new ClientCreatedEvent(
                 this,
-                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID())
+                new ClientCreated(client, entrance.id, ticketOffice.getOfficeID())
         );
         applicationEventPublisher.publishEvent(event);
     }

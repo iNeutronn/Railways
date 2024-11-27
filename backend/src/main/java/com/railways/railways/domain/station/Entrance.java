@@ -7,8 +7,7 @@ import java.awt.*;
  * An entrance is associated with a specific segment and has an ID for identification.
  */
 public class Entrance {
-    private int id;
-    private Segment segment;
+    private final int id;
 
     /**
      * Constructs an Entrance with the specified ID and associated segment.
@@ -16,9 +15,8 @@ public class Entrance {
      * @param id the unique identifier for this entrance
      * @param segment the segment this entrance is linked to
      */
-    public Entrance(int id, Segment segment) {
+    public Entrance(int id) {
         this.id = id;
-        this.segment = segment;
     }
 
     /**
@@ -28,24 +26,5 @@ public class Entrance {
      */
     public int getId() {
         return id;
-    }
-
-    /**
-     * Gets the segment associated with this entrance.
-     *
-     * @return the segment associated with the entrance
-     */
-    public Segment getSegment() {
-        return segment;
-    }
-
-    /**
-     * Gets the starting point of the segment associated with this entrance.
-     * This point represents the start of the segment for the entrance.
-     *
-     * @return the starting point of the segment
-     */
-    public Point getStartPoint() {
-        return segment.start;
     }
 }
