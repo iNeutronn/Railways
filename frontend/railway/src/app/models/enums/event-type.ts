@@ -3,5 +3,6 @@ export enum EventTypes {
   ClientServed,
   QueueUpdated,
   QueueTransfered,
-  JoinedQueue
+  JoinedQueue,
+  ClientServingStarted
 }

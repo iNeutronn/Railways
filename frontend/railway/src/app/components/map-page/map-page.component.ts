@@ -64,7 +64,7 @@ export class MapPageComponent implements OnInit {
 
   ngOnInit() {
     this.webSocketService.connect();
-    this.webSocketService.getMessages().subscribe((message) => {
+    this.webSocketService.getCreatedClientsMessages().subscribe((message) => {
       console.log('Received message:', message);
       this.handleClientCreatedEvent(message);
     });
