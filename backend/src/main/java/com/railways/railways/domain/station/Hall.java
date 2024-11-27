@@ -116,7 +116,7 @@ public class Hall {
         for (TicketOffice ticketOffice : ticketOffices) {
             count += ticketOffice.getQueueSize();
         }
-        return count;
+        return count + clientsThatAreGoingToCashPoint.size();
     }
 
     /**
