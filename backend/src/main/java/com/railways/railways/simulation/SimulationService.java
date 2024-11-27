@@ -48,7 +48,7 @@ public class SimulationService {
     public SimulationService(ApplicationEventPublisher eventPublisher, ConfigModel appConfig, Logger logger) {
         this.eventPublisher = eventPublisher;
         this.appConfig = appConfig;
-        this.hall = new Hall(appConfig, appConfig.getMapSize(), logger);
+        this.hall = new Hall(appConfig, logger);
         this.executorService = Executors.newCachedThreadPool(); // Flexible thread pool
         Map<PrivilegeEnum, Integer> privilegeMap = Map.of(
                 PrivilegeEnum.DEFAULT, 70,

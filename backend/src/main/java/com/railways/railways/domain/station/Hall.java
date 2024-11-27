@@ -26,7 +26,6 @@ public class Hall {
     private final List<Client> clientsThatAreGoingToCashPoint = new ArrayList<>();
     private List<TicketOffice> ticketOffices;
     private TicketOffice reservedTicketOffice;
-    private MapSize mapSize;
     private ApplicationEventPublisher applicationEventPublisher;
     private final Random random;
     private double moveSpeed = 100.0;
@@ -45,13 +44,11 @@ public class Hall {
     /**
      * Constructs a Hall with the specified map size and logger.
      *
-     * @param mapSize the size of the map
      * @param logger the logger used for logging events
      */
-    public Hall(ConfigModel config, MapSize mapSize, Logger logger) {
+    public Hall(ConfigModel config, Logger logger) {
         this.logger = logger;
         this.config = config;
-        this.mapSize = mapSize;
         this.random = new Random();
         this.ticketOffices = new ArrayList<>();
 
