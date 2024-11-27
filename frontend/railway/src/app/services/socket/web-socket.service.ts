@@ -34,6 +34,9 @@ export class WebSocketService {
       else if(message.type.toString() === EventTypes[EventTypes.ClientServingStarted]) {
         this.clientServingStartedSubject.next(message);
       }
+      else if(message.type.toString() === EventTypes[EventTypes.QueueUpdated]) {
+        this.queueUpdatedSubject.next(message);
+      }
     };
 
     this.socket.onclose = () => {
