@@ -28,5 +28,6 @@ public enum GenerationUpdateTypes {
      * Represents an update indicating that a client has been transferred to a different queue.
      */
     QueueTransfered,
-    ClientServingStarted
+    ClientServingStarted,
+    ClientRedirected
 }

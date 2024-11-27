@@ -48,4 +48,8 @@ public class Segment {
 
         return points;
     }
+
+    public Point getStart() {
+        return start;
+    }
 }
