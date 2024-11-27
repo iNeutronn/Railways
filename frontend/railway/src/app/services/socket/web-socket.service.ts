@@ -24,7 +24,7 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log(message)
+      console.log('Received message:', message);
 
       if(message.type.toString() === EventTypes[EventTypes.ClientCreated]) {
         this.clientCreatedMessageSubject.next(message);
