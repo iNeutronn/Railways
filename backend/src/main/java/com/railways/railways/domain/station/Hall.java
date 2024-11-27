@@ -6,7 +6,9 @@ import com.railways.railways.Configuration.MapSize;
 import com.railways.railways.Configuration.WebSocketConfig;
 import com.railways.railways.domain.client.Client;
 import com.railways.railways.domain.client.ClientCreated;
+import com.railways.railways.domain.client.ClientRedirected;
 import com.railways.railways.events.ClientCreatedEvent;
+import com.railways.railways.events.ClientRedirectedEvent;
 import com.railways.railways.events.QueueTransferedEvent;
 import com.railways.railways.logging.Logger;
 import com.railways.railways.logging.LogLevel;
@@ -251,7 +253,29 @@ public class Hall {
 
     public void clientReachedCashPoint(int clientId,int cashPointId) {
         Client client = clientsThatAreGoingToCashPoint.stream().filter(c -> c.getClientID() == clientId).findFirst().orElse(null);
-        clientsThatAreGoingToCashPoint.remove(client);
-        ticketOffices.stream().filter(ticketOffice -> ticketOffice.getOfficeID() == cashPointId).findFirst().ifPresent(ticketOffice -> ticketOffice.addClient(client));
+
+        TicketOffice ticketOffice = ticketOffices.stream().
+                filter(t -> t.getOfficeID() == cashPointId).
+                findFirst().
+                orElse(null);
+
+        if (ticketOffice == null) {
+            logger.log("Ticket office with ID " + cashPointId + " not found", LogLevel.Error);
+            return;
+        }
+
+        if (ticketOffice.isOpen())
+        {
+            ticketOffice.addClient(client);
+            clientsThatAreGoingToCashPoint.remove(client);
+            return;
+        }
+        TicketOffice newTicketOffice = getBestTicketOffice(ticketOffice.getSegment().getStart());
+//        newTicketOffice.addClient(client);
+
+        ClientRedirected redirected = new ClientRedirected(clientId, newTicketOffice.getOfficeID());
+        ClientRedirectedEvent event = new ClientRedirectedEvent(this, redirected);
+        applicationEventPublisher.publishEvent(event);
+
     }
 }
