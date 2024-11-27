@@ -47,6 +47,7 @@ export class MapPageComponent implements OnInit {
   }
 
   isSimulationActive: boolean = false;
+  isSidebarOpen: boolean = false;
   maxIndexX: number = 0;
   maxIndexY: number = 0;
   cellSize: number = 50;
@@ -63,6 +64,10 @@ export class MapPageComponent implements OnInit {
     this.mapPositionHelper = new MapPositionHelper();
   }
 
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+  
   ngOnInit() {
     this.webSocketService.connect();
     this.webSocketService.getCreatedClientsMessages().subscribe((message) => {
