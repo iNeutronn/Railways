@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import {environmentDev} from '../../environments/environment.development';
 import {HttpClient} from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +15,43 @@ export class SimulationService {
 
   startSimulation() {
     const url = this.simulationUrl + '/start';
-    return this.httpClient.get(url);
+    return this.httpClient.get(url, { responseType: 'text' }).pipe(
+      map(response => {
+        console.log('Simulation started:', response); 
+        return response; 
+      }),
+      catchError(error => {
+        console.error('Error starting simulation:', error); 
+        return throwError(() => new Error('Failed to start simulation'));
+      })
+    );
   }
-
   pauseSimulation() {
     const url = this.simulationUrl + '/stop';
-    return this.httpClient.get(url);
+    return this.httpClient.get(url, { responseType: 'text' }).pipe(
+      map(response => {
+        console.log('Simulation paused:', response); 
+        return response; 
+      }),
+      catchError(error => {
+        console.error('Error pausing simulation:', error); 
+        return throwError(() => new Error('Failed to pause simulation'));
+      })
+    );
   }
-
+  
   resumeSimulation() {
-    const url: string = environmentDev.serverApi + '/resume';
-    return this.httpClient.get(url);
+    const url = this.simulationUrl + '/resume';
+    return this.httpClient.get(url, { responseType: 'text' }).pipe(
+      map(response => {
+        console.log('Simulation resumed:', response); 
+        return response; 
+      }),
+      catchError(error => {
+        console.error('Error resuming simulation:', error); 
+        return throwError(() => new Error('Failed to resume simulation'));
+      })
+    );
   }
 
   cashPointCloseSimulation(id: number) {
