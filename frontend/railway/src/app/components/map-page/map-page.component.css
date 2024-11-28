@@ -160,22 +160,32 @@
     color: #bbb;
   }
 
-/* Сама панель */
+
 .sidebar {
   position: fixed;
-  top: 49px; /* Відступ від хедера */
+  top: 49px; 
   right: -100%;
   width: 500px;
-  height: calc(100% - 100px); /* Висота під хедер */
+  height: calc(100% - 100px); 
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   transition: right 0.3s ease;
   padding: 20px;
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .sidebar.open {
   right: 0;
+}
+
+.sidebar h2 {
+  color: #346cb0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0ebf7;
+  font-size: 24px;
+  text-align: center;
 }
 
 .service-history {
@@ -190,4 +200,121 @@
 
 .service-history:hover {
   color: #0e2643;
+}
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.clock {
+  font-size: 20px;
+  font-weight: 500;
+  color: #e0ebf7;
+  font-weight: bold;
+  padding: 5px 15px;
+  border-radius: 5px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #e0ebf7;
+  gap: 15px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar li:hover {
+  background-color: #f8f9fa;
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.client-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.first-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #346cb0;
+}
+
+.last-name {
+  font-size: 14px;
+  color: #346cb0;
+}
+
+.client-id {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 80px;
+}
+
+.client-id-number {
+  color: #346cb0;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.client-ticket-office {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 60px;
+}
+
+.ticket-office-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.client-ticket-office-number {
+  color: #346cb0;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.client-time-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.time-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.label {
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.time {
+  color: #346cb0;
+  font-weight: bold;
+  font-size: 14px;
 }

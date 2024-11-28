@@ -1,6 +1,5 @@
-
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {NgClass, NgForOf} from '@angular/common';
+import {CommonModule, NgClass, NgForOf} from '@angular/common';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {CashDesk} from '../../models/entities/cash-desk';
 import {Entrance} from '../../models/entities/entrance';
@@ -16,13 +15,15 @@ import {SimulationService} from '../../services/simulation/simulation.service';
 import {interval, map, Subscription, takeWhile} from 'rxjs';
 import {MapPositionHelper} from '../../helpers/mapPositionHelper';
 import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
+import {ClientServedDto} from '../../models/dtos/ClientServedDto';
 
 @Component({
   selector: 'app-map-page',
   standalone: true,
   imports: [
     NgForOf,
-    NgClass
+    NgClass,
+    CommonModule
   ],
   templateUrl: './map-page.component.html',
   styleUrl: './map-page.component.css',
@@ -56,12 +57,31 @@ export class MapPageComponent implements OnInit {
   cashDesks: CashDesk[] = [];
   clients: Client[] = [];
 
+  loggedClients: {
+    clientID: number;
+    firstName: string;
+    lastName: string;
+    ticketOfficeId: number;
+    startTime: Date | null;
+    endTime: Date | null;
+  }[] = [];
+  
+  private servingClients: Map<number, Client> = new Map();
+
+  currentTime: Date = new Date();
+  private clockSubscription: Subscription;
+
   constructor(
     private configService: StationConfigurationService,
     private simulationService: SimulationService,
     private router: Router,
     private webSocketService: WebSocketService) {
     this.mapPositionHelper = new MapPositionHelper();
+    
+    // Update clock every second
+    this.clockSubscription = interval(1000).subscribe(() => {
+      this.currentTime = new Date();
+    });
   }
 
   toggleSidebar(): void {
@@ -80,6 +100,16 @@ export class MapPageComponent implements OnInit {
       this.handleClientServingStartedEvent(message);
     });
 
+    this.webSocketService.getClientServedMessages().subscribe({
+      next: (message) => {
+        console.log('Component received ClientServed message:', message);
+        this.handleClientServedEvent(message);
+      },
+      error: (error) => {
+        console.error('Error in ClientServed subscription:', error);
+      }
+    });
+
     this.calculateScaleFactor();
     this.configService.getConfiguration().subscribe(configuration => {
 
@@ -90,29 +120,17 @@ export class MapPageComponent implements OnInit {
     });
   }
 
+
   handleClientServingStartedEvent(clientServing: ClientServingStartedDto): void {
     const { clientId, ticketOfficeId, timeNeeded } = clientServing.data;
-
-    // Знайти клієнта у списку клієнтів
     const client = this.clients.find(c => c.clientID === clientId);
-
-    // Знайти касу, до якої прив'язаний клієнт
-    const ticketOffice = this.cashDesks.find(c => c.id === ticketOfficeId);
-
-    if (client && ticketOffice) {
-      console.log(`Client ${clientId} started being served at ticket office ${ticketOfficeId}`);
-
-      // Залишити клієнта на точці протягом заданого часу
+    
+    if (client) {
+      this.servingClients.set(clientId, client);
+      
       setTimeout(() => {
-        console.log(`Client ${clientId} finished serving at ticket office ${ticketOfficeId}`);
-
-        // Видалити клієнта зі списку
-        ticketOffice.queue = ticketOffice.queue.filter(c => c.clientID !== clientId);
-        console.log('new queue', ticketOffice.queue.map(q => q.clientID).join(', '));
         this.clients = this.clients.filter(c => c.clientID !== clientId);
-      }, timeNeeded * 1000); // `timeNeeded` переводимо у мілісекунди
-    } else {
-      console.warn(`Client or ticket office not found for event:`, clientServing);
+      }, timeNeeded * 1000);
     }
   }
 
@@ -350,5 +368,39 @@ export class MapPageComponent implements OnInit {
 
   ngOnDestroy() {
     this.webSocketService.closeConnection();
+    if (this.clockSubscription) {
+      this.clockSubscription.unsubscribe();
+    }
+  }
+
+  handleClientServedEvent(clientServed: ClientServedDto): void {
+    const { clientID, startTime, endTime, ticketOfficeID } = clientServed.data;
+    
+    const client = this.clients.find(c => c.clientID === clientID) || 
+                  this.servingClients.get(clientID);
+    
+    if (client) {
+      const parseDate = (dateStr: string) => {
+        return new Date(dateStr.split('[')[0]);
+      };
+
+      this.loggedClients.push({
+        clientID: clientID,
+        firstName: client.firstName,
+        lastName: client.lastName,
+        ticketOfficeId: ticketOfficeID,
+        startTime: parseDate(startTime),
+        endTime: parseDate(endTime)
+      });
+      
+      console.log('Added logged client:', {
+        startTime: parseDate(startTime),
+        endTime: parseDate(endTime)
+      });
+      
+      this.servingClients.delete(clientID);
+    } else {
+      console.warn(`Client ${clientID} not found in either active or serving clients`);
+    }
   }
 }
