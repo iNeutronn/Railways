@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 @Service
 public class SimulationService {
     private Hall hall;
-    private final ExecutorService executorService;
+    private ExecutorService executorService;
     private final ClientGenerator clientGenerator;
     private HallSimulator hallSimulator;
     private final ApplicationEventPublisher eventPublisher;
@@ -166,5 +166,29 @@ public class SimulationService {
 
     public Hall getHall() {
         return hall;
+    }
+
+    public void resetCashPoints()
+    {
+        List<TicketOffice> ticketOffices = new ArrayList<>();
+        for (int i = 0; i < appConfig.getCashPointCount(); i++) {
+            CashPointConfig cashPointConfig = appConfig.getCashpointConfigs().get(i);
+
+            Segment segment = new Segment(new Point(cashPointConfig.x, cashPointConfig.y), new Point(cashPointConfig.x+4, cashPointConfig.y + 3));
+
+            TicketOffice office = new TicketOffice(eventPublisher, i,segment,cashPointConfig.direction, appConfig.getMinServiceTime(), appConfig.getMaxServiceTime(), logger);
+            ticketOffices.add(office);
+        }
+
+        hall.setTicketOffices(ticketOffices);
+        executorService.shutdownNow();
+        executorService = Executors.newCachedThreadPool();
+
+
+        // Start ticket office threads
+        for (TicketOffice office : hall.getTicketOffices()) {
+            executorService.submit(office);
+        }
+
     }
 }

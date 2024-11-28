@@ -2,6 +2,7 @@ package com.railways.railways.Configuration;
 
 import com.railways.railways.simulation.IntervalGenerationPolicy;
 import com.railways.railways.simulation.RandomGenerationPolicy;
+import com.railways.railways.simulation.SimulationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class ConfigController {
 
     private final ConfigModel configModel;
     private final MapGenerationHelper mapGenerationHelper;
+    private final SimulationService simulationService;
 
     /**
      * Constructor for ConfigController, accepting a configuration model.
@@ -24,9 +26,10 @@ public class ConfigController {
      * @param configModel the configuration for the railway ticketing system
      * @param mapGenerationHelper the helper for generating and updating map configurations
      */
-    public ConfigController(ConfigModel configModel, MapGenerationHelper mapGenerationHelper) {
+    public ConfigController(ConfigModel configModel, MapGenerationHelper mapGenerationHelper, SimulationService simulationService) {
         this.configModel = configModel;
         this.mapGenerationHelper = mapGenerationHelper;
+        this.simulationService = simulationService;
     }
 
     /**
@@ -193,6 +196,7 @@ public class ConfigController {
     @PostMapping("/mapSize")
     public ConfigModel updateMapSize(@RequestParam int width, @RequestParam int height) {
         mapGenerationHelper.updateMapSize(new MapSize(width, height));
+        simulationService.resetCashPoints();
         return configModel;
     }
 
