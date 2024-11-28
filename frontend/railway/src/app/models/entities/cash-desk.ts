@@ -8,4 +8,5 @@ export interface CashDesk {
   isReserve: boolean;
   queue: Client[];
   serviceTime: number;
+  isQueueUpdating: boolean;
 }
