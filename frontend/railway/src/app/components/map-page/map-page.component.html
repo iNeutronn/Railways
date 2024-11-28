@@ -1,5 +1,8 @@
 <div class="header">
-  <div class="title">RAILWAY</div>
+  <div class="title-container">
+    <div class="title">RAILWAY</div>
+    <div class="clock">{{ currentTime | date:'HH:mm:ss' }}</div>
+  </div>
   <div class="controls">
     <button class="service-history" (click)="toggleSidebar()">SERVICE HISTORY</button>
     <button class="simulation-btn" (click)="startSimulation()">Start</button>
@@ -10,8 +13,33 @@
   </div>
 </div>
 
-
-<div class="sidebar" [ngClass]="{'open': isSidebarOpen}">
+<div 
+  class="sidebar" 
+  [ngClass]="{'open': isSidebarOpen}" 
+  *ngIf="isSidebarOpen">
+  <ul>
+    <li *ngFor="let client of loggedClients">
+      <img src="/assets/images/user.png" alt="user-icon" class="user-icon">
+      <div class="client-name">
+        <span class="first-name">{{ client.firstName }}</span>
+        <span class="last-name">{{ client.lastName }}</span>
+      </div>
+      <div class="client-id">
+        <span class="client-id-number">{{ client.clientID }}</span>
+      </div>
+      <div class="client-ticket-office">
+        <img src="/assets/images/ticket.png" alt="ticket-office-icon" class="ticket-office-icon">
+        <span class="client-ticket-office-number">{{ client.ticketOfficeId }}</span>
+      </div>
+      <div class="time-item">
+        <img src="/assets/images/clock.png" alt="clock-icon" class="clock-icon">
+        <div class="client-time-info">
+          <span class="start-time">{{ client.startTime | date:'HH:mm:ss' || 'N/A' }}</span>
+          <span class="end-time">{{ client.endTime | date:'HH:mm:ss' || 'N/A' }}</span>
+        </div>
+      </div>
+    </li>
+  </ul>
 </div>
 
 <div class="stats">

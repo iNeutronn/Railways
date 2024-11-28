@@ -195,18 +195,19 @@
     color: #bbb;
   }
 
-/* Сама панель */
+
 .sidebar {
   position: fixed;
-  top: 49px; /* Відступ від хедера */
+  top: 52px; 
   right: -100%;
   width: 500px;
-  height: calc(100% - 100px); /* Висота під хедер */
+  height: calc(100% - 95px); 
   background-color: white;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   transition: right 0.3s ease;
   padding: 20px;
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .sidebar.open {
@@ -226,3 +227,137 @@
 .service-history:hover {
   color: #0e2643;
 }
+<<<<<<< HEAD
+=======
+
+.title-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.clock {
+  font-size: 20px;
+  font-weight: 500;
+  color: #e0ebf7;
+  font-weight: bold;
+  padding: 5px 15px;
+  border-radius: 5px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #e0ebf7;
+  gap: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar li:hover {
+  background-color: #f8f9fa;
+}
+
+.user-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.client-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.first-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0073ff;
+}
+
+.last-name {
+  font-size: 16px;
+  color: #0073ff;
+}
+
+.client-id {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 80px;
+}
+
+.client-id-number {
+  color: #0073ff;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.client-ticket-office {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 60px;
+}
+
+.ticket-office-icon {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.client-ticket-office-number {
+  color: #0073ff;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.client-time-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.time-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  right: 0px;
+}
+
+.label {
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.time {
+  color: #346cb0;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.clock-icon {
+  width: 25px;
+  height: 25px;
+  margin-right: -15px;
+}
+
+.start-time, .end-time {
+  margin-left: 20px;
+  right: 0px;
+  color: #0073ff;
+  font-size: 14px;
+}
+>>>>>>> a410824b71187ec141010ac21170125827e6ed07
