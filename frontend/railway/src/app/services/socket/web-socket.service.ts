@@ -5,6 +5,7 @@ import {Client} from '../../models/entities/client';
 import {EventTypes} from '../../models/enums/event-type';
 import {ClientServingStartedDto} from '../../models/dtos/ClientServingStartedDto';
 import {ClientServedDto} from '../../models/dtos/ClientServedDto';
+import { QueueUpdatedDto } from '../../models/dtos/QueueUpdatedDto';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,8 @@ export class WebSocketService {
   private clientCreatedMessageSubject = new Subject<ClientCreatedDto>()
   private clientServingStartedSubject = new Subject<ClientServingStartedDto>();
   private clientServedSubject = new Subject<ClientServedDto>();
+  private queueUpdatedSubject = new Subject<QueueUpdatedDto>();
+
 
   constructor() { }
 
@@ -26,7 +29,7 @@ export class WebSocketService {
 
     this.socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log(message)
+      console.log('Received message:', message);
 
       if(message.type.toString() === EventTypes[EventTypes.ClientCreated]) {
         this.clientCreatedMessageSubject.next(message);
@@ -36,6 +39,9 @@ export class WebSocketService {
       }
       else if (message.type.toString() === EventTypes[EventTypes.ClientServed]) {
         this.clientServedSubject.next(message);
+      }
+      else if(message.type.toString() === EventTypes[EventTypes.QueueUpdated]) {
+        this.queueUpdatedSubject.next(message);
       }
     };
 
@@ -58,6 +64,10 @@ export class WebSocketService {
 
   public getClientServedMessages() {
     return this.clientServedSubject.asObservable();
+  }
+
+  public getQueueUpdatedMessages() {
+    return this.queueUpdatedSubject.asObservable();
   }
 
   public sendMessage(message: string): void {
