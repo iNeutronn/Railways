@@ -127,25 +127,18 @@ export class MapPageComponent implements OnInit {
 
   handleClientServingStartedEvent(clientServing: ClientServingStartedDto): void {
     const { clientId, ticketOfficeId, timeNeeded } = clientServing.data;
-
-    // Знайти клієнта у списку клієнтів
     const client = this.clients.find(c => c.clientID === clientId);
-
-    // Знайти касу, до якої прив'язаний клієнт
     const ticketOffice = this.cashDesks.find(c => c.id === ticketOfficeId);
 
     if (client && ticketOffice) {
+      // Add client to servingClients map when service starts
+      this.servingClients.set(clientId, client);
       console.log(`Client ${clientId} started being served at ticket office ${ticketOfficeId}`);
 
-      // Залишити клієнта на точці протягом заданого часу
       setTimeout(() => {
         console.log(`Client ${clientId} finished serving at ticket office ${ticketOfficeId}`);
-
-        // Видалити клієнта зі списку
         this.clients = this.clients.filter(c => c.clientID !== clientId);
         ticketOffice.queue = ticketOffice.queue.filter(c => c.clientID !== clientId);
-        console.log('new queue', ticketOffice.queue.map(q => q.clientID).join(', '));
-
         this.updateQueuePositions(ticketOffice);
       }, timeNeeded * 1000);
     } else {
