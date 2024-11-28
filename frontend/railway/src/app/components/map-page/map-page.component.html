@@ -17,7 +17,6 @@
   class="sidebar" 
   [ngClass]="{'open': isSidebarOpen}" 
   *ngIf="isSidebarOpen">
-  <h2>Клієнти</h2>
   <ul>
     <li *ngFor="let client of loggedClients">
       <img src="/assets/images/user.png" alt="user-icon" class="user-icon">
@@ -32,9 +31,12 @@
         <img src="/assets/images/ticket.png" alt="ticket-office-icon" class="ticket-office-icon">
         <span class="client-ticket-office-number">{{ client.ticketOfficeId }}</span>
       </div>
-      <div class="client-time-info"> 
-        <span class="start-time">{{ client.startTime | date:'HH:mm:ss' || 'N/A' }}</span>
-        <span class="end-time">{{ client.endTime | date:'HH:mm:ss' || 'N/A' }}</span>
+      <div class="time-item">
+        <img src="/assets/images/clock.png" alt="clock-icon" class="clock-icon">
+        <div class="client-time-info">
+          <span class="start-time">{{ client.startTime | date:'HH:mm:ss' || 'N/A' }}</span>
+          <span class="end-time">{{ client.endTime | date:'HH:mm:ss' || 'N/A' }}</span>
+        </div>
       </div>
     </li>
   </ul>

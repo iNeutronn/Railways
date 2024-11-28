@@ -131,7 +131,6 @@ export class MapPageComponent implements OnInit {
     const ticketOffice = this.cashDesks.find(c => c.id === ticketOfficeId);
 
     if (client && ticketOffice) {
-      // Add client to servingClients map when service starts
       this.servingClients.set(clientId, client);
       console.log(`Client ${clientId} started being served at ticket office ${ticketOfficeId}`);
 
