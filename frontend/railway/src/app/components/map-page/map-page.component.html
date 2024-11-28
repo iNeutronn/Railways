@@ -50,7 +50,7 @@
 
 
 <div class="station-container" #stationContainer>
-  <div *ngFor="let client of clients"
+  <div *ngFor="let client of clients trackBy: trackByClientId"
        [ngClass]="getPrivilegeLabel(client.privilege)"
        class="marker person"
        [style.top.px]="client.position.x * cellSize"
@@ -61,7 +61,6 @@
        class="marker entrance"
        [style.top.px]="entrance.position.x * cellSize"
        [style.left.px]="entrance.position.y * cellSize">
-
   </div>
 
   <div *ngFor="let cashDesk of cashDesks"
@@ -69,5 +68,10 @@
        [ngClass]="{'cash-desk-disabled': cashDesk.isReserve, 'cash-desk': !cashDesk.isReserve}"
        [style.top.px]="cashDesk.position.x * cellSize"
        [style.left.px]="cashDesk.position.y * cellSize">
+    <div class="stop-overlay" (click)="toggleCashDesk(cashDesk.id)">
+      <span class="stop-text">{{ cashDesk.id == closedCashDeskId ? 'Відновити' : 'Призупинити' }}</span>
+      <span class="stop-icon">{{ cashDesk.id == closedCashDeskId ? '✔' : '✖' }}</span>
+    </div>
   </div>
+
 </div>

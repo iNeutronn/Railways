@@ -4,6 +4,7 @@ import { environmentDev } from '../../environments/environment.development';
 import { StationConfiguration } from '../../models/station-configuration';
 import {Observable} from 'rxjs';
 import { forkJoin } from 'rxjs';
+import {ClientGenerationType} from '../../models/enums/client-generation';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +21,9 @@ export class StationConfigurationService {
     const minServeTime$ = this.setMinServeTime(configuration.minServiceTime);
     const maxServeTime$ = this.setMaxServeTime(configuration.maxServiceTime);
     const mapSize$ = this.setMapSize(configuration.mapSize.width, configuration.mapSize.height);
+    const policy$ = this.setPolicy(configuration.generationType);
 
-    return forkJoin([entranceCount$, cashpointCount$, minServeTime$, maxServeTime$, mapSize$]);
+    return forkJoin([entranceCount$, cashpointCount$, minServeTime$, maxServeTime$, mapSize$, policy$]);
   }
 
     getConfiguration(){
@@ -60,6 +62,13 @@ export class StationConfigurationService {
     const url = this.stationConfigurationUrl + '/mapSize';
     return this.httpClient.post(url, null, {
       params: { width, height },
+    })
+  }
+
+  private setPolicy(type: ClientGenerationType){
+    const url = this.stationConfigurationUrl + '/setPolicyWithDefaultValues';
+    return this.httpClient.post(url, null, {
+      params: { policy: type },
     })
   }
 }

@@ -1,4 +1,4 @@
 export enum ClientGenerationType {
-  Simple = "Simple",
-  Random = "Random",
+  Simple = "interval",
+  Random = "random",
 }

@@ -24,6 +24,41 @@
   background: url('/assets/images/entrance.png') no-repeat center center;
 }
 
+.stop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none; /* Прихований за замовчуванням */
+  background-color: rgba(255, 0, 0, 0.7);
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 12px;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.stop-overlay:hover {
+  background-color: rgba(0, 128, 0, 0.7); /* Можна змінити колір при наведенні */
+}
+
+.marker.cash-desk:hover .stop-overlay {
+  display: block;
+}
+
+.stop-text {
+  margin-right: 5px;
+}
+
+.stop-icon {
+  font-size: 16px;
+}
+
+/* При наведенні на entrance - показати хрестик */
+.marker.cash-desk:hover .stop-overlay {
+  display: block;
+}
+
 .default {
   background-size: contain;
   background: url('/assets/images/person.png') no-repeat center center;
@@ -129,13 +164,13 @@
     background-color: #9abfff;
     padding: 10px 0;
     font-family: Arial, sans-serif;
-    transition: margin-right 0.3s ease; 
+    transition: margin-right 0.3s ease;
     z-index: 90;
   }
-  
+
 
   .sidebar.open ~ .stats {
-    margin-right: 500px; 
+    margin-right: 500px;
   }
 
   .stat {
@@ -194,6 +229,8 @@
 .service-history:hover {
   color: #0e2643;
 }
+<<<<<<< HEAD
+=======
 
 .title-container {
   display: flex;
@@ -325,3 +362,4 @@
   color: #0073ff;
   font-size: 14px;
 }
+>>>>>>> a410824b71187ec141010ac21170125827e6ed07

@@ -1,4 +1,12 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  NgZone,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {CommonModule, NgClass, NgForOf} from '@angular/common';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {CashDesk} from '../../models/entities/cash-desk';
@@ -29,6 +37,7 @@ import { QueueUpdatedDto } from '../../models/dtos/QueueUpdatedDto';
   ],
   templateUrl: './map-page.component.html',
   styleUrl: './map-page.component.css',
+  changeDetection: ChangeDetectionStrategy.Default,
   animations: [
     trigger('moveDown', [
       transition(':enter', [
@@ -49,6 +58,8 @@ export class MapPageComponent implements OnInit {
     height: 0
   }
 
+  closedCashDeskId: number = -1;
+  isQueueUpdateInProgress: boolean = false;
   isSimulationActive: boolean = false;
   isSidebarOpen: boolean = false;
   cellSize: number = 50;
@@ -65,7 +76,7 @@ export class MapPageComponent implements OnInit {
     startTime: Date | null;
     endTime: Date | null;
   }[] = [];
-  
+
   private servingClients: Map<number, Client> = new Map();
 
   currentTime: Date = new Date();
@@ -75,9 +86,11 @@ export class MapPageComponent implements OnInit {
     private configService: StationConfigurationService,
     private simulationService: SimulationService,
     private router: Router,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
     private webSocketService: WebSocketService) {
     this.mapPositionHelper = new MapPositionHelper();
-    
+
     // Update clock every second
     this.clockSubscription = interval(1000).subscribe(() => {
       this.currentTime = new Date();
@@ -86,17 +99,21 @@ export class MapPageComponent implements OnInit {
 
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
+    this.ngZone.run(() => {
+      // Оновлення позицій клієнтів
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnInit() {
     this.webSocketService.connect();
     this.webSocketService.getCreatedClientsMessages().subscribe((message) => {
-      console.log('Received message:', message);
+      //console.log('Received message:', message);
       this.handleClientCreatedEvent(message);
     });
 
     this.webSocketService.getClientServingStartedMessages().subscribe((message) => {
-      console.log('Received message:', message);
+      //console.log('Received message:', message);
       this.handleClientServingStartedEvent(message);
     });
 
@@ -124,6 +141,9 @@ export class MapPageComponent implements OnInit {
     });
   }
 
+  trackByClientId(index: number, client: Client): number {
+    return client.clientID;
+  }
 
   handleClientServingStartedEvent(clientServing: ClientServingStartedDto): void {
     const { clientId, ticketOfficeId, timeNeeded } = clientServing.data;
@@ -170,7 +190,7 @@ export class MapPageComponent implements OnInit {
       const cashPoint = this.cashDesks.find(c => c.id == clientCreated.data.ticketOfficeId);
 
       if(cashPoint){
-        console.log('Created client with id ' + client.clientID + ', assigned to ' + clientCreated.data.ticketOfficeId);
+        console.log('Created ' + client.privilege + ' client with id ' + client.clientID + ', assigned to ' + clientCreated.data.ticketOfficeId);
         this.clients = [...this.clients, client];
 
         this.moveClientToPoint(client.clientID, cashPoint);
@@ -178,19 +198,63 @@ export class MapPageComponent implements OnInit {
     }
   }
 
-  handleQueueUpdatedEvent(queueUpdated: QueueUpdatedDto) {  
-    const cashDesk = this.cashDesks.find(c => c.id === queueUpdated.data.ticketOfficeID);
-    if (cashDesk && cashDesk.queue.length > 0) {    
+  handleQueueUpdatedEvent(queueUpdated: QueueUpdatedDto) {
+    console.log(queueUpdated.data.Queue);
+    const cashDesk = this.cashDesks.find(c => c.id === queueUpdated.data.TicketOfficeId);
+    if (cashDesk) {
+      cashDesk.isQueueUpdating = true;
+
       const firstClient = cashDesk.queue[0];
-  
       const remainingClients = cashDesk.queue.slice(1);
-  
-      const sortedQueue = queueUpdated.data.queue.map(id => remainingClients.find(client => client.clientID === id))
-      .filter(client => client !== undefined); 
- 
+
+      //console.log('queue before', cashDesk.queue.map(c => c.clientID).join(", "));
+      //console.log('queue position before', cashDesk.queue.map(c => c.position.y).join(", "));
+
+      // Зберігаємо попередні позиції
+      const previousPositions = cashDesk.queue.map(c => ({ ...c.position }));
+
+      const sortedQueue = queueUpdated.data.Queue
+        .map(id => remainingClients.find(client => client.clientID == id))
+        .filter(client => client !== undefined);
+
+      // Оновлюємо позиції клієнтів
+      sortedQueue.forEach((client, index) => {
+        if (client) {
+          const globalClient = this.clients.find(c => c.clientID === client.clientID);
+          if (globalClient && index + 1 < previousPositions.length) {
+            //console.log(globalClient.clientID + ' previous position', globalClient.position.x, globalClient.position.y);
+            globalClient.position = { ...previousPositions[index + 1] };
+            //console.log(globalClient.clientID + ' after position', globalClient.position.x, globalClient.position.y);
+          }
+        }
+      });
+
+      // Оновлюємо чергу, зберігаючи посилання
       cashDesk.queue = [firstClient, ...sortedQueue];
-    }}
-  
+      //console.log('queue after', cashDesk.queue.map(c => c.clientID).join(", "));
+      //console.log('queue position after', cashDesk.queue.map(c => c.position.y).join(", "));
+
+      // Примусовий запуск перевірки змін
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        cashDesk.isQueueUpdating = false; // Розблокування руху
+      }, 500); // Додатковий час для завершення змін
+    }
+  }
+
+
+  moveToPosition(id: number, newX: number, newY: number) {
+    const clientIndex = this.clients.findIndex(client => client.clientID === id);
+    if (clientIndex !== -1) {
+      const client = this.clients[clientIndex];
+
+      this.clients = [
+        ...this.clients.slice(0, clientIndex),
+        { ...client, position: {x: newX, y: newY} },
+        ...this.clients.slice(clientIndex + 1)
+      ];
+    }
+  }
 
   handleConfigurationResponse(configuration: StationConfiguration) {
     console.log(configuration.mapSize.height)
@@ -221,6 +285,7 @@ export class MapPageComponent implements OnInit {
         serviceTime: configuration.maxServiceTime,
         isActive: true,
         isReserve: false,
+        isQueueUpdating: false,
         queue: [],
         position: {
           x: configuration.cashpointConfigs[i].x,
@@ -229,11 +294,13 @@ export class MapPageComponent implements OnInit {
       })
     }
 
+    this.closedCashDeskId = configuration.reservCashPointConfig.id;
     this.cashDesks.push({
       id: configuration.reservCashPointConfig.id,
       serviceTime: configuration.maxServiceTime,
       isActive: false,
       isReserve: true,
+      isQueueUpdating: false,
       queue: [],
       position: {
         x: configuration.reservCashPointConfig.x,
@@ -246,11 +313,12 @@ export class MapPageComponent implements OnInit {
     return PrivilegeEnumLabels[privilege];
   }
 
-  moveClientToPoint(clientId: number, cashDesk: CashDesk, stepSize: number = 1, intervalMs: number = 200): Subscription {
+  moveClientToPoint(clientId: number, cashDesk: CashDesk, stepSize: number = 1, intervalMs: number = 200): Subscription | null {
+
     const clientIndex = this.clients.findIndex(client => client.clientID === clientId);
     if (clientIndex < 0) {
       console.error(`Client with ID ${clientId} not found.`);
-      return null!;
+      return null;
     }
 
     const client = this.clients[clientIndex];
@@ -259,24 +327,31 @@ export class MapPageComponent implements OnInit {
     return interval(intervalMs).pipe(
       takeWhile(() => this.calculateDistance(client.position, target) != 0),
     ).subscribe(() => {
-
       target = this.mapPositionHelper.findCashServingPoint(this.mapSize, client, cashDesk);
+      //console.log('target', target);
       const distance = this.calculateDistance(client.position, target);
 
-      if (distance == 1 && !cashDesk.queue.map(c => c.clientID).includes(client.clientID)) {
+      if (distance < 2 && !cashDesk.isQueueUpdating && !cashDesk.queue.map(c => c.clientID).includes(client.clientID)) {
         this.joinQueue(client, cashDesk);
       }
 
-      if (distance != 0) {
-        this.moveClient(client, target, stepSize);
+      if(!cashDesk.queue.map(c => c.clientID).includes(client.clientID) && cashDesk.queue.length > 0) {
+        const distanceToQueue = this.calculateDistance(client.position, cashDesk.queue[cashDesk.queue.length - 1].position);
+        //console.log('distanceToQueue', distanceToQueue);
+        if(distanceToQueue < 2){
+          this.joinQueue(client, cashDesk);
+        }
       }
 
-      /*// Якщо клієнт досяг цілі, оновіть позиції інших клієнтів в черзі
-      if (distance === 0 && client.clientID === cashDesk.queue[0]?.clientID) {
-        this.updateQueuePositions(cashDesk);
-      }*/
+      if(!cashDesk.isQueueUpdating && cashDesk.queue.map(c => c.clientID).includes(client.clientID)){
+
+      }
+      else if (distance != 0) {
+        this.moveClient(client, target, stepSize);
+      }
     });
   }
+
 
   updateQueuePositions(cashDesk: CashDesk) {
     // Оновлення позицій всіх клієнтів після того, як один з них вийшов з черги
@@ -335,6 +410,21 @@ export class MapPageComponent implements OnInit {
     this.isSimulationActive = !this.isSimulationActive;
   }
 
+  toggleCashDesk(id: number){
+    if(this.closedCashDeskId == id){
+    this.simulationService.cashPointOpenSimulation(id)
+      .subscribe((id) => {
+        this.closedCashDeskId = -1;
+      });
+    }
+    else {
+      this.simulationService.cashPointCloseSimulation(id)
+        .subscribe((id) => {
+          this.closedCashDeskId = id;
+        });
+    }
+  }
+
   goToSettings(): void {
     this.router.navigate(['/start']);
   }
@@ -348,10 +438,10 @@ export class MapPageComponent implements OnInit {
 
   handleClientServedEvent(clientServed: ClientServedDto): void {
     const { clientID, startTime, endTime, ticketOfficeID } = clientServed.data;
-    
-    const client = this.clients.find(c => c.clientID === clientID) || 
+
+    const client = this.clients.find(c => c.clientID === clientID) ||
                   this.servingClients.get(clientID);
-    
+
     if (client) {
       const parseDate = (dateStr: string) => {
         return new Date(dateStr.split('[')[0]);
@@ -365,12 +455,12 @@ export class MapPageComponent implements OnInit {
         startTime: parseDate(startTime),
         endTime: parseDate(endTime)
       });
-      
+
       console.log('Added logged client:', {
         startTime: parseDate(startTime),
         endTime: parseDate(endTime)
       });
-      
+
       this.servingClients.delete(clientID);
     } else {
       console.warn(`Client ${clientID} not found in either active or serving clients`);
