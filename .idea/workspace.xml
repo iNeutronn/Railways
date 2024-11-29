@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a517ee6-73b3-4fe5-ae9c-c63997c16fee" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientCreatedTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientGeneratorTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/PrivilegeEnumTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/EntranceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/TicketOfficeTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,8 +73,10 @@
     "JUnit.ConfigControllerTest.executor": "Run",
     "JUnit.ConfigModelTest.executor": "Run",
     "JUnit.EntranceLocationGeneratorTest.executor": "Run",
+    "JUnit.EntranceTest.executor": "Run",
     "JUnit.PrivilegeEnumTest.executor": "Run",
     "JUnit.SimulationControllerTest.executor": "Run",
+    "JUnit.TicketOfficeTest.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -126,7 +125,7 @@
       <workItem from="1732887327544" duration="1672000" />
       <workItem from="1732890464835" duration="66000" />
       <workItem from="1732890796244" duration="1226000" />
-      <workItem from="1732905519547" duration="625000" />
+      <workItem from="1732905519547" duration="930000" />
     </task>
     <servers />
   </component>
