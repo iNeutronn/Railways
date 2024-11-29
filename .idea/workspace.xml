@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a517ee6-73b3-4fe5-ae9c-c63997c16fee" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/RailwaysApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/CashPointLocationGeneratorEdgeCasesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/CashPointLocationGeneratorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ConfigController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ConfigModel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/listeners/ClientCreatedListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/listeners/ClientCreatedListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/CashPointLocationGeneratorEdgeCasesTest.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,6 +19,13 @@
   </component>
   <component name="ComposerSettings">
     <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <favorite-branches>
@@ -31,22 +43,23 @@
     </favorite-branches>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "SCORPIOS211"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;SCORPIOS211&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/iNeutronn/Railways.git",
-    "accountId": "2e8b78c2-d422-41d2-8757-b4f7e1025371"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/iNeutronn/Railways.git&quot;,
+    &quot;accountId&quot;: &quot;2e8b78c2-d422-41d2-8757-b4f7e1025371&quot;
   }
-}]]></component>
+}</component>
+  <component name="PhpDebugGeneral" listening_started="true" />
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="C:\xampp\php\php.exe" />
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="2pUMb61MEBA2extRZBBLTXOgIc4" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -54,16 +67,27 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "JUnit.CashPointLocationGeneratorEdgeCasesTest.executor": "Run",
+    "JUnit.CashPointLocationGeneratorTest.executor": "Run",
     "JUnit.ConfigControllerIntegrationTest.executor": "Run",
+    "JUnit.ConfigControllerTest.executor": "Run",
+    "JUnit.ConfigModelTest.executor": "Run",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "Unit-Tests",
+    "Spring Boot.RailwaysApplication.executor": "Run",
+    "git-widget-placeholder": "Final-Tests",
     "kotlin-language-version-configured": "true",
+    "last_directory_selection": "C:/Users/Artem/Desktop/Railways-backend/backend/src/main/java/com/railways/railways/Configuration",
     "last_opened_file_path": "C:/Users/Artem/Desktop/Railways-backend",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -92,7 +116,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1732816268823</updated>
-      <workItem from="1732816269878" duration="863000" />
+      <workItem from="1732816269878" duration="1921000" />
+      <workItem from="1732887327544" duration="1672000" />
+      <workItem from="1732890464835" duration="66000" />
+      <workItem from="1732890796244" duration="788000" />
     </task>
     <servers />
   </component>
