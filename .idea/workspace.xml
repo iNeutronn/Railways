@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a517ee6-73b3-4fe5-ae9c-c63997c16fee" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/CashPointLocationGeneratorTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ConfigController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ConfigModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/listeners/ClientCreatedListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/listeners/ClientCreatedListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/CashPointLocationGeneratorEdgeCasesTest.java" beforeDir="false" />
-    </list>
+    <list default="true" id="8a517ee6-73b3-4fe5-ae9c-c63997c16fee" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,6 +62,7 @@
   "keyToString": {
     "JUnit.CashPointLocationGeneratorEdgeCasesTest.executor": "Run",
     "JUnit.CashPointLocationGeneratorTest.executor": "Run",
+    "JUnit.CashPointLocationGeneratorTest.testGenerateValidLocations.executor": "Debug",
     "JUnit.ConfigControllerIntegrationTest.executor": "Run",
     "JUnit.ConfigControllerTest.executor": "Run",
     "JUnit.ConfigModelTest.executor": "Run",
@@ -119,7 +113,7 @@
       <workItem from="1732816269878" duration="1921000" />
       <workItem from="1732887327544" duration="1672000" />
       <workItem from="1732890464835" duration="66000" />
-      <workItem from="1732890796244" duration="788000" />
+      <workItem from="1732890796244" duration="1226000" />
     </task>
     <servers />
   </component>
