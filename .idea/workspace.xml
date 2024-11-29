@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a517ee6-73b3-4fe5-ae9c-c63997c16fee" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/EntranceTest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/TicketOfficeTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientMovementHelperTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,12 +67,14 @@
     "JUnit.CashPointLocationGeneratorTest.testGenerateValidLocations.executor": "Debug",
     "JUnit.ClientCreatedTest.executor": "Run",
     "JUnit.ClientGeneratorTest.executor": "Run",
+    "JUnit.ClientMovementHelperTest.executor": "Run",
     "JUnit.ClientTest.executor": "Run",
     "JUnit.ConfigControllerIntegrationTest.executor": "Run",
     "JUnit.ConfigControllerTest.executor": "Run",
     "JUnit.ConfigModelTest.executor": "Run",
     "JUnit.EntranceLocationGeneratorTest.executor": "Run",
     "JUnit.EntranceTest.executor": "Run",
+    "JUnit.HallTest.executor": "Run",
     "JUnit.PrivilegeEnumTest.executor": "Run",
     "JUnit.SimulationControllerTest.executor": "Run",
     "JUnit.TicketOfficeTest.executor": "Run",
@@ -125,7 +126,7 @@
       <workItem from="1732887327544" duration="1672000" />
       <workItem from="1732890464835" duration="66000" />
       <workItem from="1732890796244" duration="1226000" />
-      <workItem from="1732905519547" duration="930000" />
+      <workItem from="1732905519547" duration="1235000" />
     </task>
     <servers />
   </component>
