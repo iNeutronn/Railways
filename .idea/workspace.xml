@@ -5,7 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a517ee6-73b3-4fe5-ae9c-c63997c16fee" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientMovementHelperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientCreatedListenerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientServedListenerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/ServeRecord.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/ServeRecord.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/client/ClientCreated.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/client/ClientCreated.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/station/Hall.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/station/Hall.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/station/TicketOffice.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/railways/railways/domain/station/TicketOffice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientCreatedTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/test/java/com/railways/railways/ClientCreatedTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,9 +72,11 @@
     "JUnit.CashPointLocationGeneratorEdgeCasesTest.executor": "Run",
     "JUnit.CashPointLocationGeneratorTest.executor": "Run",
     "JUnit.CashPointLocationGeneratorTest.testGenerateValidLocations.executor": "Debug",
+    "JUnit.ClientCreatedListenerTest.executor": "Run",
     "JUnit.ClientCreatedTest.executor": "Run",
     "JUnit.ClientGeneratorTest.executor": "Run",
     "JUnit.ClientMovementHelperTest.executor": "Run",
+    "JUnit.ClientServedListenerTest.executor": "Run",
     "JUnit.ClientTest.executor": "Run",
     "JUnit.ConfigControllerIntegrationTest.executor": "Run",
     "JUnit.ConfigControllerTest.executor": "Run",
@@ -76,8 +85,10 @@
     "JUnit.EntranceTest.executor": "Run",
     "JUnit.HallTest.executor": "Run",
     "JUnit.PrivilegeEnumTest.executor": "Run",
+    "JUnit.QueueTransferedListenerTest.executor": "Run",
     "JUnit.SimulationControllerTest.executor": "Run",
     "JUnit.TicketOfficeTest.executor": "Run",
+    "JUnit.railways in railways.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -97,7 +108,15 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.railways in railways">
+    <configuration name="railways in railways" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="railways" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/backend/src/test/java/com/railways/railways" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="RailwaysApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="railways" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.railways.railways.RailwaysApplication" />
@@ -105,6 +124,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.railways in railways" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -126,7 +150,8 @@
       <workItem from="1732887327544" duration="1672000" />
       <workItem from="1732890464835" duration="66000" />
       <workItem from="1732890796244" duration="1226000" />
-      <workItem from="1732905519547" duration="1235000" />
+      <workItem from="1732905519547" duration="1747000" />
+      <workItem from="1732968698924" duration="643000" />
     </task>
     <servers />
   </component>

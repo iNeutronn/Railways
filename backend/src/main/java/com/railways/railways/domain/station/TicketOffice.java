@@ -81,7 +81,7 @@ public class TicketOffice implements Runnable {
 
         String endTime = ZonedDateTime.now().format(isoFormatter);
 
-        ServeRecord record = new ServeRecord(ticketOfficeID, client.getClientID(), client.getTicketsToBuy(), startTime, endTime);
+        ServeRecord record = new ServeRecord();
         serveRecords.add(record);
         System.out.println("TicketOffice: Client " + client.getFullName() + " with id:" + client.getClientID() + " served by ticket office " + ticketOfficeID);
 

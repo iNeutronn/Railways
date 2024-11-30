@@ -6,7 +6,7 @@ public class ClientCreated {
     private  int ticketOfficeId;
     private double time;
 
-    public ClientCreated(Client client, int entranceId, int ticketOfficeId, double time) {
+    public ClientCreated() {
         this.client = client;
         this.entranceId = entranceId;
         this.ticketOfficeId = ticketOfficeId;

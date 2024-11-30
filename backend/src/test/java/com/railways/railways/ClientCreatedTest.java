@@ -12,7 +12,7 @@ class ClientCreatedTest {
     @Test
     void testClientCreatedInitialization() {
         Client client = new Client(1, "John", "Doe", 2, PrivilegeEnum.DISABLED);
-        ClientCreated clientCreated = new ClientCreated(client, 5, 3, 12.5);
+        ClientCreated clientCreated = new ClientCreated();
 
         assertNotNull(clientCreated);
     }

@@ -188,7 +188,7 @@ public class Hall {
     private void publishClientCreatedEvent(Client client, Entrance entrance, TicketOffice ticketOffice, double time) {
         ClientCreatedEvent event = new ClientCreatedEvent(
                 this,
-                new ClientCreated(client, entrance.getId(), ticketOffice.getOfficeID(), time)
+                new ClientCreated()
         );
         applicationEventPublisher.publishEvent(event);
     }
