@@ -96,7 +96,6 @@ public class SimulationService {
 
         hall.setReservedTicketOffice(reservedTicketOffice);
 
-        hall.setMoveSpeed(appConfig.getClientSpeed());
 
 
         logger.log("Hall setup complete", LogLevel.Info);
