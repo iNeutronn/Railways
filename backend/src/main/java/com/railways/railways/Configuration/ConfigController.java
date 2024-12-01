@@ -63,6 +63,7 @@ public class ConfigController {
     @PostMapping("/cashpointsCount")
     public ConfigModel updateCashpointsCount(@RequestParam int cashpointsCount) {
         mapGenerationHelper.updateCashPointConfigs(cashpointsCount);
+        simulationService.resetCashPoints();
         return configModel;
     }
 
