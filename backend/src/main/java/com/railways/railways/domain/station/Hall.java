@@ -30,7 +30,6 @@ public class Hall {
     private TicketOffice reservedTicketOffice;
     private ApplicationEventPublisher applicationEventPublisher;
     private final Random random;
-    private double moveSpeed = 100.0;
     private final Logger logger;
     private final ConfigModel config;
 
@@ -75,10 +74,6 @@ public class Hall {
 
     public void setReservedTicketOffice(TicketOffice reservedTicketOffice) {
         this.reservedTicketOffice = reservedTicketOffice;
-    }
-
-    public void setMoveSpeed(double moveSpeed) {
-        this.moveSpeed = moveSpeed;
     }
 
     /**
