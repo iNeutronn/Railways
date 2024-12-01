@@ -1,25 +1,35 @@
 package com.railways.railways.Configuration;
 
+import com.railways.railways.simulation.IntervalGenerationPolicy;
+import com.railways.railways.simulation.RandomGenerationPolicy;
+import com.railways.railways.simulation.SimulationService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
- * ConfigController provides REST API to access and modify the configuration of the railway ticketing system.
+ * ConfigController provides a REST API to access and modify the configuration of the railway ticketing system.
+ * It includes endpoints for retrieving and updating various configuration settings.
  */
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/config")
 public class ConfigController {
 
     private final ConfigModel configModel;
+    private final MapGenerationHelper mapGenerationHelper;
+    private final SimulationService simulationService;
 
     /**
      * Constructor for ConfigController, accepting a configuration model.
      *
      * @param configModel the configuration for the railway ticketing system
+     * @param mapGenerationHelper the helper for generating and updating map configurations
      */
-    public ConfigController(ConfigModel configModel) {
+    public ConfigController(ConfigModel configModel, MapGenerationHelper mapGenerationHelper, SimulationService simulationService) {
         this.configModel = configModel;
+        this.mapGenerationHelper = mapGenerationHelper;
+        this.simulationService = simulationService;
     }
 
     /**
@@ -52,7 +62,8 @@ public class ConfigController {
      */
     @PostMapping("/cashpointsCount")
     public ConfigModel updateCashpointsCount(@RequestParam int cashpointsCount) {
-        configModel.setCashPointCount(cashpointsCount);
+        mapGenerationHelper.updateCashPointConfigs(cashpointsCount);
+        simulationService.resetCashPoints();
         return configModel;
     }
 
@@ -96,7 +107,7 @@ public class ConfigController {
      */
     @PostMapping("/entranceCount")
     public ConfigModel updateEntranceCount(@RequestParam int entranceCount) {
-        configModel.setEntranceCount(entranceCount);
+        mapGenerationHelper.updateEntranceConfigs(entranceCount);
         return configModel;
     }
 
@@ -165,4 +176,53 @@ public class ConfigController {
         configModel.setMaxPeopleAllowed(maxPeopleAllowed);
         return configModel;
     }
+
+    /**
+     * Endpoint to get the map size.
+     *
+     * @return the current map size
+     */
+    @GetMapping("/mapSize")
+    public MapSize getMapSize() {
+        return configModel.getMapSize();
+    }
+
+    /**
+     * Endpoint to update the map size.
+     *
+     * @param width the new width of the map
+     * @param height the new height of the map
+     * @return the updated configuration model
+     */
+    @PostMapping("/mapSize")
+    public ConfigModel updateMapSize(@RequestParam int width, @RequestParam int height) {
+        mapGenerationHelper.updateMapSize(new MapSize(width, height));
+        simulationService.resetCashPoints();
+        return configModel;
+    }
+
+    @PostMapping("/setRandomGenerationPolicy")
+    public ConfigModel setGenerationPolicy(@RequestParam double minTime, @RequestParam double maxTime) {
+        configModel.setGenerationPolicy(new RandomGenerationPolicy(minTime, maxTime));
+        return configModel;
+    }
+
+    @PostMapping("/setIntervalGenerationPolicy")
+    public ConfigModel setIntervalGenerationPolicy(@RequestParam double interval) {
+        configModel.setGenerationPolicy(new IntervalGenerationPolicy(interval));
+        return configModel;
+    }
+
+    @PostMapping("/setPolicyWithDefaultValues")
+    public ConfigModel setPolicyWithDefaultValues(@RequestParam String policy) {
+        policy = policy.toLowerCase();
+        if (policy.equals("random")) {
+            configModel.setGenerationPolicy(new RandomGenerationPolicy(5.0, 10.0));
+        } else if (policy.equals("interval")) {
+            configModel.setGenerationPolicy(new IntervalGenerationPolicy(7.0));
+        }
+        return configModel;
+
+    }
+
 }
