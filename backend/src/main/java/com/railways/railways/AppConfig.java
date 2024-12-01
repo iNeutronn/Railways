@@ -49,7 +49,6 @@ public class AppConfig {
         );
         logger.log("Base ConfigModel object created", LogLevel.Debug);
 
-        config.setCashPointSize(5,3);
         logger.log("CashPoint size set to 5x3", LogLevel.Debug);
 
 

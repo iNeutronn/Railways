@@ -17,11 +17,6 @@ public class ConfigModel {
 
     private MapSize mapSize;
 
-    private int cashPointXSize;
-    private int cashPointYSize;
-
-    private int hallMaxCapacity;
-
     // Number of ticket cashpoints
     private int cashpointsCount;
 
@@ -363,41 +358,6 @@ public class ConfigModel {
                     "Client speed must be greater than zero.");
         }
         clientSpeed = newClientSpeed;
-    }
-
-    /**
-     * Gets the X size of the cashpoint.
-     *
-     * @return the X size of the cashpoint
-     */
-    public int getCashPointXSize() {
-        return cashPointXSize;
-    }
-
-    /**
-     * Gets the Y size of the cashpoint.
-     *
-     * @return the Y size of the cashpoint
-     */
-    public int getCashPointYSize() {
-        return cashPointYSize;
-    }
-
-    /**
-     * Sets the size of the cashpoint.
-     *
-     * @param x the X size of the cashpoint
-     * @param y the Y size of the cashpoint
-     * @throws IllegalArgumentException if the sizes are non-positive
-     */
-    public  void  setCashPointSize(int x, int y)
-    {
-        if (x <= 0 || y <= 0) {
-            throw new IllegalArgumentException(
-                    "Cash point size must be greater than zero.");
-        }
-        cashPointXSize = x;
-        cashPointYSize = y;
     }
 
     @Override
