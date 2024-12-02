@@ -90,10 +90,12 @@ public class EntranceLocationGenerator {
         }
 
         List<EntranceConfig> result = new ArrayList<>(possibleLocations);
-
         if (randomOrder) {
             Collections.shuffle(result, random);
         }
+
+        var sublist = result.subList(0, count);
+        possibleLocations.removeAll(sublist);
 
         return result.subList(0, count);
     }
